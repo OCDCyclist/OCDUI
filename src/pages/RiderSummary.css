@@ -1,0 +1,27 @@
+.rider-summary {
+    padding: 20px;
+}
+
+.summary-section {
+    margin-bottom: 1em; /* Spacing between sections */
+    padding: 15px;
+    border: 1px solid #ccc; /* Optional border for visual separation */
+    border-radius: 8px;
+    background-color: #f9f9f9; /* Background color */
+}
+
+.summary-item {
+    margin: 10px 0; /* Vertical spacing between items */
+}
+
+.delta {
+    font-size: 0.8em; /* Smaller font size for deltas */
+}
+
+.positive {
+    color: green; /* Color for positive deltas */
+}
+
+.negative {
+    color: red; /* Color for negative deltas */
+}
