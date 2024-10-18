@@ -214,11 +214,11 @@ const CumulativeDataComponent = () => {
       <Paper
           elevation={3}
           sx={{
-              backgroundColor: '#f5f5f5',
-              marginBottom: '1em',
-              padding: 2,
-              textAlign: 'center',
-              width: 1000
+            backgroundColor: '#fbeacd',
+            padding: 2, // Increase padding
+            marginBottom: '1em',
+            margin: 'auto', // Center the component
+            width: '100%', // Occupy the full width of the container
           }}
       >
         <Box>

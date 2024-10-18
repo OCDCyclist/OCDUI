@@ -96,9 +96,9 @@ const AddWeightForm: React.FC = () => {
     setWeightData(defaultWeightMeasurement); // Clear success state to show form again
   };
 
-  // Handle navigation to dashboard
-  const handleGoToDashboard = () => {
-    navigate('/dashboard');
+  // Handle navigation to weighttracker
+  const handleGoToWeightTracker = () => {
+    navigate('/rider/weighttracker');
   };
 
   // Read-Only Success Component
@@ -147,8 +147,8 @@ const AddWeightForm: React.FC = () => {
             </Button>
           </Grid>
           <Grid item xs={6}>
-            <Button fullWidth variant="outlined" onClick={handleGoToDashboard}>
-              Go to Dashboard
+            <Button fullWidth variant="outlined" onClick={handleGoToWeightTracker}>
+              Go to Weight Tracker
             </Button>
           </Grid>
         </Grid>
@@ -168,8 +168,8 @@ const AddWeightForm: React.FC = () => {
             </Button>
           </Grid>
           <Grid item xs={6}>
-            <Button fullWidth variant="outlined" onClick={handleGoToDashboard}>
-              Go to Dashboard
+            <Button fullWidth variant="outlined" onClick={handleGoToWeightTracker}>
+              Go to Weight Tracker
             </Button>
           </Grid>
         </Grid>

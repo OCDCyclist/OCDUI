@@ -1,127 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Tab, Tabs, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, Container } from '@mui/material';
 import axios from 'axios';
+import { YearAndMonthData } from '../graphql/graphql';
 
-interface YearAndMonthData {
-  rideyear: number;
-  total_distance_miles: number;
-  jan_distance: number;
-  feb_distance: number;
-  mar_distance: number;
-  apr_distance: number;
-  may_distance: number;
-  jun_distance: number;
-  jul_distance: number;
-  aug_distance: number;
-  sep_distance: number;
-  oct_distance: number;
-  nov_distance: number;
-  dec_distance: number;
-  total_elevationgain: number;
-  jan_elevationgain: number;
-  feb_elevationgain: number;
-  mar_elevationgain: number;
-  apr_elevationgain: number;
-  may_elevationgain: number;
-  jun_elevationgain: number;
-  jul_elevationgain: number;
-  aug_elevationgain: number;
-  sep_elevationgain: number;
-  oct_elevationgain: number;
-  nov_elevationgain: number;
-  dec_elevationgain: number;
-  elapsedtime_hours: number;
-  jan_elapsedtime_hours: number;
-  feb_elapsedtime_hours: number;
-  mar_elapsedtime_hours: number;
-  apr_elapsedtime_hours: number;
-  may_elapsedtime_hours: number;
-  jun_elapsedtime_hours: number;
-  jul_elapsedtime_hours: number;
-  aug_elapsedtime_hours: number;
-  sep_elapsedtime_hours: number;
-  oct_elapsedtime_hours: number;
-  nov_elapsedtime_hours: number;
-  dec_elapsedtime_hours: number;
-  avg_speed: number;
-  jan_avg_speed: number;
-  feb_avg_speed: number;
-  mar_avg_speed: number;
-  apr_avg_speed: number;
-  may_avg_speed: number;
-  jun_avg_speed: number;
-  jul_avg_speed: number;
-  aug_avg_speed: number;
-  sep_avg_speed: number;
-  oct_avg_speed: number;
-  nov_avg_speed: number;
-  dec_avg_speed: number;
-  avg_cadence: number;
-  jan_avg_cadence: number;
-  feb_avg_cadence: number;
-  mar_avg_cadence: number;
-  apr_avg_cadence: number;
-  may_avg_cadence: number;
-  jun_avg_cadence: number;
-  jul_avg_cadence: number;
-  aug_avg_cadence: number;
-  sep_avg_cadence: number;
-  oct_avg_cadence: number;
-  nov_avg_cadence: number;
-  dec_avg_cadence: number;
-  avg_hr: number;
-  jan_avg_hr: number;
-  feb_avg_hr: number;
-  mar_avg_hr: number;
-  apr_avg_hr: number;
-  may_avg_hr: number;
-  jun_avg_hr: number;
-  jul_avg_hr: number;
-  aug_avg_hr: number;
-  sep_avg_hr: number;
-  oct_avg_hr: number;
-  nov_avg_hr: number;
-  dec_avg_hr: number;
-  max_hr: number;
-  jan_max_hr: number;
-  feb_max_hr: number;
-  mar_max_hr: number;
-  apr_max_hr: number;
-  may_max_hr: number;
-  jun_max_hr: number;
-  jul_max_hr: number;
-  aug_max_hr: number;
-  sep_max_hr: number;
-  oct_max_hr: number;
-  nov_max_hr: number;
-  dec_max_hr: number;
-  avg_power: number;
-  jan_avg_power: number;
-  feb_avg_power: number;
-  mar_avg_power: number;
-  apr_avg_power: number;
-  may_avg_power: number;
-  jun_avg_power: number;
-  jul_avg_power: number;
-  aug_avg_power: number;
-  sep_avg_power: number;
-  oct_avg_power: number;
-  nov_avg_power: number;
-  dec_avg_power: number;
-  max_power: number;
-  jan_max_power: number;
-  feb_max_power: number;
-  mar_max_power: number;
-  apr_max_power: number;
-  may_max_power: number;
-  jun_max_power: number;
-  jul_max_power: number;
-  aug_max_power: number;
-  sep_max_power: number;
-  oct_max_power: number;
-  nov_max_power: number;
-  dec_max_power: number;
-}
 
 const TabPanel = ({ children, value, index }: { children: React.ReactNode; value: number; index: number }) => {
   return (
@@ -308,7 +189,7 @@ const YearAndMonthComponent = () => {
       <Paper
         elevation={3}
         sx={{
-          backgroundColor: '#ffe5cc',
+          backgroundColor: '#fbeacd',
           padding: 2, // Increase padding
           margin: 'auto', // Center the component
           width: '100%', // Occupy the full width of the container

@@ -8,7 +8,9 @@ import AddWeight from './pages/AddWeight';
 import WeightTracker from './pages/WeightTracker';
 import CumulativeDataComponent from './components/CumulativeDataComponent';
 import YearAndMonthComponent from './components/YearAndMonthComponent';
+import YearAndDOWComponent from './components/YearAndDOWComponent';
 import AddRide from './pages/AddRide';
+import RideListComponent from './components/RideListComponent';
 
 const App: React.FC = () => {
   return (
@@ -19,11 +21,11 @@ const App: React.FC = () => {
           <Route path="login" element={<Login />} />
           <Route path="ocds/cummulatives" element={<CumulativeDataComponent />} />
           <Route path="ocds/yearandmonth" element={<YearAndMonthComponent />} />
+          <Route path="ocds/yearanddow" element={<YearAndDOWComponent />} />
           <Route path="updateStrava" element={<UpdateStrava />} />
           <Route path="rider/weighttracker" element={<WeightTracker />} />
           <Route path="rider/addweight" element={<AddWeight />} />
-
-          <Route path="rides/recent" element={<AddRide />} />
+          <Route path="rides/recent" element={<RideListComponent />} />
           <Route path="rides/add" element={<AddRide />} />
         </Route>
       </Routes>
