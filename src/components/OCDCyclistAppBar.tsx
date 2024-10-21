@@ -3,8 +3,7 @@ import { AppBar, Toolbar, Typography, Button, IconButton, Drawer, List, ListItem
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'; // Close icon
 import HomeIcon from '@mui/icons-material/Home';
-import ContentPasteSearchIcon from '@mui/icons-material/ContentPasteSearch';
-import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
+import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import UpdateIcon from '@mui/icons-material/Update';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
@@ -12,12 +11,14 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike';
 import DayOfMonthIcon from '@mui/icons-material/CalendarViewDay';
+import DatasetIcon from '@mui/icons-material/Dataset';
 import PlusOneIcon from '@mui/icons-material/PlusOne';
 import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
 import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
 import ScaleIcon from '@mui/icons-material/Scale';
 import CalendarViewMonthIcon from '@mui/icons-material/CalendarViewMonth';
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/AuthContext';
 
@@ -69,8 +70,8 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
       text: 'Rides',
       icon: <DirectionsBikeIcon />,
       children: [
-        { text: 'Recent Rides', icon: <DirectionsBikeIcon />, path: '/rides/recent' },
-        { text: 'Search Rides', icon: <ContentPasteSearchIcon />, path: '/rides/search' },
+        { text: 'Rides', icon: <DirectionsBikeIcon />, path: '/rides/recent' },
+        { text: 'Ride Lookback', icon: <TravelExploreIcon />, path: '/rides/lookback' },
         { text: 'Add Ride', icon: <PlusOneIcon />, path: '/rides/add' },
       ]
     },
@@ -80,9 +81,9 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
       icon: <CalendarViewMonthIcon />,
       children: [
         { text: 'Cummulatives', icon: <QueryStatsIcon />, path: '/ocds/cummulatives' },
-        { text: 'Year and Month', icon: <FitnessCenterIcon />, path: '/ocds/yearandmonth' },
-        { text: 'Year and DOW', icon: <FitnessCenterIcon />, path: '/ocds/yearanddow' },
-        { text: 'Day of Month', icon: <DayOfMonthIcon />, path: '/ocds/day-of-month' }
+        { text: 'Year and Month', icon: <DatasetIcon />, path: '/ocds/yearandmonth' },
+        { text: 'Year and DOW', icon: <DayOfMonthIcon />, path: '/ocds/yearanddow' },
+        { text: 'Day of Month', icon: <CalendarMonthIcon />, path: '/ocds/monthanddom' }
       ]
     },
 
@@ -96,7 +97,15 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
       ]
     },
 
-    { text: 'Update Strava', icon: <UpdateIcon />, path: '/updateStrava' },
+    {
+      text: 'Updates',
+      icon: <SentimentSatisfiedAltIcon />,
+      children: [
+        { text: 'Update Strava', icon: <UpdateIcon />, path: '/updateStrava' },
+        { text: 'Update Metrics', icon: <UpdateIcon />, path: '/updateMetrics' },
+      ]
+    },
+
     { text: isAuthenticated ? 'Logout' : 'Login', icon: <ExitToAppIcon />, path: '/login' }
   ];
 

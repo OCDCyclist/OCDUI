@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Tab, Tabs, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogContent, Container, Checkbox, FormGroup, FormControlLabel } from '@mui/material';
+import { Box, Tab, Tabs, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogContent, Container, Checkbox, FormGroup, FormControlLabel, Button } from '@mui/material';
 import axios from 'axios';
 import RideDetail from './RideDetail';
 import { formatDate, formatElapsedTime, formatInteger, formatNumber } from '../utilities/formatUtilities';
 import { RideData } from '../graphql/graphql';
+import { daysOfWeek } from '../utilities/daysOfWeek';
 
 const TabPanel = ({ children, value, index }: { children: React.ReactNode; value: number; index: number }) => {
   return (
@@ -12,8 +13,6 @@ const TabPanel = ({ children, value, index }: { children: React.ReactNode; value
     </div>
   );
 };
-
-const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 const RideListComponent = () => {
   const [data, setData] = useState<RideData[]>([]);
@@ -24,6 +23,43 @@ const RideListComponent = () => {
     key: null,
     direction: 'asc',
   });
+  const [showFilters, setShowFilters] = useState<boolean>(false);
+
+  const [showAll, setShowAll] = useState<boolean>(false);
+
+  // Toggle function to show or hide the checkboxes
+  const toggleShowFilters = () => {
+    setShowFilters(prev => !prev);
+  };
+
+  const toggleShowAll = () =>{
+    setShowAll(prev => {
+      if(prev){
+        setSelectedDays({
+          Sunday: true,
+          Monday: true,
+          Tuesday: true,
+          Wednesday: true,
+          Thursday: true,
+          Friday: true,
+          Saturday: true
+        });
+      }
+      else{
+        setSelectedDays({
+          Sunday: false,
+          Monday: false,
+          Tuesday: false,
+          Wednesday: false,
+          Thursday: false,
+          Friday: false,
+          Saturday: false
+        });
+      }
+      return !prev;
+    });
+  };
+
   const [selectedDays, setSelectedDays] = useState<{ [key: string]: boolean }>({
     Sunday: true,
     Monday: true,
@@ -87,6 +123,10 @@ const RideListComponent = () => {
 
   const format = (col: { key: keyof RideData; label: string; justify: string, width: string }, theDatum: number | string) => {
     switch (col.key) {
+      case 'title':
+      case 'comment':{
+        return theDatum as string;
+      }
       case 'rideid':
       case 'cadence':
       case 'hravg':
@@ -102,9 +142,6 @@ const RideListComponent = () => {
       case 'trainer':
       case 'elevationloss': {
         return formatInteger(theDatum as number);
-      }
-      case 'title': {
-        return theDatum as string;
       }
       case 'elapsedtime': {
         return formatElapsedTime(theDatum as number);
@@ -192,21 +229,37 @@ const RideListComponent = () => {
             <Tab label="Recent Rides" />
           </Tabs>
 
-          <FormGroup row sx={{ marginY: 2 }}>
-            {daysOfWeek.map((day) => (
-              <FormControlLabel
-                key={day}
-                control={
-                  <Checkbox
-                    checked={selectedDays[day]}
-                    onChange={() => handleDayChange(day)}
-                    name={day}
-                  />
-                }
-                label={day}
-              />
-            ))}
-          </FormGroup>
+          <Box display="flex" alignItems="center">
+            <Button variant="text" color="primary" onClick={toggleShowFilters}>
+              {showFilters ? 'Hide Filters' : 'Show Filters'}
+            </Button>
+
+            {
+              showFilters && (
+                <>
+                  <Button variant="text" color="primary" onClick={toggleShowAll}>
+                      {showAll ? 'Select All' : 'Unselect All'}
+                  </Button>
+
+                <FormGroup row sx={{ marginY: 2 }} style={{ marginLeft: '16px' }}>
+                    {daysOfWeek.map((day) => (
+                      <FormControlLabel
+                        key={day}
+                        control={
+                          <Checkbox
+                            checked={selectedDays[day]}
+                            onChange={() => handleDayChange(day)}
+                            name={day}
+                          />
+                        }
+                        label={day}
+                      />
+                    ))}
+                  </FormGroup>
+                </>
+              )
+            }
+          </Box>
 
           <TabPanel value={tabIndex} index={0}>
             {renderTable([

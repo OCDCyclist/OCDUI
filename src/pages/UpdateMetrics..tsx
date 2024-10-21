@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import {
   Container,
   Paper,
@@ -9,12 +8,12 @@ import {
   CircularProgress,
   Alert,
 } from '@mui/material';
-import StravaLogo from '../assets/powered by Strava/pwrdBy_strava_light/api_logo_pwrdBy_strava_horiz_light.svg';
+import axios from 'axios';
 
-const UpdateStrava: React.FC = () => {
+const UpdateMetrics: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false); // Loading state
   const [error, setError] = useState<string | null>(null); // Error state
-  const [updateResult, setUpdateResult] = useState<{ success: boolean; ridesAdded: number } | null>(null); // Success response state
+  const [updateResult, setUpdateResult] = useState<{ status: boolean; message: string } | null>(null); // Success response state
 
   // Function to handle Strava Update
   const handleStravaUpdate = async () => {
@@ -24,16 +23,18 @@ const UpdateStrava: React.FC = () => {
     const token = localStorage.getItem('token'); // Retrieve the JWT token from localStorage
 
     try {
-      const response = await axios.get('http://localhost:3000/rider/updateStrava', {
+      const response = await axios.get('http://localhost:3000/ride/updateMetrics', {
         headers: {
           Authorization: `Bearer ${token}`, // Add the token in the Authorization header
         },
       });
 
-      setUpdateResult(response.data); // Store the response data (success and ridesAdded)
+      setUpdateResult(response.data);
       setLoading(false);
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
-      setError(`Failed to update Strava rides. Please try again: ${err}`);
+      setError('Failed to update rider metrics rides. Please try again.');
       setLoading(false);
     }
   };
@@ -49,9 +50,8 @@ const UpdateStrava: React.FC = () => {
       <Container maxWidth="sm" sx={{ marginY: 5, textAlign: 'center' }}>
         <CircularProgress />
         <Typography variant="body1" sx={{ marginTop: 2 }}>
-          Updating your Strava rides...
+          Updating your rider metrics...
         </Typography>
-        <img src={StravaLogo} alt="Powered by Strava" style={{ marginTop: 20, width: '80%' }} /> {/* Add image */}
       </Container>
     );
   }
@@ -73,18 +73,18 @@ const UpdateStrava: React.FC = () => {
       <Container maxWidth="sm" sx={{ marginY: 5 }}>
         <Paper elevation={3} sx={{ padding: 4 }}>
           <Typography variant="h5" align="center" gutterBottom>
-            Strava Update Complete!
+            Rider Metrics Update Complete!
           </Typography>
 
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <Typography variant="body1">
-                <strong>Success:</strong> {updateResult.success ? 'Yes' : 'No'}
+                <strong>Success:</strong> {updateResult.status ? 'Yes' : 'No'}
               </Typography>
             </Grid>
             <Grid item xs={12}>
               <Typography variant="body1">
-                <strong>Rides Added:</strong> {updateResult.ridesAdded}
+                <strong>Message:</strong> {updateResult.message}
               </Typography>
             </Grid>
           </Grid>
@@ -92,11 +92,10 @@ const UpdateStrava: React.FC = () => {
           <Grid container spacing={2} sx={{ marginTop: 3 }}>
             <Grid item xs={12}>
               <Button fullWidth variant="contained" color="primary" onClick={handleStravaUpdate}>
-                Update Again
+                Update Again (probably not necessary)
               </Button>
             </Grid>
           </Grid>
-          <img src={StravaLogo} alt="Powered by Strava" style={{ marginTop: 20, width: '80%' }} /> {/* Add image */}
         </Paper>
       </Container>
     );
@@ -105,4 +104,4 @@ const UpdateStrava: React.FC = () => {
   return null; // Render nothing by default until the component is loaded
 };
 
-export default UpdateStrava;
+export default UpdateMetrics;

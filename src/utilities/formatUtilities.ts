@@ -32,6 +32,14 @@ export const formatNumber = (num: number) => {
     }).format(Number(num));
 };
 
+export const formatPercent = (num: number) => {
+    return new Intl.NumberFormat('en-US', {
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1,
+        useGrouping: true,
+    }).format(100 * Number(num));
+};
+
 export const formatInteger = (num: number) => {
     return new Intl.NumberFormat('en-US', {
         minimumFractionDigits: 0,
@@ -43,3 +51,8 @@ export const formatInteger = (num: number) => {
 export const formatBoolean = (num: number) => {
     return num === 0 ? 'false' : 'true';
 };
+
+export const isTextPresent = (str: string) =>{
+    if( typeof(str) !== 'string') return false;
+    return str.trim().length === 0 ? false : true;
+}
