@@ -56,3 +56,11 @@ export const isTextPresent = (str: string) =>{
     if( typeof(str) !== 'string') return false;
     return str.trim().length === 0 ? false : true;
 }
+
+export const formatNumber1 = (num: string | number) => {
+return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+    useGrouping: true,
+}).format(Number(num));
+};

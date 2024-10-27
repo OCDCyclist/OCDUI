@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Container,
   Paper,
@@ -14,11 +14,17 @@ import {
   Link,
   Alert,
   Grid,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
 } from '@mui/material';
 import { formatBoolean, formatDate, formatElapsedTime, formatInteger, formatNumber, formatPercent, isTextPresent } from '../utilities/formatUtilities';
-import { RideData } from '../graphql/graphql';
+import { useNavigate } from 'react-router-dom';
+import { Bike, RideData } from '../graphql/graphql';
 import { isBooleanString, isStringInteger, isStringNumber } from '../utilities/validation';
 import LinearIndeterminate from '../components/loaders/LinearIndeterminate';
+import { isTokenValid } from '../utilities/jwtUtils';
 interface RideDetailProps {
   rideData: RideData;
   onClose: () => void;
@@ -26,11 +32,47 @@ interface RideDetailProps {
 
 const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => {
   const [rideData, setRideData] = useState<RideData>(initialRideData); // For success response
+  const [bikes, setBikes] = useState<Bike[]>([]); // Bikes data
   const [editingField, setEditingField] = useState<string | null>(null);
-  const [editValue, setEditValue] = useState<string | number | null>(null);
+  const [editValue, setEditValue] = useState<string | number >('');
   const [inputError, setInputError] = useState<string | null>(null); // Tracks validation errors
   const [loading, setLoading] = useState<boolean>(false); // For loading state when updating
   const [error, setError] = useState<string | null>(null); // For error state when updatig
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Fetch bikes from the API
+    const fetchBikes = async () => {
+
+      try {
+        const token = localStorage.getItem('token');
+
+        if (!isTokenValid(token)) {
+          localStorage.removeItem('token'); // Clear the token
+          navigate('/login'); // Redirect to login
+        }
+
+        const response = await fetch('http://localhost:3000/bikes', {
+          method: 'GET',
+          headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setBikes(data);
+        } else {
+          setError('Failed to fetch bikes');
+        }
+      } catch (error) {
+        setError('Error fetching bikes: ' + error);
+      }
+    };
+
+    fetchBikes();
+  }, []);
 
   if (!rideData) {
     return <Typography variant="h6">No ride data available.</Typography>;
@@ -65,7 +107,7 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
       });
 
       setEditingField(null);
-      setEditValue(null);
+      setEditValue('');
       setInputError(null);
 
       if (response.ok) {
@@ -92,11 +134,11 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
     });
 
     setEditingField(null);
-    setEditValue(null);
+    setEditValue('');
     setInputError(null);
   };
 
-  const validateInput = (field: string, value: unknown) => {
+  const validateInput = (field: string, value: string | number) => {
     switch (field) {
       case 'title':
       case 'comment':{
@@ -118,6 +160,13 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
           return false;
         }
         break;
+      case 'bikeid':{
+        if (!Number.isInteger(value)) {
+          setInputError(`${field} value must be a whole number.`);
+          return false;
+        }
+        break;
+      }
       case 'poweravg':
       case 'powermax':
       case 'hravg':
@@ -153,7 +202,7 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
 
   const handleCancel = () => {
     setEditingField(null);
-    setEditValue(null);
+    setEditValue('');
     setInputError(null); // Clear any error on cancel
   };
 
@@ -542,6 +591,37 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
                       {`${formatBoolean(rideData.trainer)}`}
                     </span>
                   )}
+                </TableCell>
+              </TableRow>
+
+              {/* Bike name Strava Name */}
+              <TableRow>
+                <TableCell>Bike Name</TableCell>
+                <TableCell colSpan={3}>
+                    {editingField === 'bikeid' ? (
+                      <FormControl fullWidth>
+                        <InputLabel id="bike-select-label">Select Bike</InputLabel>
+                        <Select
+                          labelId="bike-select-label"
+                          value={rideData.bikeid}
+                          onChange={(e: { target: { value: unknown; }; }) => {
+                            setEditValue(Number(e.target.value));
+                            handleSave('bikeid');
+                          }}
+                          fullWidth
+                        >
+                          {bikes.map((bike) => (
+                            <MenuItem key={bike.bikeid} value={bike.bikeid}>
+                              {bike.bikename || 'Unknown'}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    ) : (
+                      <span onClick={() => handleFieldClick('bikeid', rideData.bikeid)}>
+                        <Typography variant='body2'>{`${rideData.bikename}`}</Typography>
+                      </span>
+                    )}
                 </TableCell>
               </TableRow>
 

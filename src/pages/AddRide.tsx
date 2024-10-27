@@ -15,16 +15,9 @@ import {
   Alert,
 } from '@mui/material';
 
-// Bike Interface
-interface Bike {
-  bikeid: number;
-  bikename: string;
-  stravaname: string;
-  isdefault: number;
-}
-
 import { useNavigate } from 'react-router-dom';
 import { isTokenValid } from '../utilities/jwtUtils';
+import { Bike, RideData } from '../graphql/graphql';
 // Component to add a new ride
 const AddRideForm: React.FC = () => {
   const [date, setDate] = useState<string>('');  // Date string in 'YYYY-MM-DD'
@@ -50,7 +43,7 @@ const AddRideForm: React.FC = () => {
   const [trainer, setTrainer] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false); // For loading state
   const [error, setError] = useState<string | null>(null); // For error state
-  const [rideData, setRideData] = useState<unknown>(null); // For success response
+  const [rideData, setRideData] = useState<RideData>(); // For success response
 
   const navigate = useNavigate();
 
@@ -154,7 +147,7 @@ const AddRideForm: React.FC = () => {
 
   // Handle add another ride button
   const handleAddAnotherRide = () => {
-    setRideData(null); // Clear success state to show form again
+    setRideData(null as unknown as RideData); // Clear success state to show form again
   };
 
   // Handle navigation to dashboard
@@ -163,7 +156,7 @@ const AddRideForm: React.FC = () => {
   };
 
   // Read-Only Success Component
-  const RideSuccess = ({ ride }: { ride: unknown }) => (
+  const RideSuccess = ({ ride }: { ride: RideData }) => (
     <Container maxWidth="sm" sx={{ marginY: 5 }}>
       <Paper elevation={3} sx={{ padding: 4 }}>
         <Typography variant="h5" align="center" gutterBottom>
@@ -196,14 +189,14 @@ const AddRideForm: React.FC = () => {
             <Typography variant="body1"><strong>Avg Speed:</strong></Typography>
           </Grid>
           <Grid item xs={6}>
-            <Typography variant="body1">{ride.speedAvg} mi/h</Typography>
+            <Typography variant="body1">{ride.speedavg} mi/h</Typography>
           </Grid>
 
           <Grid item xs={6}>
             <Typography variant="body1"><strong>Max Speed:</strong></Typography>
           </Grid>
           <Grid item xs={6}>
-            <Typography variant="body1">{ride.speedMax} mi/h</Typography>
+            <Typography variant="body1">{ride.speedmax} mi/h</Typography>
           </Grid>
 
         </Grid>

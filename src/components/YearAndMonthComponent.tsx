@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Tab, Tabs, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, Container } from '@mui/material';
 import axios from 'axios';
 import { YearAndMonthData } from '../graphql/graphql';
-
+import { formatInteger, formatNumber1 } from '../utilities/formatUtilities';
 
 const TabPanel = ({ children, value, index }: { children: React.ReactNode; value: number; index: number }) => {
   return (
@@ -58,22 +58,6 @@ const YearAndMonthComponent = () => {
     setDialogInfo(null);
   };
 
-  const formatNumber = (num: string | number) => {
-    return new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 1,
-      maximumFractionDigits: 1,
-      useGrouping: true,
-    }).format(Number(num));
-  };
-
-  const formatInteger = (num: string | number) => {
-    return new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-      useGrouping: true,
-    }).format(Number(num));
-  };
-
   const format = ( col:  { key: keyof YearAndMonthData; label: string }, theDatum: string) =>{
     switch(col.key){
       case 'jan_elevationgain':
@@ -101,7 +85,7 @@ const YearAndMonthComponent = () => {
       case 'oct_elapsedtime_hours':
       case 'nov_elapsedtime_hours':
       case 'dec_elapsedtime_hours':{
-        return formatInteger(theDatum);
+        return formatInteger(Number(theDatum));
       }
       case 'jan_distance':
       case 'feb_distance':
@@ -116,12 +100,12 @@ const YearAndMonthComponent = () => {
       case 'nov_distance':
       case 'dec_distance':
       {
-        return formatNumber(theDatum);
+        return formatNumber1(theDatum);
       }
       case 'rideyear':{
         return theDatum;
       }
-      default: return formatNumber(theDatum);
+      default: return formatNumber1(theDatum);
     }
   }
 
@@ -179,7 +163,7 @@ const YearAndMonthComponent = () => {
   };
 
   return (
-    <Container 
+    <Container
       sx={{
         marginY: 2, // Adds some vertical margin
         maxWidth: '1200px', // Increase max width

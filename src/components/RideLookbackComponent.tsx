@@ -29,13 +29,14 @@ const RideLookbackComponent = () => {
 
   const predefinedOrder = [
     "today", "1 year ago", "2 years ago", "5 years ago", "10 years ago", "15 years ago",
-    "20 years ago", "25 years ago", "30 year ago", "35 year ago", "40 year ago", "Earliest"
+    "20 years ago", "25 years ago", "30 year ago", "35 year ago", "40 year ago"
   ];
 
 // Memoize categories and sort them according to predefined order
 const categories = useMemo(() => {
-  const uniqueCategories = [...Array.from(new Set(data.map((ride) => ride.category))), "All"];
-  return uniqueCategories.sort((a, b) => {
+  const uniqueCategories = [...Array.from(new Set(data.map((ride) => ride.category))) ];
+
+  const x =  uniqueCategories.sort((a, b) => {
       const indexA = predefinedOrder.indexOf(a);
       const indexB = predefinedOrder.indexOf(b);
 
@@ -48,6 +49,8 @@ const categories = useMemo(() => {
       if (indexB === -1) return -1; // Put predefined categories before non-predefined ones
       return indexA - indexB; // Sort based on the order in the predefined list
     });
+
+    return [...x, "All"];
   }, [data]);
 
   useEffect(() => {
@@ -190,6 +193,7 @@ const categories = useMemo(() => {
           padding: 2,
           marginBottom: '1em',
           margin: 'auto',
+          maxWidth: '1200px', // Increase max width
           width: '100%',
         }}
       >

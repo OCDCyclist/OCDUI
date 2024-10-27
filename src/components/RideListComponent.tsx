@@ -4,7 +4,7 @@ import axios from 'axios';
 import RideDetail from './RideDetail';
 import { formatDate, formatElapsedTime, formatInteger, formatNumber } from '../utilities/formatUtilities';
 import { RideData } from '../graphql/graphql';
-import { daysOfWeek } from '../utilities/daysOfWeek';
+import { dayFilterDefault, daysOfWeek } from '../utilities/daysOfWeek';
 
 const TabPanel = ({ children, value, index }: { children: React.ReactNode; value: number; index: number }) => {
   return (
@@ -24,8 +24,22 @@ const RideListComponent = () => {
     direction: 'asc',
   });
   const [showFilters, setShowFilters] = useState<boolean>(false);
-
   const [showAll, setShowAll] = useState<boolean>(false);
+  const [tableHeight, setTableHeight] = useState(window.innerHeight - 250);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const newHeight = window.innerHeight - 250;
+      setTableHeight(newHeight);
+    };
+
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Initial calculation
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   // Toggle function to show or hide the checkboxes
   const toggleShowFilters = () => {
@@ -60,15 +74,7 @@ const RideListComponent = () => {
     });
   };
 
-  const [selectedDays, setSelectedDays] = useState<{ [key: string]: boolean }>({
-    Sunday: true,
-    Monday: true,
-    Tuesday: true,
-    Wednesday: true,
-    Thursday: true,
-    Friday: true,
-    Saturday: true
-  });
+  const [selectedDays, setSelectedDays] = useState<{ [key: string]: boolean }>(dayFilterDefault);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -157,7 +163,6 @@ const RideListComponent = () => {
   };
 
   const filteredData = React.useMemo(() => filterByDay(data), [data, selectedDays]);
-
   const sortedData = React.useMemo(() => {
     if (!sortConfig.key) return filteredData;
     const sorted = [...filteredData].sort((a, b) => {
@@ -168,10 +173,10 @@ const RideListComponent = () => {
     return sorted;
   }, [filteredData, sortConfig]);
 
-  const renderTable = (columns: { key: keyof RideData; label: string; justify: string, width: string }[]) => {
+  const renderTableRecent = (columns: { key: keyof RideData; label: string; justify: string, width: string }[]) => {
     return (
-      <TableContainer>
-        <Table>
+      <TableContainer sx={{ maxHeight: tableHeight }}>
+        <Table stickyHeader>
           <TableHead>
             <TableRow>
               {columns.map((col) => (
@@ -179,8 +184,7 @@ const RideListComponent = () => {
                   key={col.key}
                   align={col.justify}
                   onClick={() => handleSort(col.key)}
-                  sx={{ cursor: 'pointer' }}
-                  width={col.width}
+                  sx={{ cursor: 'pointer', width: col.width }}
                 >
                   {col.label}
                   {sortConfig.key === col.key ? (sortConfig.direction === 'asc' ? ' ▲' : ' ▼') : ''}
@@ -196,12 +200,12 @@ const RideListComponent = () => {
               >
                 {columns.map((col) => (
                   <TableCell
-                      key={col.key}
-                      align={col.justify}
-                      sx={{ paddingRight: '1em' }}
-                      onClick={() => handleRowClick(row)}
-                    >
-                      {format(col, row[col.key])}
+                    key={col.key}
+                    align={col.justify}
+                    sx={{ paddingRight: '1em' }}
+                    onClick={() => handleRowClick(row)}
+                  >
+                    {format(col, row[col.key])}
                   </TableCell>
                 ))}
               </TableRow>
@@ -221,6 +225,7 @@ const RideListComponent = () => {
           padding: 2, // Increase padding
           marginBottom: '1em',
           margin: 'auto', // Center the component
+          maxWidth: '1900px', // Increase max width
           width: '100%', // Occupy the full width of the container
         }}
       >
@@ -262,7 +267,7 @@ const RideListComponent = () => {
           </Box>
 
           <TabPanel value={tabIndex} index={0}>
-            {renderTable([
+            {renderTableRecent([
               { key: 'date', label: 'Ride Date', justify: 'center', width: '80' },
               { key: 'distance', label: 'Distance', justify: 'center', width: '80' },
               { key: 'elapsedtime', label: 'Elapsed time', justify: 'center', width: '80' },
