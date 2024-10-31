@@ -12,6 +12,7 @@ import {
   CircularProgress,
   Alert,
 } from '@mui/material';
+import WeightTracker from './WeightTracker';
 
 
 const getTodayDate = () => {
@@ -101,62 +102,6 @@ const AddWeightForm: React.FC = () => {
     navigate('/rider/weighttracker');
   };
 
-  // Read-Only Success Component
-  const WeightSuccess = ({ weightReading }: { weightReading: WeightReading }) => (
-    <Container maxWidth="sm" sx={{ marginY: 5 }}>
-      <Paper elevation={3} sx={{ padding: 4 }}>
-        <Typography variant="h5" align="center" gutterBottom>
-          Weight Added Successfully!
-        </Typography>
-
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <Typography variant="body1"><strong>Date:</strong></Typography>
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant="body1">{weightReading.date}</Typography>
-          </Grid>
-
-          <Grid item xs={6}>
-            <Typography variant="body1"><strong>Weight:</strong></Typography>
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant="body1">{weightReading.weight} lbs</Typography>
-          </Grid>
-
-          <Grid item xs={6}>
-            <Typography variant="body1"><strong>Body Fat Fraction</strong></Typography>
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant="body1">{weightReading.bodyfatfraction}</Typography>
-          </Grid>
-
-          <Grid item xs={6}>
-            <Typography variant="body1"><strong>Body H2O Fraction</strong></Typography>
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant="body1">{weightReading.bodyh2ofraction}</Typography>
-          </Grid>
-
-        </Grid>
-
-        <Grid container spacing={2} sx={{ marginTop: 3 }}>
-          <Grid item xs={6}>
-            <Button fullWidth variant="contained" onClick={handleAddAnotherWeight}>
-              Add Another Weight
-            </Button>
-          </Grid>
-          <Grid item xs={6}>
-            <Button fullWidth variant="outlined" onClick={handleGoToWeightTracker}>
-              Go to Weight Tracker
-            </Button>
-          </Grid>
-        </Grid>
-      </Paper>
-    </Container>
-  );
-
-  // Error Component
   const ErrorComponent = ({ error }: { error: string }) => (
     <Container maxWidth="sm" sx={{ marginY: 5 }}>
       <Paper elevation={3} sx={{ padding: 4 }}>
@@ -186,7 +131,7 @@ const AddWeightForm: React.FC = () => {
   }
 
   if (weightData) {
-    return <WeightSuccess weightReading={weightData} />;
+    return <WeightTracker />;
   }
 
   if (error) {

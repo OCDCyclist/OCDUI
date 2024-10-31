@@ -17,8 +17,9 @@ import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
 import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
 import ScaleIcon from '@mui/icons-material/Scale';
 import CalendarViewMonthIcon from '@mui/icons-material/CalendarViewMonth';
-import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import PersonIcon from '@mui/icons-material/Person';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/AuthContext';
 
@@ -72,6 +73,7 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
       children: [
         { text: 'Rides', icon: <DirectionsBikeIcon />, path: '/rides/recent' },
         { text: 'Ride Lookback', icon: <TravelExploreIcon />, path: '/rides/lookback' },
+        { text: 'All Rides', icon: <DirectionsBikeIcon />, path: '/rides/allrides' },
         { text: 'Add Ride', icon: <PlusOneIcon />, path: '/rides/add' },
       ]
     },
@@ -89,7 +91,7 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
 
     {
       text: 'Rider',
-      icon: <SentimentSatisfiedAltIcon />,
+      icon: <PersonIcon />,
       children: [
         { text: 'Weight Tracker', icon: <MonitorHeartIcon />, path: '/rider/weighttracker' },
         { text: 'Record Weight', icon: <ScaleIcon />, path: '/rider/addweight' },
@@ -99,7 +101,7 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
 
     {
       text: 'Updates',
-      icon: <SentimentSatisfiedAltIcon />,
+      icon: <RefreshIcon />,
       children: [
         { text: 'Update Strava', icon: <UpdateIcon />, path: '/updateStrava' },
         { text: 'Update Metrics', icon: <UpdateIcon />, path: '/updateMetrics' },

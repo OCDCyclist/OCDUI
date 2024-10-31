@@ -164,9 +164,10 @@ const YearAndMonthComponent = () => {
 
   return (
     <Container
+      maxWidth='xl'
       sx={{
         marginY: 2, // Adds some vertical margin
-        maxWidth: '1200px', // Increase max width
+        maxWidth: '1800px', // Increase max width
         width: '100%', // Set width to 100% for full-page width
       }}
     >

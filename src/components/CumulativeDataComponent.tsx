@@ -210,7 +210,7 @@ const CumulativeDataComponent = () => {
   };
 
   return (
-    <Container sx={{ marginY: 0 }}>
+    <Container maxWidth='xl' sx={{ marginY: 0 }}>
       <Paper
           elevation={3}
           sx={{

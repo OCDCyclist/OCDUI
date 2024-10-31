@@ -185,7 +185,7 @@ const categories = useMemo(() => {
   };
 
   return (
-    <Container sx={{ marginY: 0 }}>
+    <Container maxWidth='xl' sx={{ marginY: 0 }}>
       <Paper
         elevation={3}
         sx={{
@@ -193,7 +193,7 @@ const categories = useMemo(() => {
           padding: 2,
           marginBottom: '1em',
           margin: 'auto',
-          maxWidth: '1200px', // Increase max width
+          maxWidth: '1800px', // Increase max width
           width: '100%',
         }}
       >

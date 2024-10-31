@@ -1,22 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Tab, Tabs, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogContent, Container, Checkbox, FormGroup, FormControlLabel, Button } from '@mui/material';
+import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogContent, Container, Checkbox, FormGroup, FormControlLabel, Button } from '@mui/material';
 import axios from 'axios';
 import RideDetail from './RideDetail';
 import { formatDate, formatElapsedTime, formatInteger, formatNumber } from '../utilities/formatUtilities';
 import { RideData } from '../graphql/graphql';
 import { dayFilterDefault, daysOfWeek } from '../utilities/daysOfWeek';
 
-const TabPanel = ({ children, value, index }: { children: React.ReactNode; value: number; index: number }) => {
-  return (
-    <div role="tabpanel" hidden={value !== index}>
-      {value === index && <Box>{children}</Box>}
-    </div>
-  );
-};
-
 const RideListComponent = () => {
   const [data, setData] = useState<RideData[]>([]);
-  const [tabIndex, setTabIndex] = useState(0);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [rideData, setRideData] = useState<RideData | null >(null);
   const [sortConfig, setSortConfig] = useState<{ key: keyof RideData | null, direction: 'asc' | 'desc' }>({
@@ -25,11 +16,11 @@ const RideListComponent = () => {
   });
   const [showFilters, setShowFilters] = useState<boolean>(false);
   const [showAll, setShowAll] = useState<boolean>(false);
-  const [tableHeight, setTableHeight] = useState(window.innerHeight - 250);
+  const [tableHeight, setTableHeight] = useState(window.innerHeight - 190);
 
   useEffect(() => {
     const handleResize = () => {
-      const newHeight = window.innerHeight - 250;
+      const newHeight = window.innerHeight - 190;
       setTableHeight(newHeight);
     };
 
@@ -96,10 +87,6 @@ const RideListComponent = () => {
       direction = 'desc';
     }
     setSortConfig({ key: columnKey, direction });
-  };
-
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setTabIndex(newValue);
   };
 
   const handleRowClick = (rideData: RideData) => {
@@ -217,7 +204,7 @@ const RideListComponent = () => {
   };
 
   return (
-    <Container sx={{ marginY: 0 }}>
+    <Container maxWidth='xl' sx={{ marginY: 0 }}>
       <Paper
         elevation={3}
         sx={{
@@ -225,77 +212,68 @@ const RideListComponent = () => {
           padding: 2, // Increase padding
           marginBottom: '1em',
           margin: 'auto', // Center the component
-          maxWidth: '1900px', // Increase max width
           width: '100%', // Occupy the full width of the container
         }}
       >
-        <Box>
-          <Tabs value={tabIndex} onChange={handleTabChange}>
-            <Tab label="Recent Rides" />
-          </Tabs>
+        <Box display="flex" alignItems="center">
+          <Button variant="text" color="primary" onClick={toggleShowFilters}>
+            {showFilters ? 'Hide Filters' : 'Show Filters'}
+          </Button>
 
-          <Box display="flex" alignItems="center">
-            <Button variant="text" color="primary" onClick={toggleShowFilters}>
-              {showFilters ? 'Hide Filters' : 'Show Filters'}
-            </Button>
-
-            {
-              showFilters && (
-                <>
-                  <Button variant="text" color="primary" onClick={toggleShowAll}>
-                      {showAll ? 'Select All' : 'Unselect All'}
-                  </Button>
+          {
+            showFilters && (
+              <>
+                <Button variant="text" color="primary" onClick={toggleShowAll}>
+                    {showAll ? 'Select All' : 'Unselect All'}
+                </Button>
 
                 <FormGroup row sx={{ marginY: 2 }} style={{ marginLeft: '16px' }}>
-                    {daysOfWeek.map((day) => (
-                      <FormControlLabel
-                        key={day}
-                        control={
-                          <Checkbox
-                            checked={selectedDays[day]}
-                            onChange={() => handleDayChange(day)}
-                            name={day}
-                          />
-                        }
-                        label={day}
-                      />
-                    ))}
-                  </FormGroup>
-                </>
-              )
-            }
-          </Box>
-
-          <TabPanel value={tabIndex} index={0}>
-            {renderTableRecent([
-              { key: 'date', label: 'Ride Date', justify: 'center', width: '80' },
-              { key: 'distance', label: 'Distance', justify: 'center', width: '80' },
-              { key: 'elapsedtime', label: 'Elapsed time', justify: 'center', width: '80' },
-              { key: 'speedavg', label: 'Avg Speed', justify: 'center', width: '80' },
-              { key: 'elevationgain', label: 'Elevation', justify: 'center', width: '80' },
-              { key: 'hravg', label: 'Avg HR', justify: 'center', width: '80' },
-              { key: 'poweravg', label: 'Avg Power', justify: 'center', width: '80' },
-              { key: 'title', label: 'Title', justify: 'left', width: '100' },
-            ])}
-          </TabPanel>
-
-          {/* Modal Dialog for clicking on a row */}
-          <Dialog
-            open={dialogOpen}
-            onClose={handleCloseDialog}
-            fullWidth // Make the dialog use the full width allowed
-            maxWidth="md" // You can set 'lg' or 'xl' for larger widths
-          >
-            <DialogContent
-              sx={{
-                padding: 4, // Optional: adjust padding if needed
-                width: '100%', // Make sure the content spans full width
-              }}
-            >
-              <RideDetail rideData={rideData} onClose={() => setDialogOpen(false)} />
-            </DialogContent>
-          </Dialog>
+                  {daysOfWeek.map((day) => (
+                    <FormControlLabel
+                      key={day}
+                      control={
+                        <Checkbox
+                          checked={selectedDays[day]}
+                          onChange={() => handleDayChange(day)}
+                          name={day}
+                        />
+                      }
+                      label={day}
+                    />
+                  ))}
+                </FormGroup>
+              </>
+            )
+          }
         </Box>
+
+        {renderTableRecent([
+          { key: 'date', label: 'Ride Date', justify: 'center', width: '80' },
+          { key: 'distance', label: 'Distance', justify: 'center', width: '80' },
+          { key: 'elapsedtime', label: 'Elapsed time', justify: 'center', width: '80' },
+          { key: 'speedavg', label: 'Avg Speed', justify: 'center', width: '80' },
+          { key: 'elevationgain', label: 'Elevation', justify: 'center', width: '80' },
+          { key: 'hravg', label: 'Avg HR', justify: 'center', width: '80' },
+          { key: 'poweravg', label: 'Avg Power', justify: 'center', width: '80' },
+          { key: 'title', label: 'Title', justify: 'left', width: '100' },
+        ])}
+
+        {/* Modal Dialog to display ride details */}
+        <Dialog
+          open={dialogOpen}
+          onClose={handleCloseDialog}
+          fullWidth 
+          maxWidth="lg"
+        >
+          <DialogContent
+            sx={{
+              padding: 4,
+              width: '100%',
+            }}
+          >
+            {rideData ? <RideDetail rideData={rideData} onClose={() => setDialogOpen(false)} /> : undefined}
+          </DialogContent>
+        </Dialog>
       </Paper>
     </Container>
   );

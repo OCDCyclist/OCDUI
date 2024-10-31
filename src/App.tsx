@@ -13,6 +13,7 @@ import YearAndDOWComponent from './components/YearAndDOWComponent';
 import MonthAndDOMComponent from './components/MonthAndDOMComponent';
 import AddRide from './pages/AddRide';
 import RideListComponent from './components/RideListComponent';
+import RideAllComponent from './components/RideAllComponent';
 import RideLookbackComponent from './components/RideLookbackComponent';
 
 const App: React.FC = () => {
@@ -32,6 +33,7 @@ const App: React.FC = () => {
           <Route path="rider/addweight" element={<AddWeight />} />
           <Route path="rides/recent" element={<RideListComponent />} />
           <Route path="rides/lookback" element={<RideLookbackComponent />} />
+          <Route path="rides/allrides" element={<RideAllComponent />} />
           <Route path="rides/add" element={<AddRide />} />
         </Route>
       </Routes>

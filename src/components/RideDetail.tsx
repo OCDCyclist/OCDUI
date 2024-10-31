@@ -19,12 +19,14 @@ import {
   MenuItem,
   Select,
 } from '@mui/material';
-import { formatBoolean, formatDate, formatElapsedTime, formatInteger, formatNumber, formatPercent, isTextPresent } from '../utilities/formatUtilities';
+import { formatBoolean, formatDate, formatInteger, formatNumber, formatPercent, isTextPresent } from '../utilities/formatUtilities';
 import { useNavigate } from 'react-router-dom';
 import { Bike, RideData } from '../graphql/graphql';
 import { isBooleanString, isStringInteger, isStringNumber } from '../utilities/validation';
 import LinearIndeterminate from '../components/loaders/LinearIndeterminate';
 import { isTokenValid } from '../utilities/jwtUtils';
+import ElapsedTimeEditor from './ElapsedTimeEditor';
+
 interface RideDetailProps {
   rideData: RideData;
   onClose: () => void;
@@ -33,11 +35,12 @@ interface RideDetailProps {
 const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => {
   const [rideData, setRideData] = useState<RideData>(initialRideData); // For success response
   const [bikes, setBikes] = useState<Bike[]>([]); // Bikes data
+  const [elapsedTime, setElapsedTime] = useState<number>(0);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState<string | number >('');
   const [inputError, setInputError] = useState<string | null>(null); // Tracks validation errors
   const [loading, setLoading] = useState<boolean>(false); // For loading state when updating
-  const [error, setError] = useState<string | null>(null); // For error state when updatig
+  const [error, setError] = useState<string | null>(null); // For error state when updating
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -103,11 +106,62 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`, // Include token in Authorization header
         },
-        body: JSON.stringify({ [field]: editValue }),
+        body: JSON.stringify({ [field]: editValue.toString() }),
       });
 
       setEditingField(null);
       setEditValue('');
+      setInputError(null);
+
+      if (response.ok) {
+        const data = await response.json();
+        setRideData(data);
+        setLoading(false);
+      } else {
+        setError('Failed to update ride');
+        setLoading(false);
+      }
+    } catch (error) {
+      setError('Error updating ride: ' + error);
+      setLoading(false);
+    }
+
+    // API call to save the change
+    await fetch(`/api/ride/${rideData.rideid}/update`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`, // Include token in Authorization header
+      },
+      body: JSON.stringify({ [field]: editValue }),
+    });
+
+    setEditingField(null);
+    setEditValue('');
+    setInputError(null);
+  };
+
+  const handleSaveElapsedTime = async () => {
+    if(!Number.isInteger(elapsedTime)){
+      setInputError("Invalid elapsed time value");
+      return
+    }
+
+    const token = localStorage.getItem('token'); // Retrieve token from localStorage
+
+    try {
+      const url = `http://localhost:3000/ride/${rideData.rideid}/update`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, // Include token in Authorization header
+        },
+        body: JSON.stringify({ ["elapsedtime"]: elapsedTime.toString() }),
+      });
+
+      setEditingField(null);
+      setElapsedTime(0);
       setInputError(null);
 
       if (response.ok) {
@@ -167,13 +221,19 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
         }
         break;
       }
+      case 'elapsedtime':{
+        if (!Number.isInteger(Number(value))) {
+          setInputError(`${field} value must be a whole number.`);
+          return false;
+        }
+        break;
+      }
       case 'poweravg':
       case 'powermax':
       case 'hravg':
       case 'hrmax':
       case 'elevationgain':
       case 'elevationloss':
-      case 'elapsedtime':
       case 'powernormalized':
       case 'tss':
       case 'cadence':{
@@ -230,7 +290,7 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
   }
 
   return (
-    <Container maxWidth="lg" sx={{ marginY: 5 }}>
+    <Container maxWidth="xl" sx={{ marginY: 5 }}>
       <Paper elevation={3} sx={{ padding: 2, width: '100%', margin: '0 auto' }}>
         { loading ? <LinearIndeterminate /> : null}
 
@@ -286,23 +346,63 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
                 </TableCell>
                 <TableCell>Elapsed Time</TableCell>
                 <TableCell>
-                  {editingField === 'elapsedtime' ? (
+                  <ElapsedTimeEditor initialSeconds={rideData.elapsedtime} onSave={ (newSeconds: number) =>{
+                      setElapsedTime(newSeconds);
+                      handleSaveElapsedTime('elapsedtime');
+                  }} />
+                </TableCell>
+              </TableRow>
+
+              {/* Distnace */}
+              <TableRow>
+                <TableCell>Distance</TableCell>
+                <TableCell>
+                  {editingField === 'distance' ? (
                     <TextField
                       fullWidth
-                      value={editValue ?? rideData.date}
+                      value={editValue ?? rideData.distance}
                       onChange={handleInputChange}
                       onBlur={handleCancel}
-                      onKeyUp={(e) => e.key === 'Enter' && handleSave('elapsedtime')}
+                      onKeyUp={(e) => e.key === 'Enter' && handleSave('distance')}
                       error={!!inputError}
                       helperText={inputError}
                       InputProps={{
-                        endAdornment: <InputAdornment position="end">seconds</InputAdornment>,
+                        endAdornment: <InputAdornment position="end">mph</InputAdornment>,
                       }}
                       autoFocus
                     />
                   ) : (
-                    <span onClick={() => handleFieldClick('elapsedtime', rideData.elapsedtime)}>{formatElapsedTime(rideData.elapsedtime)} H:M:S</span>
+                    <span onClick={() => handleFieldClick('distance', rideData.distance)}>
+                      {`${formatNumber(rideData.distance)} miles`}
+                    </span>
                   )}
+                </TableCell>
+                <TableCell>Bike Name</TableCell>
+                <TableCell>
+                    {editingField === 'bikeid' ? (
+                      <FormControl fullWidth>
+                        <InputLabel id="bike-select-label">Select Bike</InputLabel>
+                        <Select
+                          labelId="bike-select-label"
+                          value={rideData.bikeid}
+                          onChange={(e: { target: { value: unknown; }; }) => {
+                            setEditValue(Number(e.target.value));
+                            handleSave('bikeid');
+                          }}
+                          fullWidth
+                        >
+                          {bikes.map((bike) => (
+                            <MenuItem key={bike.bikeid} value={bike.bikeid}>
+                              {bike.bikename || 'Unknown'}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    ) : (
+                      <span onClick={() => handleFieldClick('bikeid', rideData.bikeid)}>
+                        <Typography variant='body2'>{`${rideData.bikename}`}</Typography>
+                      </span>
+                    )}
                 </TableCell>
               </TableRow>
 
@@ -591,37 +691,6 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
                       {`${formatBoolean(rideData.trainer)}`}
                     </span>
                   )}
-                </TableCell>
-              </TableRow>
-
-              {/* Bike name Strava Name */}
-              <TableRow>
-                <TableCell>Bike Name</TableCell>
-                <TableCell colSpan={3}>
-                    {editingField === 'bikeid' ? (
-                      <FormControl fullWidth>
-                        <InputLabel id="bike-select-label">Select Bike</InputLabel>
-                        <Select
-                          labelId="bike-select-label"
-                          value={rideData.bikeid}
-                          onChange={(e: { target: { value: unknown; }; }) => {
-                            setEditValue(Number(e.target.value));
-                            handleSave('bikeid');
-                          }}
-                          fullWidth
-                        >
-                          {bikes.map((bike) => (
-                            <MenuItem key={bike.bikeid} value={bike.bikeid}>
-                              {bike.bikename || 'Unknown'}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    ) : (
-                      <span onClick={() => handleFieldClick('bikeid', rideData.bikeid)}>
-                        <Typography variant='body2'>{`${rideData.bikename}`}</Typography>
-                      </span>
-                    )}
                 </TableCell>
               </TableRow>
 
