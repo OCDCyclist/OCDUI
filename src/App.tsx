@@ -15,6 +15,8 @@ import AddRide from './pages/AddRide';
 import RideListComponent from './components/RideListComponent';
 import RideAllComponent from './components/RideAllComponent';
 import RideLookbackComponent from './components/RideLookbackComponent';
+import StarredSegmentsComponent from './components/StarredSegmentsComponent';
+import UpdateStravaStarredSegments from './pages/UpdateStravaStarredSegments';
 
 const App: React.FC = () => {
   return (
@@ -35,6 +37,8 @@ const App: React.FC = () => {
           <Route path="rides/lookback" element={<RideLookbackComponent />} />
           <Route path="rides/allrides" element={<RideAllComponent />} />
           <Route path="rides/add" element={<AddRide />} />
+          <Route path="segments/starred" element={<StarredSegmentsComponent />} />
+          <Route path="segments/updatestarred" element={<UpdateStravaStarredSegments />} />
         </Route>
       </Routes>
     </Router>

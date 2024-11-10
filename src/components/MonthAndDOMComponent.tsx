@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Tab, Tabs, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, Container } from '@mui/material';
 import axios from 'axios';
-import { MonthAndDOMData } from '../graphql/graphql';
+import { MonthAndDOMData } from '../types/types';
 import { formatInteger, formatNumber } from '../utilities/formatUtilities';
 
 const TabPanel = ({ children, value, index }: { children: React.ReactNode; value: number; index: number }) => {
@@ -147,6 +147,11 @@ const MonthAndDOMComponent = () => {
   }, [data, sortConfig]);
 
   const renderTable = (columns: { key: keyof MonthAndDOMData; label: string }[]) => {
+
+    const today = new Date();
+    const monthAbbreviation = today.toLocaleString('en-US', { month: 'short' });
+    const currentDay = today.getDate();
+
     return (
       <TableContainer>
         <Table>
@@ -175,7 +180,7 @@ const MonthAndDOMComponent = () => {
                   <TableCell
                       key={col.key}
                       align="right"
-                      sx={{ paddingRight: '1em' }}
+                      sx={{ paddingRight: '1em',  backgroundColor: (row.dom === currentDay && col.label === monthAbbreviation) ? '#e3f1c4' : 'inherit', }}
                       onClick={() => handleRowClick(row.dom, col.key)}
                     >
                       {format(col, row[col.key])}

@@ -44,8 +44,6 @@ const AddWeightForm: React.FC = () => {
   const [error, setError] = useState<string | null>(null); // For error state
   const [weightData, setWeightData] = useState<WeightReading>(null as unknown as WeightReading); // For success response
 
-  const navigate = useNavigate();
-
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,8 +54,10 @@ const AddWeightForm: React.FC = () => {
 
     if (!isTokenValid(token)) {
       localStorage.removeItem('token');
-      navigate('/login');
-    }
+      setLoading(false);
+      setWeightData(defaultWeightMeasurement);
+      setError('You are not logged in. Please login and try again.');
+      }
 
     const formattedDateTime = `${date}`;
     // Build the payload
@@ -97,11 +97,6 @@ const AddWeightForm: React.FC = () => {
     setWeightData(defaultWeightMeasurement); // Clear success state to show form again
   };
 
-  // Handle navigation to weighttracker
-  const handleGoToWeightTracker = () => {
-    navigate('/rider/weighttracker');
-  };
-
   const ErrorComponent = ({ error }: { error: string }) => (
     <Container maxWidth="sm" sx={{ marginY: 5 }}>
       <Paper elevation={3} sx={{ padding: 4 }}>
@@ -110,11 +105,6 @@ const AddWeightForm: React.FC = () => {
           <Grid item xs={6}>
             <Button fullWidth variant="contained" onClick={handleAddAnotherWeight}>
               Try Again
-            </Button>
-          </Grid>
-          <Grid item xs={6}>
-            <Button fullWidth variant="outlined" onClick={handleGoToWeightTracker}>
-              Go to Weight Tracker
             </Button>
           </Grid>
         </Grid>

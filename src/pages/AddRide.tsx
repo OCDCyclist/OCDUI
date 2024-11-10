@@ -17,7 +17,7 @@ import {
 
 import { useNavigate } from 'react-router-dom';
 import { isTokenValid } from '../utilities/jwtUtils';
-import { Bike, RideData } from '../graphql/graphql';
+import { Bike, RideData } from '../types/types';
 // Component to add a new ride
 const AddRideForm: React.FC = () => {
   const [date, setDate] = useState<string>('');  // Date string in 'YYYY-MM-DD'

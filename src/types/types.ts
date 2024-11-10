@@ -391,3 +391,32 @@ export interface YearAndMonthData {
     nov_max_power: number;
     dec_max_power: number;
 }
+
+export interface SegmentData {
+    id: number,
+    name: string
+    distance: number,
+    average_grade: number,
+    maximum_grade: number,
+    elevation_high: number,
+    elevation_low: number,
+    total_elevation_gain: number,
+    total_elevation_loss: number,
+    climb_category: number,
+    effort_count: number,
+    total_effort_count: number,
+    athlete_count: number,
+    starred_date: string,
+    pr_time: number,
+    pr_date: string,
+    tags?: string
+}
+
+export interface TagResult{
+    name: string;
+}
+
+export interface FetchTagsResult {
+    tags: TagResult[];
+    error: string | null;
+}

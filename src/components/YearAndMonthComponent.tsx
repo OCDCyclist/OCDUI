@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Tab, Tabs, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, Container } from '@mui/material';
 import axios from 'axios';
-import { YearAndMonthData } from '../graphql/graphql';
+import { YearAndMonthData } from '../types/types';
 import { formatInteger, formatNumber1 } from '../utilities/formatUtilities';
 
 const TabPanel = ({ children, value, index }: { children: React.ReactNode; value: number; index: number }) => {
@@ -16,7 +16,7 @@ const YearAndMonthComponent = () => {
   const [data, setData] = useState<YearAndMonthData[]>([]);
   const [tabIndex, setTabIndex] = useState(0);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogInfo, setDialogInfo] = useState<{ date: string; column: string } | null>(null);
+  const [dialogInfo, setDialogInfo] = useState<{ year: number; column: string } | null>(null);
   const [sortConfig, setSortConfig] = useState<{ key: keyof YearAndMonthData | null, direction: 'asc' | 'desc' }>({
     key: null,
     direction: 'asc',
@@ -48,8 +48,8 @@ const YearAndMonthComponent = () => {
     setTabIndex(newValue);
   };
 
-  const handleRowClick = (date: string, column: string) => {
-    setDialogInfo({ date, column });
+  const handleRowClick = (year: number, column: string) => {
+    setDialogInfo({ year, column });
     setDialogOpen(true);
   };
 
@@ -58,7 +58,7 @@ const YearAndMonthComponent = () => {
     setDialogInfo(null);
   };
 
-  const format = ( col:  { key: keyof YearAndMonthData; label: string }, theDatum: string) =>{
+  const format = ( col:  { key: keyof YearAndMonthData; label: string }, theDatum: string | number) =>{
     switch(col.key){
       case 'jan_elevationgain':
       case 'feb_elevationgain':
@@ -120,6 +120,7 @@ const YearAndMonthComponent = () => {
   }, [data, sortConfig]);
 
   const renderTable = (columns: { key: keyof YearAndMonthData; label: string }[]) => {
+    const currentYear = new Date().getFullYear();
     return (
       <TableContainer>
         <Table>
@@ -142,13 +143,13 @@ const YearAndMonthComponent = () => {
             {sortedData.map((row, index) => (
               <TableRow
                 key={row.rideyear}
-                sx={{ backgroundColor: index % 2 === 0 ? '#f9f9f9' : '#fff' }}
+                sx={{ backgroundColor: index % 2 === 0 ? '#f3f3f3' : '#ffffff' }}
               >
                 {columns.map((col) => (
                   <TableCell
                       key={col.key}
                       align="right"
-                      sx={{ paddingRight: '1em' }}
+                      sx={{ paddingRight: '1em',  backgroundColor: row.rideyear === currentYear ? '#e3f1c4' : 'inherit', }}
                       onClick={() => handleRowClick(row.rideyear, col.key)}
                     >
                       {format(col, row[col.key])}
@@ -174,7 +175,7 @@ const YearAndMonthComponent = () => {
       <Paper
         elevation={3}
         sx={{
-          backgroundColor: '#fbeacd',
+          backgroundColor: '#f9f1d1', //'#fbeacd',
           padding: 2, // Increase padding
           margin: 'auto', // Center the component
           width: '100%', // Occupy the full width of the container
@@ -350,7 +351,7 @@ const YearAndMonthComponent = () => {
             <DialogTitle>Row Clicked</DialogTitle>
             <DialogContent>
               <Typography>
-                {dialogInfo ? `Date: ${dialogInfo.date}, Column: ${dialogInfo.column}` : 'No details available'}
+                {dialogInfo ? `Year: ${dialogInfo.year}, Column: ${dialogInfo.column}` : 'No details available'}
               </Typography>
             </DialogContent>
           </Dialog>

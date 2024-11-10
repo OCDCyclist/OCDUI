@@ -3,7 +3,7 @@ import { Box, Tab, Tabs, Table, TableBody, TableCell, TableContainer, TableHead,
 import axios from 'axios';
 import RideDetail from './RideDetail';
 import { formatDate, formatElapsedTime, formatInteger, formatNumber } from '../utilities/formatUtilities';
-import { RideData } from '../graphql/graphql';
+import { RideData } from '../types/types';
 
 interface RideDataCategory extends RideData {
   category: string;

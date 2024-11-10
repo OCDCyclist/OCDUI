@@ -21,7 +21,7 @@ import {
 } from '@mui/material';
 import { formatBoolean, formatDate, formatInteger, formatNumber, formatPercent, isTextPresent } from '../utilities/formatUtilities';
 import { useNavigate } from 'react-router-dom';
-import { Bike, RideData } from '../graphql/graphql';
+import { Bike, RideData } from '../types/types';
 import { isBooleanString, isStringInteger, isStringNumber } from '../utilities/validation';
 import LinearIndeterminate from '../components/loaders/LinearIndeterminate';
 import { isTokenValid } from '../utilities/jwtUtils';

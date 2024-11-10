@@ -3,7 +3,7 @@ import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
 import axios from 'axios';
 import RideDetail from './RideDetail';
 import { formatRideData } from '../utilities/formatUtilities';
-import { RideData } from '../graphql/graphql';
+import { RideData } from '../types/types';
 import RideFilter from './filters/RideFilter';
 
 const RideAllComponent = () => {

@@ -20,6 +20,7 @@ import CalendarViewMonthIcon from '@mui/icons-material/CalendarViewMonth';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import PersonIcon from '@mui/icons-material/Person';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/AuthContext';
 
@@ -72,8 +73,8 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
       icon: <DirectionsBikeIcon />,
       children: [
         { text: 'Rides', icon: <DirectionsBikeIcon />, path: '/rides/recent' },
-        { text: 'Ride Lookback', icon: <TravelExploreIcon />, path: '/rides/lookback' },
         { text: 'All Rides', icon: <DirectionsBikeIcon />, path: '/rides/allrides' },
+        { text: 'Yesteryear', icon: <TravelExploreIcon />, path: '/rides/lookback' },
         { text: 'Add Ride', icon: <PlusOneIcon />, path: '/rides/add' },
       ]
     },
@@ -86,6 +87,15 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
         { text: 'Year and Month', icon: <DatasetIcon />, path: '/ocds/yearandmonth' },
         { text: 'Year and DOW', icon: <DayOfMonthIcon />, path: '/ocds/yearanddow' },
         { text: 'Day of Month', icon: <CalendarMonthIcon />, path: '/ocds/monthanddom' }
+      ]
+    },
+
+    {
+      text: 'Segments',
+      icon: <AutoAwesomeIcon />,
+      children: [
+        { text: 'Starred', icon: <AutoAwesomeIcon />, path: '/segments/starred' },
+        { text: 'Update Starred', icon: <AutoAwesomeIcon />, path: '/segments/updatestarred' },
       ]
     },
 

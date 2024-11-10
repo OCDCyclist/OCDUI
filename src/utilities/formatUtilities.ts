@@ -1,4 +1,4 @@
-import { RideData } from "../graphql/graphql";
+import { RideData } from "../types/types";
 
 export function formatElapsedTime(seconds: number): string {
     const pad = (num: number) => num.toString().padStart(2, '0');
