@@ -420,3 +420,8 @@ export interface FetchTagsResult {
     tags: TagResult[];
     error: string | null;
 }
+
+export enum LocationId {
+    Segments = 1,
+    Rides = 2,
+}

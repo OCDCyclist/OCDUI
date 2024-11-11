@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Autocomplete, TextField, Chip, Box, Button, Stack } from '@mui/material';
+import { Autocomplete, TextField, Chip, Box, Button, Stack, Typography } from '@mui/material';
 import { fetchTags } from '../api/tags/fetchTags';
 
 type TagSelectorProps = {
   initialTags: string[];
+  locationId:  string | number | null;
+  assignmentId: string | number | null;
   onClose: () => void;
-  onSave: () => void;
+  onSave: (locationId : number | string | null, assignmentId : number | string | null, tags: string[]) => void;
 };
 
-const TagSelector: React.FC<TagSelectorProps> = ({ initialTags, onClose, onSave }) => {
+const TagSelector: React.FC<TagSelectorProps> = ({ initialTags, locationId, assignmentId, onClose, onSave }) => {
   const [selectedTags, setSelectedTags] = useState<string[]>(initialTags);
   const [inputValue, setInputValue] = useState<string>('');
   const [allTags, setAllTags] = useState<string[]>([]);
@@ -35,33 +37,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({ initialTags, onClose, onSave 
         });
   }, []);
 
-  // Async function to create new tags
-  const createTags = async (newTags: string[]) => {
-    try {
-      await fetch('/api/createTags', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newTags),
-      });
-    } catch (error) {
-      console.error('Error creating tags:', error);
-    }
-  };
-
-  // Async function to assign tags
-  const assignTags = async (tags: string[]) => {
-    try {
-      await fetch('/api/assignTags', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(tags),
-      });
-    } catch (error) {
-      console.error('Error assigning tags:', error);
-    }
-  };
-
-  const handleTagSelect = (event: React.SyntheticEvent, newValue: string[]) => {
+  const handleTagSelect = (_event: React.SyntheticEvent, newValue: string[]) => {
     const newTags = newValue.filter(tag => !allTags.includes(tag));
     setSelectedTags(newValue);
     if (newTags.length > 0) {
@@ -70,12 +46,8 @@ const TagSelector: React.FC<TagSelectorProps> = ({ initialTags, onClose, onSave 
   };
 
   const handleSave = async () => {
-    const newTags = selectedTags.filter(tag => !availableTags.includes(tag));
-    if (newTags.length > 0) {
-      await createTags(newTags); // Create new tags
-    }
-    await assignTags(selectedTags); // Assign selected tags
-    onSave();
+    await onSave(locationId, assignmentId, selectedTags );
+    onClose();
   };
 
   const handleCancel = () => {
@@ -98,11 +70,20 @@ const TagSelector: React.FC<TagSelectorProps> = ({ initialTags, onClose, onSave 
             <Chip variant="outlined" label={option} {...getTagProps({ index })} key={option} />
           ))
         }
-        renderInput={(params) => <TextField {...params} label="Select or create tags" />}
+        renderInput={(params) => <TextField 
+            {...params}
+            label="Choose existing or add a new tag" 
+            helperText="Press Enter to add new tag" />}
       />
 
+      {error &&
+        <Typography>
+            {`Error: ${error}`}
+        </Typography>
+       }
+
       <Stack direction="row" spacing={2} mt={2}>
-        <Button variant="contained" color="primary" onClick={handleSave}>
+        <Button variant="contained" color="primary" onClick={handleSave} disabled={!!error}>
           Save
         </Button>
         <Button variant="outlined" onClick={handleCancel}>

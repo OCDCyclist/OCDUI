@@ -1,12 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogContent, Container, Link, Chip, Stack, TableCellProps, Typography } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogContent, Container, Link, Chip, Stack, TableCellProps, Typography, Box } from '@mui/material';
 import axios from 'axios';
 import { formatDate, formatElapsedTime, formatInteger, formatNumber } from '../utilities/formatUtilities';
-import { SegmentData } from '../types/types';
-import DaysOfWeekFilter from './filters/DaysOfWeekFilter';
+import { LocationId, SegmentData } from '../types/types';
 import TagChips from './TagChips';
 import TagSelector from './TagSelector';
 import { splitCommaSeparatedString } from '../utilities/stringUtilities';
+import TagFilter from './TagFilter';
+
+const getUniqueTags = (segments: SegmentData[]): string[] => {
+  const tagSet = new Set<string>();
+
+  segments.forEach(segment => {
+    // Check if tags exist and are non-null before iterating
+    if (segment.tags && segment.tags.trim().length > 0) {
+      segment.tags.split(',').forEach(tag => tagSet.add(tag));
+    }
+  });
+
+  return Array.from(tagSet); // Convert the Set back to an array
+};
 
 const StarredSegmentsComponent = () => {
   const [data, setData] = useState<SegmentData[]>([]);
@@ -17,8 +30,10 @@ const StarredSegmentsComponent = () => {
     key: null,
     direction: 'asc',
   });
-  const [showFilters, setShowFilters] = useState<boolean>(false);
   const [tableHeight, setTableHeight] = useState(window.innerHeight - 190);
+  const [refreshData, setRefreshData] = useState(false);
+  const [uniqueTags, setUniqueTags] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -44,9 +59,13 @@ const StarredSegmentsComponent = () => {
           Authorization: `Bearer ${token}`, // Include the token in the Authorization header
       },
     })
-      .then((response) => setData(response.data))
+      .then((response) => {
+        const uniqueTags = getUniqueTags(response.data);
+        setUniqueTags(uniqueTags);
+        setData(response.data);
+      })
       .catch((error) => console.error('Error fetching data:', error));
-  }, []);
+  }, [refreshData]);
 
   const handleSort = (columnKey: keyof SegmentData) => {
     let direction: 'asc' | 'desc' = 'asc';
@@ -60,6 +79,11 @@ const StarredSegmentsComponent = () => {
     setDialogInfo( {segmentData, column });
     setSegmentData(segmentData);
     setDialogOpen(true);
+  };
+
+  const handleTagFilterChange = (tags: string[]) => {
+    setSelectedTags(tags);
+    // Filter segment data based on `tags` here
   };
 
   const handleCloseDialog = () => {
@@ -110,20 +134,53 @@ const StarredSegmentsComponent = () => {
     }
   };
 
-  const handleOnSaveTags = ( tags: string[]) =>{
-
-
+  const handleOnSaveTags = (locationId : number | string | null, assignmentId : number | string | null, tags: string[]) =>{
+    const token = localStorage.getItem('token');
+    axios.post(
+      'http://localhost:3000/user/saveTagAssignments',
+      {
+        locationId,
+        assignmentId,
+        tags
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+      .then(() => {
+         setRefreshData((prev) => !prev);  // Toggle refreshData to trigger useEffect
+      })
+      .catch((error) =>{
+        console.error('Error fetching data:', error)
+      });
   };
 
+  const filterByTag = (segmentData: SegmentData[], filterTags: string[]) => {
+    if(filterTags.length === 0 ) return segmentData;
+    return segmentData.filter(
+      segment => {
+        const segmentTags = segment.tags ? segment.tags.trim().split(',') : [];
+        return filterTags.every(tag => segmentTags.includes(tag));
+      }
+    );
+  }
+
+  const filteredData = React.useMemo(() => filterByTag(data, selectedTags), [data, selectedTags]);
+
   const sortedData = React.useMemo(() => {
-    if (!sortConfig.key) return data;
-    const sorted = [...data].sort((a, b) => {
-      if (a[sortConfig.key!] < b[sortConfig.key!]) return sortConfig.direction === 'asc' ? -1 : 1;
-      if (a[sortConfig.key!]> b[sortConfig.key!]) return sortConfig.direction === 'asc' ? 1 : -1;
+    if (!sortConfig.key) return filteredData;
+    const sorted = [...filteredData].sort((a, b) => {
+      const lhs = a[sortConfig.key!] || '';
+      const rhs = b[sortConfig.key!] || '';
+      if (lhs < rhs) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (lhs > rhs) return sortConfig.direction === 'asc' ? 1 : -1;
       return 0;
     });
     return sorted;
-  }, [data, sortConfig]);
+  }, [filteredData, sortConfig]);
 
   const renderTableRecent = (columns: { key: keyof SegmentData; label: string; justify: string, width: string, type: string }[]) => {
     return (
@@ -180,8 +237,13 @@ const StarredSegmentsComponent = () => {
           width: '100%', // Occupy the full width of the container
         }}
       >
+
         <Box display="flex" alignItems="center">
-          { showFilters ? <DaysOfWeekFilter /> : undefined }
+          <TagFilter
+            availableTags={uniqueTags}
+            selectedTags={selectedTags}
+            onTagChange={handleTagFilterChange}
+          />
         </Box>
 
         {renderTableRecent([
@@ -212,17 +274,11 @@ const StarredSegmentsComponent = () => {
               dialogInfo?.column.toLowerCase() === 'tags'
               ?
               <TagSelector
+                  locationId={LocationId.Segments}
+                  assignmentId={segmentData?.id || null}
                   initialTags={splitCommaSeparatedString(dialogInfo?.segmentData?.tags)}
-                  onClose={
-                    function (): void {
-                      throw new Error('Function not implemented.');
-                    }
-                  }
-                  onSave={
-                    function (): void {
-                      throw new Error('Function not implemented.');
-                    }
-                  }
+                  onClose={handleCloseDialog}
+                  onSave={handleOnSaveTags}
               />
               :
               <Typography>
