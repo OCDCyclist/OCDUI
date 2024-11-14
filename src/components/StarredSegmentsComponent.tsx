@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogContent, Container, Link, Chip, Stack, TableCellProps, Typography, Box } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogContent, Container, Link,TableCellProps, Typography, Box } from '@mui/material';
 import axios from 'axios';
 import { formatDate, formatElapsedTime, formatInteger, formatNumber } from '../utilities/formatUtilities';
-import { LocationId, SegmentData } from '../types/types';
+import { LocationId, SegmentDataWithTags } from '../types/types';
 import TagChips from './TagChips';
 import TagSelector from './TagSelector';
 import { splitCommaSeparatedString } from '../utilities/stringUtilities';
 import TagFilter from './TagFilter';
 
-const getUniqueTags = (segments: SegmentData[]): string[] => {
+const getUniqueTags = (segments: SegmentDataWithTags[]): string[] => {
   const tagSet = new Set<string>();
 
   segments.forEach(segment => {
@@ -22,11 +22,11 @@ const getUniqueTags = (segments: SegmentData[]): string[] => {
 };
 
 const StarredSegmentsComponent = () => {
-  const [data, setData] = useState<SegmentData[]>([]);
+  const [data, setData] = useState<SegmentDataWithTags[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogInfo, setDialogInfo] = useState<{ segmentData: SegmentData; column: string } | null>(null);
-  const [segmentData, setSegmentData] = useState<SegmentData | null >(null);
-  const [sortConfig, setSortConfig] = useState<{ key: keyof SegmentData | null, direction: 'asc' | 'desc' }>({
+  const [dialogInfo, setDialogInfo] = useState<{ segmentData: SegmentDataWithTags; column: string } | null>(null);
+  const [segmentData, setSegmentData] = useState<SegmentDataWithTags | null >(null);
+  const [sortConfig, setSortConfig] = useState<{ key: keyof SegmentDataWithTags | null, direction: 'asc' | 'desc' }>({
     key: null,
     direction: 'asc',
   });
@@ -67,7 +67,7 @@ const StarredSegmentsComponent = () => {
       .catch((error) => console.error('Error fetching data:', error));
   }, [refreshData]);
 
-  const handleSort = (columnKey: keyof SegmentData) => {
+  const handleSort = (columnKey: keyof SegmentDataWithTags) => {
     let direction: 'asc' | 'desc' = 'asc';
     if (sortConfig.key === columnKey && sortConfig.direction === 'asc') {
       direction = 'desc';
@@ -75,7 +75,7 @@ const StarredSegmentsComponent = () => {
     setSortConfig({ key: columnKey, direction });
   };
 
-  const handleRowClick = (segmentData: SegmentData, column: string ) => {
+  const handleRowClick = (segmentData: SegmentDataWithTags, column: string ) => {
     setDialogInfo( {segmentData, column });
     setSegmentData(segmentData);
     setDialogOpen(true);
@@ -91,7 +91,7 @@ const StarredSegmentsComponent = () => {
     setSegmentData(null);
   };
 
-  const format = (col: { key: keyof SegmentData; label: string; justify: string, width: string, type: string }, theDatum: number | string, row: SegmentData) => {
+  const format = (col: { key: keyof SegmentDataWithTags; label: string; justify: string, width: string, type: string }, theDatum: number | string, row: SegmentDataWithTags) => {
     switch (col.key) {
       case 'name':{
         if(col.type === 'segmenturl'){
@@ -158,7 +158,7 @@ const StarredSegmentsComponent = () => {
       });
   };
 
-  const filterByTag = (segmentData: SegmentData[], filterTags: string[]) => {
+  const filterByTag = (segmentData: SegmentDataWithTags[], filterTags: string[]) => {
     if(filterTags.length === 0 ) return segmentData;
     return segmentData.filter(
       segment => {
@@ -182,7 +182,7 @@ const StarredSegmentsComponent = () => {
     return sorted;
   }, [filteredData, sortConfig]);
 
-  const renderTableRecent = (columns: { key: keyof SegmentData; label: string; justify: string, width: string, type: string }[]) => {
+  const renderTableRecent = (columns: { key: keyof SegmentDataWithTags; label: string; justify: string, width: string, type: string }[]) => {
     return (
       <TableContainer sx={{ maxHeight: tableHeight }}>
         <Table stickyHeader>

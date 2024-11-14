@@ -25,7 +25,27 @@ export interface RideData {
     elevationloss: number,
     datenotime: string | null,
     device_name: string | null,
-    fracdim: number
+    fracdim: number,
+    calculated_weight_kg: number | null | undefined;
+}
+
+export interface RideDataStrava{
+    start_date_local: string,
+    distance: number,
+    average_speed: number,
+    max_speed: number,
+    average_cadence: number,
+    average_heartrate: number,
+    max_heartrate: number,
+    name: string,
+    average_watts: number,
+    max_watts: number,
+    gear_id: number,
+    id: number,
+    total_elevation_gain: number,
+    moving_time: number,
+    weighted_average_watts: number,
+    type: string
 }
 
 export interface YearAndMonthData {
@@ -409,11 +429,14 @@ export interface SegmentData {
     starred_date: string,
     pr_time: number,
     pr_date: string,
-    tags?: string
 }
 
 export interface TagResult{
     name: string;
+}
+
+export interface Tagable{
+    tags?: string,
 }
 
 export interface FetchTagsResult {
@@ -425,3 +448,6 @@ export enum LocationId {
     Segments = 1,
     Rides = 2,
 }
+
+export type RideDataWithTags = RideData & Tagable;
+export type SegmentDataWithTags = SegmentData & Tagable;

@@ -10,13 +10,13 @@ import {
   Alert,
 } from '@mui/material';
 import StravaLogo from '../assets/powered by Strava/pwrdBy_strava_light/api_logo_pwrdBy_strava_horiz_light.svg';
+import { RideDataStrava } from '../types/types';
 
 const UpdateStrava: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false); // Loading state
   const [error, setError] = useState<string | null>(null); // Error state
-  const [updateResult, setUpdateResult] = useState<{ success: boolean; ridesAdded: number } | null>(null); // Success response state
+  const [updateResult, setUpdateResult] = useState<{ success: boolean; ridesAddedCount: number, ridesAdded: RideDataStrava[] } | null>(null);
 
-  // Function to handle Strava Update
   const handleStravaUpdate = async () => {
     setLoading(true);
     setError(null);
@@ -84,7 +84,7 @@ const UpdateStrava: React.FC = () => {
             </Grid>
             <Grid item xs={12}>
               <Typography variant="body1">
-                <strong>Rides Added:</strong> {updateResult.ridesAdded}
+                <strong>Rides Added:</strong> {updateResult.ridesAddedCount}
               </Typography>
             </Grid>
           </Grid>

@@ -25,7 +25,9 @@ import { Bike, RideData } from '../types/types';
 import { isBooleanString, isStringInteger, isStringNumber } from '../utilities/validation';
 import LinearIndeterminate from '../components/loaders/LinearIndeterminate';
 import { isTokenValid } from '../utilities/jwtUtils';
+import { wattsPerKilo } from '../utilities/metricsUtils';
 import ElapsedTimeEditor from './ElapsedTimeEditor';
+import DisplayPower from './DisplayPower';
 
 interface RideDetailProps {
   rideData: RideData;
@@ -294,7 +296,6 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
       <Paper elevation={3} sx={{ padding: 2, width: '100%', margin: '0 auto' }}>
         { loading ? <LinearIndeterminate /> : null}
 
-
         <Typography variant="h5" align="center" paddingBottom={3}>
           {editingField === 'title' ? (
             <TextField
@@ -348,7 +349,7 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
                 <TableCell>
                   <ElapsedTimeEditor initialSeconds={rideData.elapsedtime} onSave={ (newSeconds: number) =>{
                       setElapsedTime(newSeconds);
-                      handleSaveElapsedTime('elapsedtime');
+                      handleSaveElapsedTime();
                   }} />
                 </TableCell>
               </TableRow>
@@ -569,9 +570,11 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
                       autoFocus
                     />
                   ) : (
-                    <span onClick={() => handleFieldClick('poweravg', rideData.poweravg)}>
-                      {`${formatInteger(rideData.poweravg)} watts`}
-                    </span>
+                    <DisplayPower
+                      power={rideData.poweravg}
+                      wattsPerKilo={wattsPerKilo(rideData.poweravg, rideData.calculated_weight_kg)}
+                      onClick={() => handleFieldClick('poweravg', rideData.poweravg)}
+                    />
                   )}
                 </TableCell>
                 <TableCell>Max Power</TableCell>
@@ -591,10 +594,12 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
                       autoFocus
                     />
                   ) : (
-                    <span onClick={() => handleFieldClick('powermax', rideData.powermax)}>
-                      {`${formatInteger(rideData.powermax)} watts`}
-                    </span>
-                  )}
+                    <DisplayPower
+                      power={rideData.powermax}
+                      wattsPerKilo={wattsPerKilo(rideData.powermax, rideData.calculated_weight_kg)}
+                      onClick={() => handleFieldClick('powermax', rideData.powermax)}
+                    />
+              )}
                 </TableCell>
               </TableRow>
 
@@ -617,9 +622,11 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
                       autoFocus
                     />
                   ) : (
-                    <span onClick={() => handleFieldClick('powernormalized', rideData.powernormalized)}>
-                      {`${formatInteger(rideData.powernormalized)} watts`}
-                    </span>
+                      <DisplayPower
+                        power={rideData.powernormalized}
+                        wattsPerKilo={wattsPerKilo(rideData.powernormalized, rideData.calculated_weight_kg)}
+                        onClick={() => handleFieldClick('powernormalized', rideData.powernormalized)}
+                      />
                   )}
                 </TableCell>
                 <TableCell>Intensity Factor</TableCell>
