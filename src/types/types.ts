@@ -431,6 +431,23 @@ export interface SegmentData {
     pr_date: string,
 }
 
+export interface SegmentEffort {
+    rank: number,
+    id: number,
+    segment_name: string
+    distance: number,
+    total_elevation_gain: number,
+    start_date: string,
+    elapsed_time: number,
+    moving_time: number,
+    average_cadence: number,
+    average_watts: number,
+    average_heartrate: number,
+    max_heartrate: number,
+    start_index: number,
+    end_index: number,
+}
+
 export interface TagResult{
     name: string;
 }
@@ -447,7 +464,9 @@ export interface FetchTagsResult {
 export enum LocationId {
     Segments = 1,
     Rides = 2,
+    SegmentEfforts = 3,
 }
 
 export type RideDataWithTags = RideData & Tagable;
 export type SegmentDataWithTags = SegmentData & Tagable;
+export type SegmentEffortWithTags = SegmentEffort & Tagable;

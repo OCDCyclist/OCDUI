@@ -64,8 +64,8 @@ const AddWeightForm: React.FC = () => {
     const payload = {
       date: formattedDateTime,
       weight: Number(weight),
-      bodyfatfraction: Number(bodyfatfraction),
-      bodyh2ofraction: Number(bodyh2ofraction)
+      bodyfatfraction: Number(bodyfatfraction) / 100.0,
+      bodyh2ofraction: Number(bodyh2ofraction) / 100.0
     };
 
     try {
@@ -80,21 +80,21 @@ const AddWeightForm: React.FC = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setWeightData(data); // Store the returned weight data
-        setLoading(false);
+        setWeightData(data);
       } else {
+        setWeightData(defaultWeightMeasurement);
         setError('Failed to add weight');
-        setLoading(false);
       }
     } catch (error) {
       setError(`Error adding weight: ${error}`);
+    }
+    finally{
       setLoading(false);
     }
   };
 
-  // Handle add another weight measurement button
   const handleAddAnotherWeight = () => {
-    setWeightData(defaultWeightMeasurement); // Clear success state to show form again
+    setWeightData(defaultWeightMeasurement);
   };
 
   const ErrorComponent = ({ error }: { error: string }) => (
@@ -172,6 +172,7 @@ const AddWeightForm: React.FC = () => {
                 type="number"
                 value={bodyfatfraction}
                 onChange={(e) => setBodyfatfraction(e.target.value)}
+                InputProps={{ endAdornment: <InputAdornment position="end">%</InputAdornment> }}
               />
             </Grid>
             <Grid item xs={6}>
@@ -181,6 +182,7 @@ const AddWeightForm: React.FC = () => {
                 type="number"
                 value={bodyh2ofraction}
                 onChange={(e) => setBodyh2ofraction(e.target.value)}
+                InputProps={{ endAdornment: <InputAdornment position="end">%</InputAdornment> }}
               />
             </Grid>
 

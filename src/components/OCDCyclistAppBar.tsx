@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { AppBar, Toolbar, Typography, Button, IconButton, Drawer, List, ListItem, ListItemIcon, ListItemText, Box, CssBaseline, Divider, Collapse } from '@mui/material';
+import { AppBar, Toolbar, Typography, IconButton, Drawer, List, ListItem, ListItemIcon, ListItemText, Box, CssBaseline, Divider, Collapse } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'; // Close icon
 import HomeIcon from '@mui/icons-material/Home';
 import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import UpdateIcon from '@mui/icons-material/Update';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
-import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike';
@@ -23,6 +22,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/AuthContext';
+import LoginStatus from './LoginLogout';
 
 const drawerWidth = 240;
 
@@ -117,8 +117,6 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
         { text: 'Update Metrics', icon: <UpdateIcon />, path: '/updateMetrics' },
       ]
     },
-
-    { text: isAuthenticated ? 'Logout' : 'Login', icon: <ExitToAppIcon />, path: '/login' }
   ];
 
   const handleNavigation = (path: string) => {
@@ -136,9 +134,15 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             OCD Cyclist
           </Typography>
-          <Button color="inherit" onClick={handleLoginLogout}>
-            {isAuthenticated ? 'Logout' : 'Login'}
-          </Button>
+          <LoginStatus
+            onLogin={() => {
+              handleLoginLogout();
+            }}
+            onLogout={() => {
+              handleLoginLogout();
+            }}
+            background="dark" // AppBar background
+          />
         </Toolbar>
       </AppBar>
 
@@ -149,7 +153,7 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
         sx={{
           width: drawerWidth,
           flexShrink: 0,
-          '& .MuiDrawer-paper': { width: drawerWidth, boxSizing: 'border-box' },
+          '& .MuiDrawer-paper': { width: drawerWidth, boxSizing: 'border-box', display: 'flex', flexDirection: 'column' },
         }}
       >
         <Toolbar />
@@ -159,18 +163,18 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
           </IconButton>
         </Box>
         <Divider />
-        <Box sx={{ width: drawerWidth }}>
+        <Box sx={{ flexGrow: 1 }}>
           <List>
             {menuItems.map((item) => (
               <React.Fragment key={item.text}>
                 {!item.children ? (
-                  <ListItem button onClick={() => handleNavigation(item.path)}>
+                  <ListItem onClick={() => handleNavigation(item.path)} component="div">
                     <ListItemIcon>{item.icon}</ListItemIcon>
                     <ListItemText primary={item.text} />
                   </ListItem>
                 ) : (
                   <>
-                    <ListItem button onClick={() => toggleItem(item.text)}>
+                    <ListItem onClick={() => toggleItem(item.text)} component="div">
                       <ListItemIcon>{item.icon}</ListItemIcon>
                       <ListItemText primary={item.text} />
                       {openItems[item.text] ? <ExpandLess /> : <ExpandMore />}
@@ -179,7 +183,7 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
                       <List component="div" disablePadding>
                         {item.children.map((subItem) => (
                           <ListItem
-                            button
+                            component="div"
                             key={subItem.text}
                             sx={{ pl: 4 }}
                             onClick={() => handleNavigation(subItem.path)}
@@ -195,6 +199,18 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
               </React.Fragment>
             ))}
           </List>
+        </Box>
+        <Divider />
+        <Box sx={{ padding: 2 }}>
+          <LoginStatus
+            onLogin={() => {
+              handleLoginLogout();
+            }}
+            onLogout={() => {
+              handleLoginLogout();
+            }}
+            background="light" // AppBar background
+          />
         </Box>
       </Drawer>
     </>
