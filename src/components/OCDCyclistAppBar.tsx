@@ -22,7 +22,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/AuthContext';
-import LoginStatus from './LoginLogout';
+import LoginStatus from './authentication/LoginStatus';
 
 const drawerWidth = 240;
 

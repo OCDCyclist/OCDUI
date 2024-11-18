@@ -7,6 +7,7 @@ import TagChips from './TagChips';
 import TagSelector from './TagSelector';
 import { splitCommaSeparatedString } from '../utilities/stringUtilities';
 import TagFilter from './TagFilter';
+import SegmentEffortListComponent from './SegmentEffortListComponent';
 
 const getUniqueTags = (segments: SegmentDataWithTags[]): string[] => {
   const tagSet = new Set<string>();
@@ -75,7 +76,8 @@ const StarredSegmentsComponent = () => {
     setSortConfig({ key: columnKey, direction });
   };
 
-  const handleRowClick = (segmentData: SegmentDataWithTags, column: string ) => {
+  const handleRowClick = (segmentData: SegmentDataWithTags, column: string, colType: string ) => {
+    if(colType === "segmenturl"){ return;}
     setDialogInfo( {segmentData, column });
     setSegmentData(segmentData);
     setDialogOpen(true);
@@ -212,7 +214,7 @@ const StarredSegmentsComponent = () => {
                     key={col.key}
                     align={col.justify as unknown as TableCellProps["align"]}
                     sx={{ paddingRight: '1em' }}
-                    onClick={() => handleRowClick(row, col.label)}
+                    onClick={() => handleRowClick(row, col.label, col.type)}
                   >
                     {format(col, row[col.key] ?? '', row)}
                   </TableCell>
@@ -281,9 +283,7 @@ const StarredSegmentsComponent = () => {
                   onSave={handleOnSaveTags}
               />
               :
-              <Typography>
-                {dialogInfo ? `Segment: ${dialogInfo.segmentData.name}, Column: ${dialogInfo.column}` : 'No details available'}
-              </Typography>
+              <SegmentEffortListComponent segmentId={Number(dialogInfo?.segmentData.id || 0)} />
             }
           </DialogContent>
         </Dialog>

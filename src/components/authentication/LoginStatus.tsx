@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Tooltip } from '@mui/material';
-import { isTokenValid } from '../utilities/jwtUtils';
+import { isTokenValid } from '../../utilities/jwtUtils';
 
 interface LoginStatusProps {
   onLogin: () => void;

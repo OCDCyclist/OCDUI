@@ -11,7 +11,6 @@ import {
   TableRow,
   TextField,
   InputAdornment,
-  Link,
   Alert,
   Grid,
   FormControl,
@@ -28,6 +27,7 @@ import { isTokenValid } from '../utilities/jwtUtils';
 import { wattsPerKilo } from '../utilities/metricsUtils';
 import ElapsedTimeEditor from './ElapsedTimeEditor';
 import DisplayPower from './DisplayPower';
+import StravaRideLink from './StravaRideLink';
 
 interface RideDetailProps {
   rideData: RideData;
@@ -729,7 +729,7 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
               </TableRow>
               <TableRow>
                 <TableCell colSpan={4} align="right">
-                  <Link target="_blank" href={`https://www.strava.com/activities/${rideData.stravaid}`}>Open in Strava</Link>
+                  <StravaRideLink stravaRideId={rideData.stravaid} />
                 </TableCell>
               </TableRow>
 

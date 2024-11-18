@@ -434,6 +434,8 @@ export interface SegmentData {
 export interface SegmentEffort {
     rank: number,
     id: number,
+    strava_effortid: number,
+    strava_rideid: number,
     segment_name: string
     distance: number,
     total_elevation_gain: number,

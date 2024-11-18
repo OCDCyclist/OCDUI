@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogContent, Container, Checkbox, FormGroup, FormControlLabel, Button, TableCellProps } from '@mui/material';
+import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogContent, Container, Checkbox, FormGroup, FormControlLabel, Button, TableCellProps, Typography } from '@mui/material';
 import axios from 'axios';
 import { formatDate, formatElapsedTime, formatInteger, formatNumber } from '../utilities/formatUtilities';
 import { LocationId, SegmentEffortWithTags } from '../types/types';
@@ -7,15 +7,18 @@ import { dayFilterDefault, daysOfWeek } from '../utilities/daysOfWeek';
 import TagChips from './TagChips';
 import TagSelector from './TagSelector';
 import { splitCommaSeparatedString } from '../utilities/stringUtilities';
+import { getUniqueTags } from '../utilities/tagUtilities';
 import TagFilter from './TagFilter';
+import StravaEffortLink from './StravaEffortLink';
 
 interface SegmentEffortListProps {
   segmentId: number;
-  onClose: () => void;
 }
 
-const SegmentEffortListComponent = ({ segmentId, onClose }: SegmentEffortListProps) => {
+const SegmentEffortListComponent = ({ segmentId }: SegmentEffortListProps) => {
+  const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState<SegmentEffortWithTags[]>([]);
+  const [segmentName, setSegmentName] = useState<string>('');
   const [dialogInfo, setDialogInfo] = useState<{ segmentEffortData: SegmentEffortWithTags; column: string } | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [rideData, setRideData] = useState<SegmentEffortWithTags | null >(null);
@@ -80,9 +83,10 @@ const SegmentEffortListComponent = ({ segmentId, onClose }: SegmentEffortListPro
   const [selectedDays, setSelectedDays] = useState<{ [key: string]: boolean }>(dayFilterDefault);
 
   useEffect(() => {
+    setLoading(true);
     const token = localStorage.getItem('token');
 
-    axios.get(`http://localhost:3000/segment/efforts/${segmentId}/`, {
+    axios.get(`http://localhost:3000/segment/efforts/${segmentId}`, {
       method: 'GET',
       headers: {
           'Content-Type': 'application/json',
@@ -90,11 +94,16 @@ const SegmentEffortListComponent = ({ segmentId, onClose }: SegmentEffortListPro
       },
     })
       .then((response) =>{
-        //const uniqueTags = getUniqueTags(response.data);
-        //setUniqueTags(uniqueTags);
+        const uniqueTags = getUniqueTags(response.data);
+        setUniqueTags(uniqueTags);
         setData(response.data);
+        setSegmentName(response.data.length > 0 ? `${response.data.length} Segment efforts for ${response.data[0]?.segment_name || "Unavailable"}` : "No segment efforts available")
+        setLoading(false);
       })
-      .catch((error) => console.error('Error fetching segment effort data:', error));
+      .catch((error) =>{
+        console.error('Error fetching segment effort data:', error)
+        setLoading(false);
+      });
   }, [refreshData]);
 
   const handleSort = (columnKey: keyof SegmentEffortWithTags) => {
@@ -106,9 +115,11 @@ const SegmentEffortListComponent = ({ segmentId, onClose }: SegmentEffortListPro
   };
 
   const handleRowClick = (rideData: SegmentEffortWithTags, column: string) => {
-    setDialogInfo( {segmentEffortData: rideData, column });
-    setRideData(rideData);
-    setDialogOpen(true);
+    if( column.toLowerCase().trim() === "tags"){
+      setDialogInfo( {segmentEffortData: rideData, column });
+      setRideData(rideData);
+      setDialogOpen(true);
+    }
   };
 
   const handleTagFilterChange = (tags: string[]) => {
@@ -155,14 +166,16 @@ const SegmentEffortListComponent = ({ segmentId, onClose }: SegmentEffortListPro
           const tagArray = (row?.tags ?? "").split(',').map(tag => tag.trim()).filter(Boolean);
           return <TagChips
             tags={tagArray}
-            color="primary"  // Use theme color
+            color="primary"
             onClick={(tag) => console.log(`Clicked on: ${tag}`)}
             onDelete={(tag) => console.log(`Deleted: ${tag}`)}
           />
         }
         return theDatum as string;
       }
-      case 'rank':
+      case 'rank':{
+        return <StravaEffortLink stravaRideId={row.strava_rideid} stravaEffortId={row.strava_effortid} text={String(theDatum)} />
+      }
       case 'average_cadence':
       case 'average_watts':
       case 'average_heartrate':
@@ -205,7 +218,6 @@ const SegmentEffortListComponent = ({ segmentId, onClose }: SegmentEffortListPro
       });
   };
 
-  // Combine the filters using useMemo
   const filteredData = React.useMemo(() => {
     let result = data;
     result = filterByDay(result);
@@ -274,14 +286,18 @@ const SegmentEffortListComponent = ({ segmentId, onClose }: SegmentEffortListPro
         elevation={3}
         sx={{
           backgroundColor: '#fbeacd',
-          padding: 2, // Increase padding
+          padding: 2,
           marginBottom: '1em',
-          margin: 'auto', // Center the component
-          width: '100%', // Occupy the full width of the container
+          margin: 'auto',
+          width: '100%',
         }}
       >
-        <Box display="flex" alignItems="center">
-          <Button variant="text" color="primary" onClick={toggleShowFilters}>
+        <Box display="flex" flexDirection= 'column' alignItems="left">
+          <Typography>
+            { loading ? "Loading segment efforts" : `${segmentName}`}
+          </Typography>
+
+          <Button variant="text" color="primary" onClick={toggleShowFilters} sx={{alignSelf: "left"}}>
             {showFilters ? 'Hide Filters' : 'Show Filters'}
           </Button>
 
@@ -324,12 +340,12 @@ const SegmentEffortListComponent = ({ segmentId, onClose }: SegmentEffortListPro
         {renderTableRecent([
           { key: 'rank', label: 'Rank', justify: 'center', width: '80', type: 'number' },
           { key: 'start_date', label: 'Effort Date', justify: 'center', width: '80', type: 'number' },
-          { key: 'distance', label: 'Distance', justify: 'center', width: '80', type: 'number' },
+          { key: 'elapsed_time', label: 'Elapsed Time', justify: 'center', width: '80', type: 'number' },
           { key: 'average_cadence', label: 'Avg Cadence', justify: 'center', width: '80', type: 'number' },
-          { key: 'total_elevation_gain', label: 'Elevation Gain', justify: 'center', width: '80', type: 'number' },
           { key: 'average_watts', label: 'Avg Power', justify: 'center', width: '80', type: 'number' },
           { key: 'average_heartrate', label: 'Avg HR', justify: 'center', width: '80', type: 'number' },
           { key: 'max_heartrate', label: 'Max HR', justify: 'left', width: '100', type: 'string' },
+          { key: 'tags', label: 'Tags', justify: 'left', width: '90', type: 'tags' },
         ])}
 
         <Dialog
@@ -349,13 +365,13 @@ const SegmentEffortListComponent = ({ segmentId, onClose }: SegmentEffortListPro
               ?
               <TagSelector
                   locationId={LocationId.SegmentEfforts}
-                  assignmentId={rideData?.id || null}
+                  assignmentId={rideData?.strava_effortid || null}
                   initialTags={splitCommaSeparatedString(dialogInfo?.segmentEffortData?.tags)}
                   onClose={handleCloseDialog}
                   onSave={handleOnSaveTags}
               />
               :
-              rideData && <>Hello</>
+              undefined
             }
           </DialogContent>
         </Dialog>

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { isTokenValid } from '../utilities/jwtUtils';
 import {
   Container,
@@ -12,8 +11,7 @@ import {
   CircularProgress,
   Alert,
 } from '@mui/material';
-import WeightTracker from './WeightTracker';
-
+import ConfirmWeight from '../components/user/ConfirmWeight';
 
 const getTodayDate = () => {
   const today = new Date();
@@ -121,7 +119,7 @@ const AddWeightForm: React.FC = () => {
   }
 
   if (weightData) {
-    return <WeightTracker />;
+    return <ConfirmWeight weightData = {weightData}/>;
   }
 
   if (error) {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
-import Login from './components/Login';
+import Login from './components/authentication/Login';
 import UpdateStrava from './pages/UpdateStrava';
 import UpdateMetrics from './pages/UpdateMetrics.';
 import RiderSummary from './pages/RiderSummary';

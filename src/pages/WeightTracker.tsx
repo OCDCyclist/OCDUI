@@ -61,14 +61,15 @@ const WeightTracker: React.FC = () => {
     if (!weightData) return <div>Loading...</div>;
 
     const formatPercent = (fraction: number) => {
-        return (fraction * 100).toFixed(1); // Convert fraction to percent and round to 1 decimal
+        return fraction ? (fraction * 100).toFixed(1) : 0.0;
     };
 
     const formatNumber = (num: number) => {
-        return num.toFixed(1); // Round to 1 decimal place
+        return num ? num.toFixed(1) : 0.0; // Round to 1 decimal place
     };
 
     const formatDate = (dateString: string) => {
+      if( !dateString) return '';
       const date = new Date(dateString);
 
       const datePart = new Intl.DateTimeFormat('en-US', {
