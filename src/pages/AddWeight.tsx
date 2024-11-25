@@ -139,7 +139,6 @@ const AddWeightForm: React.FC = () => {
 
         <form onSubmit={handleSubmit} >
           <Grid container spacing={2}>
-            {/* Date Field */}
             <Grid item xs={12}>
               <TextField
                 label="Date (YYYY-MM-DD)"
@@ -150,7 +149,6 @@ const AddWeightForm: React.FC = () => {
               />
             </Grid>
 
-            {/* Weight */}
             <Grid item xs={12}>
               <TextField
                 label="Weight (lbs)"
@@ -162,10 +160,9 @@ const AddWeightForm: React.FC = () => {
               />
             </Grid>
 
-            {/* Body Fat fraction */}
             <Grid item xs={6}>
               <TextField
-                label="Body Fat Fraction"
+                label="Body Fat Percent"
                 fullWidth
                 type="number"
                 value={bodyfatfraction}
@@ -173,9 +170,10 @@ const AddWeightForm: React.FC = () => {
                 InputProps={{ endAdornment: <InputAdornment position="end">%</InputAdornment> }}
               />
             </Grid>
+
             <Grid item xs={6}>
               <TextField
-                label="Body H2O Fraction"
+                label="Body H2O Percent"
                 fullWidth
                 type="number"
                 value={bodyh2ofraction}
@@ -184,7 +182,6 @@ const AddWeightForm: React.FC = () => {
               />
             </Grid>
 
-            {/* Submit Button */}
             <Grid item xs={12}>
               <Button fullWidth type="submit" variant="contained" color="primary">
                 Submit Weight

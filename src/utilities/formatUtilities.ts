@@ -101,3 +101,55 @@ export const formatRideData = (col: { key: keyof RideData; label: string; justif
       default: return formatNumber(theDatum as number);
     }
   };
+
+type FormatDateParams = {
+  date?: string; // YYYY-MM-DD format
+  year?: number;
+  month?: number; // 1-12, with 0 meaning All months
+  dow?: number; // 0 = Sunday, 6 = Saturday, 7 = All days of week
+  dom?: number; // 1-31
+};
+
+export function formatDateHelper({ date, year, month, dow, dom }: FormatDateParams = {}): string {
+    const monthNames = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
+
+    const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+    // Helper to get full date details if `date` is provided
+    if (date) {
+        const parsedDate = new Date(date);
+        year = parsedDate.getFullYear();
+        month = parsedDate.getMonth() + 1;
+        dow = parsedDate.getDay();
+        dom = parsedDate.getDate();
+    }
+
+    if (year !== undefined && month !== undefined) {
+        if (month === 0) {
+            return `All ${year}`;
+        } else {
+            return `${monthNames[month - 1]} ${year}`;
+        }
+    }
+
+    if (year !== undefined && dow !== undefined) {
+        if (dow === 7) {
+            return `All ${year}`;
+        } else {
+            return `${dayNames[dow]} ${year}`;
+        }
+    }
+
+    if (dom !== undefined && month !== undefined) {
+        if (month === 0) {
+            return `All Day ${dom}`;
+        } else {
+            return `All ${monthNames[month - 1]} ${dom}`;
+        }
+    }
+
+    return "Invalid input"; // Fallback for invalid combinations
+}

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Box, Tab, Tabs, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, Container } from '@mui/material';
 import axios from 'axios';
 import { YearAndMonthData } from '../types/types';
-import { formatInteger, formatNumber1 } from '../utilities/formatUtilities';
+import { formatDateHelper, formatInteger, formatNumber1 } from '../utilities/formatUtilities';
+import RideListComponent from './RideListComponent';
 
 const TabPanel = ({ children, value, index }: { children: React.ReactNode; value: number; index: number }) => {
   return (
@@ -16,7 +17,7 @@ const YearAndMonthComponent = () => {
   const [data, setData] = useState<YearAndMonthData[]>([]);
   const [tabIndex, setTabIndex] = useState(0);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogInfo, setDialogInfo] = useState<{ year: number; column: string } | null>(null);
+  const [dialogInfo, setDialogInfo] = useState<{ year: number; column: string, month: number } | null>(null);
   const [sortConfig, setSortConfig] = useState<{ key: keyof YearAndMonthData | null, direction: 'asc' | 'desc' }>({
     key: null,
     direction: 'asc',
@@ -44,13 +45,15 @@ const YearAndMonthComponent = () => {
     setSortConfig({ key: columnKey, direction });
   };
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabIndex(newValue);
   };
 
-  const handleRowClick = (year: number, column: string) => {
-    setDialogInfo({ year, column });
-    setDialogOpen(true);
+  const handleRowClick = (year: number, column: string, month: number) => {
+    if( month >= 0){
+      setDialogInfo({ year, column, month });
+      setDialogOpen(true);
+    }
   };
 
   const handleCloseDialog = () => {
@@ -119,7 +122,7 @@ const YearAndMonthComponent = () => {
     return sorted;
   }, [data, sortConfig]);
 
-  const renderTable = (columns: { key: keyof YearAndMonthData; label: string }[]) => {
+  const renderTable = (columns: { key: keyof YearAndMonthData; label: string, month: number }[]) => {
     const currentYear = new Date().getFullYear();
     return (
       <TableContainer>
@@ -150,7 +153,7 @@ const YearAndMonthComponent = () => {
                       key={col.key}
                       align="right"
                       sx={{ paddingRight: '1em',  backgroundColor: row.rideyear === currentYear ? '#e3f1c4' : 'inherit', }}
-                      onClick={() => handleRowClick(row.rideyear, col.key)}
+                      onClick={() => handleRowClick(row.rideyear, col.key, col.month)}
                     >
                       {format(col, row[col.key])}
                   </TableCell>
@@ -195,164 +198,167 @@ const YearAndMonthComponent = () => {
 
           <TabPanel value={tabIndex} index={0}>
             {renderTable([
-              { key: 'rideyear', label: 'Year' },
-              { key: 'jan_distance', label: "Jan" },
-              { key: 'feb_distance', label: "Feb" },
-              { key: 'mar_distance', label: "Mar" },
-              { key: 'apr_distance', label: "Apr" },
-              { key: 'may_distance', label: "May" },
-              { key: 'jun_distance', label: "Jun" },
-              { key: 'jul_distance', label: "Jul" },
-              { key: 'aug_distance', label: "Aug" },
-              { key: 'sep_distance', label: "Sep" },
-              { key: 'oct_distance', label: "Oct" },
-              { key: 'nov_distance', label: "Nov" },
-              { key: 'dec_distance', label: "Dec" },
-              { key: 'total_distance_miles', label: "Total" },
+              { key: 'rideyear', label: 'Year', month: -1 },
+              { key: 'jan_distance', label: "Jan", month: 1 },
+              { key: 'feb_distance', label: "Feb", month: 2 },
+              { key: 'mar_distance', label: "Mar", month: 3 },
+              { key: 'apr_distance', label: "Apr", month: 4 },
+              { key: 'may_distance', label: "May", month: 5 },
+              { key: 'jun_distance', label: "Jun", month: 6 },
+              { key: 'jul_distance', label: "Jul", month: 7 },
+              { key: 'aug_distance', label: "Aug" , month: 8},
+              { key: 'sep_distance', label: "Sep", month: 9 },
+              { key: 'oct_distance', label: "Oct", month: 10 },
+              { key: 'nov_distance', label: "Nov", month: 11 },
+              { key: 'dec_distance', label: "Dec", month: 12 },
+              { key: 'total_distance_miles', label: "Total", month: 0 },
             ])}
           </TabPanel>
 
           <TabPanel value={tabIndex} index={1}>
             {renderTable([
-              { key: 'rideyear', label: 'Year' },
-              { key: 'jan_elevationgain', label: "Jan" },
-              { key: 'feb_elevationgain', label: "Feb" },
-              { key: 'mar_elevationgain', label: "Mar" },
-              { key: 'apr_elevationgain', label: "Apr" },
-              { key: 'may_elevationgain', label: "May" },
-              { key: 'jun_elevationgain', label: "Jun" },
-              { key: 'jul_elevationgain', label: "Jul" },
-              { key: 'aug_elevationgain', label: "Aug" },
-              { key: 'sep_elevationgain', label: "Sep" },
-              { key: 'oct_elevationgain', label: "Oct" },
-              { key: 'nov_elevationgain', label: "Nov" },
-              { key: 'dec_elevationgain', label: "Dec" },
-              { key: 'total_elevationgain', label: "Total" },
+              { key: 'rideyear', label: 'Year', month: -1 },
+              { key: 'jan_elevationgain', label: "Jan", month: 1 },
+              { key: 'feb_elevationgain', label: "Feb", month: 2 },
+              { key: 'mar_elevationgain', label: "Mar", month: 3 },
+              { key: 'apr_elevationgain', label: "Apr", month: 4 },
+              { key: 'may_elevationgain', label: "May", month: 5 },
+              { key: 'jun_elevationgain', label: "Jun", month: 6 },
+              { key: 'jul_elevationgain', label: "Jul", month: 7 },
+              { key: 'aug_elevationgain', label: "Aug", month: 8 },
+              { key: 'sep_elevationgain', label: "Sep", month: 9 },
+              { key: 'oct_elevationgain', label: "Oct", month: 10 },
+              { key: 'nov_elevationgain', label: "Nov", month: 11 },
+              { key: 'dec_elevationgain', label: "Dec", month: 12 },
+              { key: 'total_elevationgain', label: "Total", month: 0 },
             ])}
           </TabPanel>
 
           <TabPanel value={tabIndex} index={2}>
             {renderTable([
-              { key: 'rideyear', label: 'Year' },
-              { key: 'jan_elapsedtime_hours', label: "Jan" },
-              { key: 'feb_elapsedtime_hours', label: "Feb" },
-              { key: 'mar_elapsedtime_hours', label: "Mar" },
-              { key: 'apr_elapsedtime_hours', label: "Apr" },
-              { key: 'may_elapsedtime_hours', label: "May" },
-              { key: 'jun_elapsedtime_hours', label: "Jun" },
-              { key: 'jul_elapsedtime_hours', label: "Jul" },
-              { key: 'aug_elapsedtime_hours', label: "Aug" },
-              { key: 'sep_elapsedtime_hours', label: "Sep" },
-              { key: 'oct_elapsedtime_hours', label: "Oct" },
-              { key: 'nov_elapsedtime_hours', label: "Nov" },
-              { key: 'dec_elapsedtime_hours', label: "Dec" },
-              { key: 'elapsedtime_hours', label: "Total" },
+              { key: 'rideyear', label: 'Year', month: -1 },
+              { key: 'jan_elapsedtime_hours', label: "Jan", month: 1 },
+              { key: 'feb_elapsedtime_hours', label: "Feb", month: 2 },
+              { key: 'mar_elapsedtime_hours', label: "Mar", month: 3 },
+              { key: 'apr_elapsedtime_hours', label: "Apr", month: 4 },
+              { key: 'may_elapsedtime_hours', label: "May", month: 5 },
+              { key: 'jun_elapsedtime_hours', label: "Jun", month: 6 },
+              { key: 'jul_elapsedtime_hours', label: "Jul", month: 7 },
+              { key: 'aug_elapsedtime_hours', label: "Aug", month: 8 },
+              { key: 'sep_elapsedtime_hours', label: "Sep", month: 9 },
+              { key: 'oct_elapsedtime_hours', label: "Oct", month: 10 },
+              { key: 'nov_elapsedtime_hours', label: "Nov", month: 11 },
+              { key: 'dec_elapsedtime_hours', label: "Dec", month: 12 },
+              { key: 'elapsedtime_hours', label: "Total", month: 0 },
             ])}
           </TabPanel>
 
           <TabPanel value={tabIndex} index={3}>
             {renderTable([
-              { key: 'rideyear', label: 'Year' },
-              { key: 'jan_avg_speed', label: "Jan" },
-              { key: 'feb_avg_speed', label: "Feb" },
-              { key: 'mar_avg_speed', label: "Mar" },
-              { key: 'apr_avg_speed', label: "Apr" },
-              { key: 'may_avg_speed', label: "May" },
-              { key: 'jun_avg_speed', label: "Jun" },
-              { key: 'jul_avg_speed', label: "Jul" },
-              { key: 'aug_avg_speed', label: "Aug" },
-              { key: 'sep_avg_speed', label: "Sep" },
-              { key: 'oct_avg_speed', label: "Oct" },
-              { key: 'nov_avg_speed', label: "Nov" },
-              { key: 'dec_avg_speed', label: "Dec" },
-              { key: 'avg_speed', label: "Total" },
+              { key: 'rideyear', label: 'Year', month: -1 },
+              { key: 'jan_avg_speed', label: "Jan", month: 1 },
+              { key: 'feb_avg_speed', label: "Feb", month: 2 },
+              { key: 'mar_avg_speed', label: "Mar", month: 3 },
+              { key: 'apr_avg_speed', label: "Apr", month: 4 },
+              { key: 'may_avg_speed', label: "May", month: 5 },
+              { key: 'jun_avg_speed', label: "Jun", month: 6 },
+              { key: 'jul_avg_speed', label: "Jul", month: 7 },
+              { key: 'aug_avg_speed', label: "Aug", month: 8 },
+              { key: 'sep_avg_speed', label: "Sep", month: 9 },
+              { key: 'oct_avg_speed', label: "Oct", month: 10 },
+              { key: 'nov_avg_speed', label: "Nov", month: 11 },
+              { key: 'dec_avg_speed', label: "Dec", month: 12 },
+              { key: 'avg_speed', label: "Total", month: 0 },
             ])}
           </TabPanel>
 
           <TabPanel value={tabIndex} index={4}>
             {renderTable([
-              { key: 'rideyear', label: 'Year' },
-              { key: 'jan_avg_hr', label: "Jan" },
-              { key: 'feb_avg_hr', label: "Feb" },
-              { key: 'mar_avg_hr', label: "Mar" },
-              { key: 'apr_avg_hr', label: "Apr" },
-              { key: 'may_avg_hr', label: "May" },
-              { key: 'jun_avg_hr', label: "Jun" },
-              { key: 'jul_avg_hr', label: "Jul" },
-              { key: 'aug_avg_hr', label: "Aug" },
-              { key: 'sep_avg_hr', label: "Sep" },
-              { key: 'oct_avg_hr', label: "Oct" },
-              { key: 'nov_avg_hr', label: "Nov" },
-              { key: 'dec_avg_hr', label: "Dec" },
-              { key: 'avg_hr', label: "Total" },
+              { key: 'rideyear', label: 'Year', month: -1 },
+              { key: 'jan_avg_hr', label: "Jan", month: 1 },
+              { key: 'feb_avg_hr', label: "Feb", month: 2 },
+              { key: 'mar_avg_hr', label: "Mar", month: 3 },
+              { key: 'apr_avg_hr', label: "Apr", month: 4 },
+              { key: 'may_avg_hr', label: "May", month: 5 },
+              { key: 'jun_avg_hr', label: "Jun", month: 6 },
+              { key: 'jul_avg_hr', label: "Jul", month: 7 },
+              { key: 'aug_avg_hr', label: "Aug", month: 8 },
+              { key: 'sep_avg_hr', label: "Sep", month: 9 },
+              { key: 'oct_avg_hr', label: "Oct", month: 10 },
+              { key: 'nov_avg_hr', label: "Nov", month: 11 },
+              { key: 'dec_avg_hr', label: "Dec", month: 12 },
+              { key: 'avg_hr', label: "Total", month: 0 },
             ])}
           </TabPanel>
 
           <TabPanel value={tabIndex} index={5}>
             {renderTable([
-              { key: 'rideyear', label: 'Year' },
-              { key: 'jan_max_hr', label: "Jan" },
-              { key: 'feb_max_hr', label: "Feb" },
-              { key: 'mar_max_hr', label: "Mar" },
-              { key: 'apr_max_hr', label: "Apr" },
-              { key: 'may_max_hr', label: "May" },
-              { key: 'jun_max_hr', label: "Jun" },
-              { key: 'jul_max_hr', label: "Jul" },
-              { key: 'aug_max_hr', label: "Aug" },
-              { key: 'sep_max_hr', label: "Sep" },
-              { key: 'oct_max_hr', label: "Oct" },
-              { key: 'nov_max_hr', label: "Nov" },
-              { key: 'dec_max_hr', label: "Dec" },
-              { key: 'max_hr', label: "Total" },
+              { key: 'rideyear', label: 'Year', month: -1 },
+              { key: 'jan_max_hr', label: "Jan", month: 1 },
+              { key: 'feb_max_hr', label: "Feb", month: 2 },
+              { key: 'mar_max_hr', label: "Mar", month: 3 },
+              { key: 'apr_max_hr', label: "Apr", month: 4 },
+              { key: 'may_max_hr', label: "May", month: 5 },
+              { key: 'jun_max_hr', label: "Jun", month: 6 },
+              { key: 'jul_max_hr', label: "Jul", month: 7 },
+              { key: 'aug_max_hr', label: "Aug", month: 8 },
+              { key: 'sep_max_hr', label: "Sep", month: 9 },
+              { key: 'oct_max_hr', label: "Oct", month: 10 },
+              { key: 'nov_max_hr', label: "Nov" , month: 11 },
+              { key: 'dec_max_hr', label: "Dec", month: 12 },
+              { key: 'max_hr', label: "Total", month: 0 },
             ])}
           </TabPanel>
 
           <TabPanel value={tabIndex} index={6}>
             {renderTable([
-              { key: 'rideyear', label: 'Year' },
-              { key: 'jan_avg_power', label: "Jan" },
-              { key: 'feb_avg_power', label: "Feb" },
-              { key: 'mar_avg_power', label: "Mar" },
-              { key: 'apr_avg_power', label: "Apr" },
-              { key: 'may_avg_power', label: "May" },
-              { key: 'jun_avg_power', label: "Jun" },
-              { key: 'jul_avg_power', label: "Jul" },
-              { key: 'aug_avg_power', label: "Aug" },
-              { key: 'sep_avg_power', label: "Sep" },
-              { key: 'oct_avg_power', label: "Oct" },
-              { key: 'nov_avg_power', label: "Nov" },
-              { key: 'dec_avg_power', label: "Dec" },
-              { key: 'avg_power', label: "Total" },
+              { key: 'rideyear', label: 'Year', month: 1 },
+              { key: 'jan_avg_power', label: "Jan", month: 1 },
+              { key: 'feb_avg_power', label: "Feb", month: 2 },
+              { key: 'mar_avg_power', label: "Mar", month: 3 },
+              { key: 'apr_avg_power', label: "Apr", month: 4 },
+              { key: 'may_avg_power', label: "May", month: 5 },
+              { key: 'jun_avg_power', label: "Jun", month: 6 },
+              { key: 'jul_avg_power', label: "Jul", month: 7 },
+              { key: 'aug_avg_power', label: "Aug", month: 8 },
+              { key: 'sep_avg_power', label: "Sep", month: 9 },
+              { key: 'oct_avg_power', label: "Oct", month: 10 },
+              { key: 'nov_avg_power', label: "Nov", month: 11 },
+              { key: 'dec_avg_power', label: "Dec", month: 12 },
+              { key: 'avg_power', label: "Total", month: 0 },
             ])}
           </TabPanel>
 
 
           <TabPanel value={tabIndex} index={7}>
             {renderTable([
-              { key: 'rideyear', label: 'Year' },
-              { key: 'jan_max_power', label: "Jan" },
-              { key: 'feb_max_power', label: "Feb" },
-              { key: 'mar_max_power', label: "Mar" },
-              { key: 'apr_max_power', label: "Apr" },
-              { key: 'may_max_power', label: "May" },
-              { key: 'jun_max_power', label: "Jun" },
-              { key: 'jul_max_power', label: "Jul" },
-              { key: 'aug_max_power', label: "Aug" },
-              { key: 'sep_max_power', label: "Sep" },
-              { key: 'oct_max_power', label: "Oct" },
-              { key: 'nov_max_power', label: "Nov" },
-              { key: 'dec_max_power', label: "Dec" },
-              { key: 'max_power', label: "Total" },
+              { key: 'rideyear', label: 'Year', month: -1 },
+              { key: 'jan_max_power', label: "Jan", month: 1 },
+              { key: 'feb_max_power', label: "Feb", month: 2 },
+              { key: 'mar_max_power', label: "Mar", month: 3 },
+              { key: 'apr_max_power', label: "Apr", month: 4 },
+              { key: 'may_max_power', label: "May", month: 5 },
+              { key: 'jun_max_power', label: "Jun", month: 6 },
+              { key: 'jul_max_power', label: "Jul", month: 7 },
+              { key: 'aug_max_power', label: "Aug", month: 8 },
+              { key: 'sep_max_power', label: "Sep", month: 9 },
+              { key: 'oct_max_power', label: "Oct", month: 10 },
+              { key: 'nov_max_power', label: "Nov", month: 11 },
+              { key: 'dec_max_power', label: "Dec", month: 12 },
+              { key: 'max_power', label: "Total", month: 0 },
             ])}
           </TabPanel>
 
           {/* Modal Dialog for clicking on a row */}
-          <Dialog open={dialogOpen} onClose={handleCloseDialog}>
-            <DialogTitle>Row Clicked</DialogTitle>
+          <Dialog
+            open={dialogOpen}
+            onClose={handleCloseDialog}
+            fullWidth
+            maxWidth="xl" // You can set 'lg' or 'xl' for larger widths
+          >
+            <DialogTitle>Rides for {formatDateHelper( { year: dialogInfo?.year, month: dialogInfo?.month } )} </DialogTitle>
             <DialogContent>
-              <Typography>
-                {dialogInfo ? `Year: ${dialogInfo.year}, Column: ${dialogInfo.column}` : 'No details available'}
-              </Typography>
+              {dialogInfo ? <RideListComponent year={dialogInfo?.year} month={dialogInfo?.month} /> : undefined}
             </DialogContent>
           </Dialog>
         </Box>

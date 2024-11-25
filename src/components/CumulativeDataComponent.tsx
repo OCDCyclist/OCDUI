@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Tab, Tabs, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, Container } from '@mui/material';
 import axios from 'axios';
+import RideListComponent from './RideListComponent';
 
 interface CumulativeData {
   ride_date: string;
@@ -304,12 +305,15 @@ const CumulativeDataComponent = () => {
           </TabPanel>
 
           {/* Modal Dialog for clicking on a row */}
-          <Dialog open={dialogOpen} onClose={handleCloseDialog}>
-            <DialogTitle>Row Clicked</DialogTitle>
+          <Dialog
+            open={dialogOpen}
+            onClose={handleCloseDialog}
+            fullWidth
+            maxWidth="lg" // You can set 'lg' or 'xl' for larger widths
+          >
+            <DialogTitle>Rides for {dialogInfo?.date.split('T')[0] || 'Unknown date'}</DialogTitle>
             <DialogContent>
-              <Typography>
-                {dialogInfo ? `Date: ${dialogInfo.date}, Column: ${dialogInfo.column}` : 'No details available'}
-              </Typography>
+              {dialogInfo ? <RideListComponent date={dialogInfo?.date.split('T')[0]} /> : undefined}
             </DialogContent>
           </Dialog>
         </Box>

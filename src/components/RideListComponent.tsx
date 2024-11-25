@@ -11,7 +11,15 @@ import { splitCommaSeparatedString } from '../utilities/stringUtilities';
 import { getUniqueTags } from '../utilities/tagUtilities';
 import TagFilter from './TagFilter';
 
-const RideListComponent = () => {
+type RideListComponentProps = {
+  date?: string;
+  year?: number;
+  month?: number;
+  dow?: number;
+  dom?: number;
+};
+
+const RideListComponent = ( { date, year, month, dow, dom }: RideListComponentProps) => {
   const [data, setData] = useState<RideDataWithTags[]>([]);
   const [dialogInfo, setDialogInfo] = useState<{ rideData: RideDataWithTags; column: string } | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -41,7 +49,6 @@ const RideListComponent = () => {
     };
   }, []);
 
-  // Toggle function to show or hide the checkboxes
   const toggleShowFilters = () => {
     setShowFilters(prev => !prev);
   };
@@ -79,7 +86,22 @@ const RideListComponent = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
 
-    axios.get('http://localhost:3000/rides/lastmonth', {
+    let url = 'http://localhost:3000/rides/lastmonth';
+
+    if(date){
+      url = `http://localhost:3000/ridesByDate?date=${date}`;
+    }
+    else if(year && month){
+      url = `http://localhost:3000/ridesByYearMonth?year=${year}&month=${month}`;
+    }
+    else if(year && dow){
+      url = `http://localhost:3000/ridesByYearMonth?year=${year}&dow=${dow}`;
+    }
+    else if(dom && month){
+      url = `http://localhost:3000/ridesByYearMonth?dom=${dom}&month=${month}`;
+    }
+
+    axios.get(url, {
       method: 'GET',
       headers: {
           'Content-Type': 'application/json',
