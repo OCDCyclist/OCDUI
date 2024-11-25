@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Tab, Tabs, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, Container } from '@mui/material';
+import { Box, Tab, Tabs, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, Container } from '@mui/material';
 import axios from 'axios';
 import { YearAndDOWData } from '../types/types';
+import RideListComponent from './RideListComponent';
+import { formatDateHelper } from '../utilities/formatUtilities';
 
 const TabPanel = ({ children, value, index }: { children: React.ReactNode; value: number; index: number }) => {
   return (
@@ -15,7 +17,7 @@ const YearAndDOWComponent = () => {
   const [data, setData] = useState<YearAndDOWData[]>([]);
   const [tabIndex, setTabIndex] = useState(0);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogInfo, setDialogInfo] = useState<{ date: string; column: string } | null>(null);
+  const [dialogInfo, setDialogInfo] = useState<{ year: number; column: string, dow: number } | null>(null);
   const [sortConfig, setSortConfig] = useState<{ key: keyof YearAndDOWData | null, direction: 'asc' | 'desc' }>({
     key: null,
     direction: 'asc',
@@ -47,8 +49,8 @@ const YearAndDOWComponent = () => {
     setTabIndex(newValue);
   };
 
-  const handleRowClick = (date: string, column: string) => {
-    setDialogInfo({ date, column });
+  const handleRowClick = (year: number, column: string, dow: number) => {
+    setDialogInfo({ year, column, dow });
     setDialogOpen(true);
   };
 
@@ -73,7 +75,7 @@ const YearAndDOWComponent = () => {
     }).format(Number(num));
   };
 
-  const format = ( col:  { key: keyof YearAndDOWData; label: string }, theDatum: string) =>{
+  const format = ( col:  { key: keyof YearAndDOWData; label: string }, theDatum: string | number) =>{
     switch(col.key){
       case 'elevationgainmonday':
       case 'elevationgaintuesday':
@@ -137,7 +139,7 @@ const YearAndDOWComponent = () => {
     return sorted;
   }, [data, sortConfig]);
 
-  const renderTable = (columns: { key: keyof YearAndDOWData; label: string }[]) => {
+  const renderTable = (columns: { key: keyof YearAndDOWData; label: string, dow: number }[]) => {
     return (
       <TableContainer>
         <Table>
@@ -167,7 +169,7 @@ const YearAndDOWComponent = () => {
                       key={col.key}
                       align="right"
                       sx={{ paddingRight: '1em' }}
-                      onClick={() => handleRowClick(row.year, col.key)}
+                      onClick={() => handleRowClick(row.year, col.key, col.dow)}
                     >
                       {format(col, row[col.key])}
                   </TableCell>
@@ -209,81 +211,83 @@ const YearAndDOWComponent = () => {
 
           <TabPanel value={tabIndex} index={0}>
             {renderTable([
-              { key: 'year', label: 'Year' },
-              { key: 'distancesunday', label: "Sun" },
-              { key: 'distancemonday', label: "Mon" },
-              { key: 'distancetuesday', label: "Tue" },
-              { key: 'distancewednesday', label: "Wed" },
-              { key: 'distancethursday', label: "Thu" },
-              { key: 'distancefriday', label: "Fri" },
-              { key: 'distancesaturday', label: "Sat" },
-              { key: 'distance', label: "Total" },
+              { key: 'year', label: 'Year', dow: -1  },
+              { key: 'distancesunday', label: "Sun", dow: 0 },
+              { key: 'distancemonday', label: "Mon", dow: 1 },
+              { key: 'distancetuesday', label: "Tue", dow: 2 },
+              { key: 'distancewednesday', label: "Wed", dow: 3  },
+              { key: 'distancethursday', label: "Thu", dow: 4  },
+              { key: 'distancefriday', label: "Fri", dow: 5  },
+              { key: 'distancesaturday', label: "Sat", dow: 6 },
+              { key: 'distance', label: "Total", dow: 7 },
             ])}
           </TabPanel>
 
           <TabPanel value={tabIndex} index={1}>
             {renderTable([
-              { key: 'year', label: 'Year' },
-              { key: 'elevationgainsunday', label: "Sun" },
-              { key: 'elevationgainmonday', label: "Mon" },
-              { key: 'elevationgaintuesday', label: "Tue" },
-              { key: 'elevationgainwednesday', label: "Wed" },
-              { key: 'elevationgainthursday', label: "Thu" },
-              { key: 'elevationgainfriday', label: "Fri" },
-              { key: 'elevationgainsaturday', label: "Sat" },
-              { key: 'elevationgain', label: "Total" },
+              { key: 'year', label: 'Year', dow: 0 },
+              { key: 'elevationgainsunday', label: "Sun", dow: 0 },
+              { key: 'elevationgainmonday', label: "Mon", dow: 1 },
+              { key: 'elevationgaintuesday', label: "Tue", dow: 2 },
+              { key: 'elevationgainwednesday', label:"Wed", dow: 3 },
+              { key: 'elevationgainthursday', label:"Thu", dow: 4 },
+              { key: 'elevationgainfriday', label:"Fri", dow: 5 },
+              { key: 'elevationgainsaturday', label:"Sat", dow: 6 },
+              { key: 'elevationgain', label: "Total", dow: 7 },
             ])}
           </TabPanel>
 
           <TabPanel value={tabIndex} index={2}>
             {renderTable([
-              { key: 'year', label: 'Year' },
-              { key: 'elapsedtimesunday', label: "Sun" },
-              { key: 'elapsedtimemonday', label: "Mon" },
-              { key: 'elapsedtimetuesday', label: "Tue" },
-              { key: 'elapsedtimewednesday', label: "Wed" },
-              { key: 'elapsedtimethursday', label: "Thu" },
-              { key: 'elapsedtimefriday', label: "Fri" },
-              { key: 'elapsedtimesaturday', label: "Sat" },
-              { key: 'elapsedtime', label: "Total" },
+              { key: 'year', label: 'Year', dow: 0 },
+              { key: 'elapsedtimesunday', label: "Sun", dow: 0 },
+              { key: 'elapsedtimemonday', label: "Mon", dow: 1 },
+              { key: 'elapsedtimetuesday', label:"Tue", dow: 2 },
+              { key: 'elapsedtimewednesday', label:"Wed", dow: 3 },
+              { key: 'elapsedtimethursday', label:"Thu", dow: 4 },
+              { key: 'elapsedtimefriday', label:"Fri", dow: 5 },
+              { key: 'elapsedtimesaturday', label:"Sat", dow: 6 },
+              { key: 'elapsedtime', label: "Total", dow: 7 },
             ])}
           </TabPanel>
 
           <TabPanel value={tabIndex} index={3}>
             {renderTable([
-              { key: 'year', label: 'Year' },
-              { key: 'hraveragesunday', label: "Sun" },
-              { key: 'hraveragemonday', label: "Mon" },
-              { key: 'hraveragetuesday', label: "Tue" },
-              { key: 'hraveragewednesday', label: "Wed" },
-              { key: 'hraveragethursday', label: "Thu" },
-              { key: 'hraveragefriday', label: "Fri" },
-              { key: 'hraveragesaturday', label: "Sat" },
-              { key: 'hraverage', label: "Total" },
+              { key: 'year', label: 'Year', dow: 0 },
+              { key: 'hraveragesunday', label: "Sun", dow: 0 },
+              { key: 'hraveragemonday', label: "Mon", dow: 1 },
+              { key: 'hraveragetuesday', label:"Tue", dow: 2 },
+              { key: 'hraveragewednesday', label:"Wed", dow: 3 },
+              { key: 'hraveragethursday', label:"Thu", dow: 4 },
+              { key: 'hraveragefriday', label:"Fri", dow: 5 },
+              { key: 'hraveragesaturday', label:"Sat", dow: 6 },
+              { key: 'hraverage', label: "Total", dow: 7 },
             ])}
           </TabPanel>
 
           <TabPanel value={tabIndex} index={4}>
             {renderTable([
-              { key: 'year', label: 'Year' },
-              { key: 'poweraveragesunday', label: "Sun" },
-              { key: 'poweraveragemonday', label: "Mon" },
-              { key: 'poweraveragetuesday', label: "Tue" },
-              { key: 'poweraveragewednesday', label: "Wed" },
-              { key: 'poweraveragethursday', label: "Thu" },
-              { key: 'poweraveragefriday', label: "Fri" },
-              { key: 'poweraveragesaturday', label: "Sat" },
-              { key: 'poweraverage', label: "Total" },
+              { key: 'year', label: 'Year', dow: 0 },
+              { key: 'poweraveragesunday', label: "Sun", dow: 0 },
+              { key: 'poweraveragemonday', label: "Mon", dow: 1 },
+              { key: 'poweraveragetuesday', label:"Tue", dow: 2 },
+              { key: 'poweraveragewednesday', label:"Wed", dow: 3 },
+              { key: 'poweraveragethursday', label:"Thu", dow: 4 },
+              { key: 'poweraveragefriday', label:"Fri", dow: 5 },
+              { key: 'poweraveragesaturday', label:"Sat", dow: 6 },
+              { key: 'poweraverage', label: "Total", dow: 7 },
             ])}
           </TabPanel>
 
-          {/* Modal Dialog for clicking on a row */}
-          <Dialog open={dialogOpen} onClose={handleCloseDialog}>
-            <DialogTitle>Row Clicked</DialogTitle>
+          <Dialog
+            open={dialogOpen}
+            onClose={handleCloseDialog}
+            fullWidth
+            maxWidth="xl" // You can set 'lg' or 'xl' for larger widths
+          >
+            <DialogTitle>Rides for {formatDateHelper( { year: dialogInfo?.year, dow: dialogInfo?.dow } )} </DialogTitle>
             <DialogContent>
-              <Typography>
-                {dialogInfo ? `Date: ${dialogInfo.date}, Column: ${dialogInfo.column}` : 'No details available'}
-              </Typography>
+              {dialogInfo ? <RideListComponent year={dialogInfo?.year} dow={dialogInfo?.dow} /> : undefined}
             </DialogContent>
           </Dialog>
         </Box>

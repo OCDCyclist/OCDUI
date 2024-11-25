@@ -329,7 +329,6 @@ const YearAndMonthComponent = () => {
             ])}
           </TabPanel>
 
-
           <TabPanel value={tabIndex} index={7}>
             {renderTable([
               { key: 'rideyear', label: 'Year', month: -1 },
@@ -349,7 +348,6 @@ const YearAndMonthComponent = () => {
             ])}
           </TabPanel>
 
-          {/* Modal Dialog for clicking on a row */}
           <Dialog
             open={dialogOpen}
             onClose={handleCloseDialog}

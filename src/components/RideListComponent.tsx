@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogContent, Container, Checkbox, FormGroup, FormControlLabel, Button, TableCellProps } from '@mui/material';
 import axios from 'axios';
 import RideDetail from './RideDetail';
-import { formatDate, formatElapsedTime, formatInteger, formatNumber } from '../utilities/formatUtilities';
+import { formatDate, formatDateHelper, formatElapsedTime, formatInteger, formatNumber } from '../utilities/formatUtilities';
 import { LocationId, RideDataWithTags } from '../types/types';
 import { dayFilterDefault, daysOfWeek } from '../utilities/daysOfWeek';
 import TagChips from './TagChips';
@@ -10,6 +10,7 @@ import TagSelector from './TagSelector';
 import { splitCommaSeparatedString } from '../utilities/stringUtilities';
 import { getUniqueTags } from '../utilities/tagUtilities';
 import TagFilter from './TagFilter';
+import LinearLoader from './loaders/LieanLoader';
 
 type RideListComponentProps = {
   date?: string;
@@ -20,6 +21,11 @@ type RideListComponentProps = {
 };
 
 const RideListComponent = ( { date, year, month, dow, dom }: RideListComponentProps) => {
+  const [loadingState, setLoadingState] = React.useState({
+    loading: false,
+    message: "",
+  });
+
   const [data, setData] = useState<RideDataWithTags[]>([]);
   const [dialogInfo, setDialogInfo] = useState<{ rideData: RideDataWithTags; column: string } | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -88,18 +94,20 @@ const RideListComponent = ( { date, year, month, dow, dom }: RideListComponentPr
 
     let url = 'http://localhost:3000/rides/lastmonth';
 
-    if(date){
+    if(typeof date !== 'undefined'){
       url = `http://localhost:3000/ridesByDate?date=${date}`;
     }
-    else if(year && month){
+    else if(typeof year !== 'undefined' && typeof month !== 'undefined'){
       url = `http://localhost:3000/ridesByYearMonth?year=${year}&month=${month}`;
     }
-    else if(year && dow){
-      url = `http://localhost:3000/ridesByYearMonth?year=${year}&dow=${dow}`;
+    else if(typeof year !== 'undefined' && typeof dow !== 'undefined'){
+      url = `http://localhost:3000/ridesByYearDOW?year=${year}&dow=${dow}`;
     }
-    else if(dom && month){
-      url = `http://localhost:3000/ridesByYearMonth?dom=${dom}&month=${month}`;
+    else if(typeof dom !== 'undefined' && typeof month !== 'undefined'){
+      url = `http://localhost:3000/getRidesByDOMMonth?dom=${dom}&month=${month}`;
     }
+    const theMessage: string = formatDateHelper({ date: date, year: year, month: month, dow: dow, dom: dom });
+    setLoadingState({ loading: true, message: theMessage });
 
     axios.get(url, {
       method: 'GET',
@@ -112,8 +120,13 @@ const RideListComponent = ( { date, year, month, dow, dom }: RideListComponentPr
         const uniqueTags = getUniqueTags(response.data);
         setUniqueTags(uniqueTags);
         setData(response.data);
+        setLoadingState({ loading: false, message: '' });
+
       })
-      .catch((error) => console.error('Error fetching last month ride data:', error));
+      .catch((error) => {
+        console.error('Error fetching last month ride data:', error);
+        setLoadingState({ loading: false, message: '' });
+      });
   }, [refreshData]);
 
   const handleSort = (columnKey: keyof RideDataWithTags) => {
@@ -261,6 +274,7 @@ const RideListComponent = ( { date, year, month, dow, dom }: RideListComponentPr
       <TableContainer sx={{ maxHeight: tableHeight }}>
         <Table stickyHeader>
           <TableHead>
+            { loadingState.loading ? <LinearLoader message={loadingState.message} /> : undefined }
             <TableRow>
               {columns.map((col) => (
                 <TableCell
