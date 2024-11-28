@@ -27,6 +27,7 @@ export interface RideData {
     device_name: string | null,
     fracdim: number,
     calculated_weight_kg: number | null | undefined;
+    cluster: string;
 }
 
 export interface RideDataStrava{
@@ -448,6 +449,19 @@ export interface SegmentEffort {
     max_heartrate: number,
     start_index: number,
     end_index: number,
+}
+
+export interface ClusterDefinition {
+    startyear: number,
+    endyear: number
+    cluster: number,
+    distance: number,
+    speedavg: number,
+    elevationgain: number,
+    hravg: number,
+    powernormalized: number,
+    name: string,
+    ride_count: number,
 }
 
 export interface TagResult{

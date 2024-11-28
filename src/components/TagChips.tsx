@@ -27,8 +27,6 @@ const TagChips: React.FC<TagChipsProps> = ({ tags, color = 'default', onClick, o
           size="small"
           color={chipColor}
           sx={customColor}
-          onClick={onClick ? () => onClick(tag) : undefined}
-          onDelete={onDelete ? () => onDelete(tag) : undefined}
         />
       ))}
     </Stack>

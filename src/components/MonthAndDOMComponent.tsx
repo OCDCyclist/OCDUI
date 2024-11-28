@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Tab, Tabs, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, Container } from '@mui/material';
+import { Box, Tab, Tabs, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, Container } from '@mui/material';
 import axios from 'axios';
 import { MonthAndDOMData } from '../types/types';
-import { formatInteger, formatNumber } from '../utilities/formatUtilities';
+import { formatDateHelper, formatInteger, formatNumber } from '../utilities/formatUtilities';
+import RideListComponent from './RideListComponent';
 
 const TabPanel = ({ children, value, index }: { children: React.ReactNode; value: number; index: number }) => {
   return (
@@ -16,7 +17,7 @@ const MonthAndDOMComponent = () => {
   const [data, setData] = useState<MonthAndDOMData[]>([]);
   const [tabIndex, setTabIndex] = useState(0);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogInfo, setDialogInfo] = useState<{ date: number; column: string } | null>(null);
+  const [dialogInfo, setDialogInfo] = useState<{ month: number; column: string, dom: number } | null>(null);
   const [sortConfig, setSortConfig] = useState<{ key: keyof MonthAndDOMData | null, direction: 'asc' | 'desc' }>({
     key: null,
     direction: 'asc',
@@ -48,16 +49,17 @@ const MonthAndDOMComponent = () => {
     setTabIndex(newValue);
   };
 
-  const handleRowClick = (value: number, column: string) => {
-    setDialogInfo( { date: value, column: column } );
-    setDialogOpen(true);
+  const handleRowClick = (dom: number, column: string, month: number) => {
+    if( month >= 1 && month <= 12){
+      setDialogInfo( { month: month, column: column, dom: dom } );
+      setDialogOpen(true);
+    }
   };
 
   const handleCloseDialog = () => {
     setDialogOpen(false);
     setDialogInfo(null);
   };
-
 
   const format = ( col:  { key: keyof MonthAndDOMData; label: string }, theDatum: number) =>{
     switch(col.key){
@@ -146,7 +148,7 @@ const MonthAndDOMComponent = () => {
     return sorted;
   }, [data, sortConfig]);
 
-  const renderTable = (columns: { key: keyof MonthAndDOMData; label: string }[]) => {
+  const renderTable = (columns: { key: keyof MonthAndDOMData; label: string, month: number }[]) => {
 
     const today = new Date();
     const monthAbbreviation = today.toLocaleString('en-US', { month: 'short' });
@@ -181,7 +183,7 @@ const MonthAndDOMComponent = () => {
                       key={col.key}
                       align="right"
                       sx={{ paddingRight: '1em',  backgroundColor: (row.dom === currentDay && col.label === monthAbbreviation) ? '#e3f1c4' : 'inherit', }}
-                      onClick={() => handleRowClick(row.dom, col.key)}
+                      onClick={() => handleRowClick(row.dom, col.key, col.month)}
                     >
                       {format(col, row[col.key])}
                   </TableCell>
@@ -196,7 +198,7 @@ const MonthAndDOMComponent = () => {
 
   return (
     <Container
-      maxWidth='xl' 
+      maxWidth='xl'
       sx={{
         marginY: 2, // Adds some vertical margin
         maxWidth: '1800px', // Increase max width
@@ -223,106 +225,108 @@ const MonthAndDOMComponent = () => {
 
           <TabPanel value={tabIndex} index={0}>
             {renderTable([
-              { key: 'dom', label: 'Day' },
-              { key: 'distancejan', label: "Jan" },
-              { key: 'distancefeb', label: "Feb" },
-              { key: 'distancemar', label: "Mar" },
-              { key: 'distanceapr', label: "Apr" },
-              { key: 'distancemay', label: "May" },
-              { key: 'distancejun', label: "Jun" },
-              { key: 'distancejul', label: "Jul" },
-              { key: 'distanceaug', label: "Aug" },
-              { key: 'distancesep', label: "Sep" },
-              { key: 'distanceoct', label: "Oct" },
-              { key: 'distancenov', label: "Nov" },
-              { key: 'distancedec', label: "Dec" },
-              { key: 'distance', label: "Total" },
+              { key: 'dom', label: "Day", month: 0 },
+              { key: 'distancejan', label: "Jan", month: 1 },
+              { key: 'distancefeb', label: "Feb", month: 2 },
+              { key: 'distancemar', label: "Mar", month: 3 },
+              { key: 'distanceapr', label: "Apr", month: 4 },
+              { key: 'distancemay', label: "May", month: 5 },
+              { key: 'distancejun', label: "Jun", month: 6 },
+              { key: 'distancejul', label: "Jul", month: 7 },
+              { key: 'distanceaug', label: "Aug", month: 8 },
+              { key: 'distancesep', label: "Sep", month: 9 },
+              { key: 'distanceoct', label: "Oct", month: 10 },
+              { key: 'distancenov', label: "Nov", month: 11 },
+              { key: 'distancedec', label: "Dec", month: 12 },
+              { key: 'distance', label: "Total", month: 13 },
             ])}
           </TabPanel>
 
           <TabPanel value={tabIndex} index={1}>
             {renderTable([
-              { key: 'dom', label: 'Day' },
-              { key: 'elevationgainjan', label: "Jan" },
-              { key: 'elevationgainfeb', label: "Feb" },
-              { key: 'elevationgainmar', label: "Mar" },
-              { key: 'elevationgainapr', label: "Apr" },
-              { key: 'elevationgainmay', label: "May" },
-              { key: 'elevationgainjun', label: "Jun" },
-              { key: 'elevationgainjul', label: "Jul" },
-              { key: 'elevationgainaug', label: "Aug" },
-              { key: 'elevationgainsep', label: "Sep" },
-              { key: 'elevationgainoct', label: "Oct" },
-              { key: 'elevationgainnov', label: "Nov" },
-              { key: 'elevationgaindec', label: "Dec" },
-              { key: 'elevationgain', label: "Total" },
+              { key: 'dom', label: "Day", month: 0 },
+              { key: 'elevationgainjan', label: "Jan", month: 1 },
+              { key: 'elevationgainfeb', label: "Feb", month: 2 },
+              { key: 'elevationgainmar', label: "Mar", month: 3 },
+              { key: 'elevationgainapr', label: "Apr", month: 4 },
+              { key: 'elevationgainmay', label: "May", month: 5 },
+              { key: 'elevationgainjun', label: "Jun", month: 6 },
+              { key: 'elevationgainjul', label: "Jul", month: 7 },
+              { key: 'elevationgainaug', label: "Aug", month: 8 },
+              { key: 'elevationgainsep', label: "Sep", month: 9 },
+              { key: 'elevationgainoct', label: "Oct", month: 10 },
+              { key: 'elevationgainnov', label: "Nov", month: 11 },
+              { key: 'elevationgaindec', label: "Dec", month: 12 },
+              { key: 'elevationgain', label: "Total", month: 13 },
             ])}
           </TabPanel>
 
           <TabPanel value={tabIndex} index={2}>
             {renderTable([
-              { key: 'dom', label: 'Day' },
-              { key: 'elapsedtimejan', label: "Jan" },
-              { key: 'elapsedtimefeb', label: "Feb" },
-              { key: 'elapsedtimemar', label: "Mar" },
-              { key: 'elapsedtimeapr', label: "Apr" },
-              { key: 'elapsedtimemay', label: "May" },
-              { key: 'elapsedtimejun', label: "Jun" },
-              { key: 'elapsedtimejul', label: "Jul" },
-              { key: 'elapsedtimeaug', label: "Aug" },
-              { key: 'elapsedtimesep', label: "Sep" },
-              { key: 'elapsedtimeoct', label: "Oct" },
-              { key: 'elapsedtimenov', label: "Nov" },
-              { key: 'elapsedtimedec', label: "Dec" },
-              { key: 'elapsedtime', label: "Total" },
+              { key: 'dom', label: "Day", month: 0 },
+              { key: 'elapsedtimejan', label: "Jan", month: 1 },
+              { key: 'elapsedtimefeb', label: "Feb", month: 2 },
+              { key: 'elapsedtimemar', label: "Mar", month: 3 },
+              { key: 'elapsedtimeapr', label: "Apr", month: 4 },
+              { key: 'elapsedtimemay', label: "May", month: 5 },
+              { key: 'elapsedtimejun', label: "Jun", month: 6 },
+              { key: 'elapsedtimejul', label: "Jul", month: 7 },
+              { key: 'elapsedtimeaug', label: "Aug", month: 8 },
+              { key: 'elapsedtimesep', label: "Sep", month: 9 },
+              { key: 'elapsedtimeoct', label: "Oct", month: 10 },
+              { key: 'elapsedtimenov', label: "Nov", month: 11 },
+              { key: 'elapsedtimedec', label: "Dec", month: 12 },
+              { key: 'elapsedtime', label: "Total", month: 13 },
             ])}
           </TabPanel>
 
           <TabPanel value={tabIndex} index={3}>
             {renderTable([
-              { key: 'dom', label: 'Day' },
-              { key: 'hraveragejan', label: "Jan" },
-              { key: 'hraveragefeb', label: "Feb" },
-              { key: 'hraveragemar', label: "Mar" },
-              { key: 'hraverageapr', label: "Apr" },
-              { key: 'hraveragemay', label: "May" },
-              { key: 'hraveragejun', label: "Jun" },
-              { key: 'hraveragejul', label: "Jul" },
-              { key: 'hraverageaug', label: "Aug" },
-              { key: 'hraveragesep', label: "Sep" },
-              { key: 'hraverageoct', label: "Oct" },
-              { key: 'hraveragenov', label: "Nov" },
-              { key: 'hraveragedec', label: "Dec" },
-              { key: 'hraverage', label: "Total" },
+              { key: 'dom', label: "Day", month: 0 },
+              { key: 'hraveragejan', label: "Jan", month: 1 },
+              { key: 'hraveragefeb', label: "Feb", month: 2 },
+              { key: 'hraveragemar', label: "Mar", month: 3 },
+              { key: 'hraverageapr', label: "Apr", month: 4 },
+              { key: 'hraveragemay', label: "May", month: 5 },
+              { key: 'hraveragejun', label: "Jun", month: 6 },
+              { key: 'hraveragejul', label: "Jul", month: 7 },
+              { key: 'hraverageaug', label: "Aug", month: 8 },
+              { key: 'hraveragesep', label: "Sep", month: 9 },
+              { key: 'hraverageoct', label: "Oct", month: 10 },
+              { key: 'hraveragenov', label: "Nov", month: 11 },
+              { key: 'hraveragedec', label: "Dec", month: 12 },
+              { key: 'hraverage', label: "Total", month: 13 },
             ])}
           </TabPanel>
 
           <TabPanel value={tabIndex} index={4}>
             {renderTable([
-              { key: 'dom', label: 'Day' },
-              { key: 'poweraveragejan', label: "Jan" },
-              { key: 'poweraveragefeb', label: "Feb" },
-              { key: 'poweraveragemar', label: "Mar" },
-              { key: 'poweraverageapr', label: "Apr" },
-              { key: 'poweraveragemay', label: "May" },
-              { key: 'poweraveragejun', label: "Jun" },
-              { key: 'poweraveragejul', label: "Jul" },
-              { key: 'poweraverageaug', label: "Aug" },
-              { key: 'poweraveragesep', label: "Sep" },
-              { key: 'poweraverageoct', label: "Oct" },
-              { key: 'poweraveragenov', label: "Nov" },
-              { key: 'poweraveragedec', label: "Dec" },
-              { key: 'poweraverage', label: "Total" },
+              { key: 'dom', label: "Day", month: 0 },
+              { key: 'poweraveragejan', label: "Jan", month: 1 },
+              { key: 'poweraveragefeb', label: "Feb", month: 2 },
+              { key: 'poweraveragemar', label: "Mar", month: 3 },
+              { key: 'poweraverageapr', label: "Apr", month: 4 },
+              { key: 'poweraveragemay', label: "May", month: 5 },
+              { key: 'poweraveragejun', label: "Jun", month: 6 },
+              { key: 'poweraveragejul', label: "Jul", month: 7 },
+              { key: 'poweraverageaug', label: "Aug", month: 8 },
+              { key: 'poweraveragesep', label: "Sep", month: 9 },
+              { key: 'poweraverageoct', label: "Oct", month: 10 },
+              { key: 'poweraveragenov', label: "Nov", month: 11 },
+              { key: 'poweraveragedec', label: "Dec", month: 12 },
+              { key: 'poweraverage', label: "Total", month: 13 },
             ])}
           </TabPanel>
 
-          {/* Modal Dialog for clicking on a row */}
-          <Dialog open={dialogOpen} onClose={handleCloseDialog}>
-            <DialogTitle>Row Clicked</DialogTitle>
+          <Dialog
+            open={dialogOpen}
+            onClose={handleCloseDialog}
+            fullWidth
+            maxWidth="xl" // You can set 'lg' or 'xl' for larger widths
+          >
+            <DialogTitle>Rides for {formatDateHelper( { dom: dialogInfo?.dom, month: dialogInfo?.month } )} </DialogTitle>
             <DialogContent>
-              <Typography>
-                {dialogInfo ? `Date: ${dialogInfo.date}, Column: ${dialogInfo.column}` : 'No details available'}
-              </Typography>
+              {dialogInfo ? <RideListComponent dom={dialogInfo?.dom} month={dialogInfo?.month} /> : undefined}
             </DialogContent>
           </Dialog>
         </Box>

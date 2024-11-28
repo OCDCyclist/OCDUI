@@ -23,6 +23,9 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/AuthContext';
 import LoginStatus from './authentication/LoginStatus';
+import AnalyticsIcon from '@mui/icons-material/Analytics';
+import ScatterPlotIcon from '@mui/icons-material/ScatterPlot';
+import PivotTableChartIcon from '@mui/icons-material/PivotTableChart';
 
 const drawerWidth = 240;
 
@@ -96,6 +99,15 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
       children: [
         { text: 'Starred', icon: <AutoAwesomeIcon />, path: '/segments/starred' },
         { text: 'Update Starred', icon: <AutoAwesomeIcon />, path: '/segments/updatestarred' },
+      ]
+    },
+
+    {
+      text: 'Analysis',
+      icon: <AnalyticsIcon />,
+      children: [
+        { text: 'Cluster Definition', icon: <QueryStatsIcon />, path: '/analysis/clusterdefinition' },
+        { text: 'Cluster Visuals', icon: <PivotTableChartIcon />, path: '/analysis/clustervisuals' },
       ]
     },
 

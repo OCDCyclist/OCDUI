@@ -1,4 +1,4 @@
-import { RideData } from "../types/types";
+import { ClusterDefinition, RideData } from "../types/types";
 
 export function formatElapsedTime(seconds: number): string {
     const pad = (num: number) => num.toString().padStart(2, '0');
@@ -108,9 +108,10 @@ type FormatDateParams = {
   month?: number; // 1-12, with 0 meaning All months
   dow?: number; // 0 = Sunday, 6 = Saturday, 7 = All days of week
   dom?: number; // 1-31
+  cluster?: ClusterDefinition;
 };
 
-export function formatDateHelper({ date, year, month, dow, dom }: FormatDateParams = {}): string {
+export function formatDateHelper({ date, year, month, dow, dom, cluster }: FormatDateParams = {}): string {
     const monthNames = [
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
@@ -150,6 +151,9 @@ export function formatDateHelper({ date, year, month, dow, dom }: FormatDatePara
             return `All ${monthNames[month - 1]} ${dom}`;
         }
     }
+    if( cluster !== undefined){
+        return `Rides for Cluster ${cluster.cluster} ${cluster.name}`;
+    }
 
-    return "Invalid input"; // Fallback for invalid combinations
+    return ""; // Fallback for invalid combinations
 }

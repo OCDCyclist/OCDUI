@@ -45,13 +45,15 @@ const YearAndDOWComponent = () => {
     setSortConfig({ key: columnKey, direction });
   };
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabIndex(newValue);
   };
 
   const handleRowClick = (year: number, column: string, dow: number) => {
-    setDialogInfo({ year, column, dow });
-    setDialogOpen(true);
+    if( dow >= 0 && dow <= 6){
+      setDialogInfo({ year, column, dow });
+      setDialogOpen(true);
+    }
   };
 
   const handleCloseDialog = () => {
@@ -219,13 +221,13 @@ const YearAndDOWComponent = () => {
               { key: 'distancethursday', label: "Thu", dow: 4  },
               { key: 'distancefriday', label: "Fri", dow: 5  },
               { key: 'distancesaturday', label: "Sat", dow: 6 },
-              { key: 'distance', label: "Total", dow: 7 },
+              { key: 'distance', label: "Total", dow: -1 },
             ])}
           </TabPanel>
 
           <TabPanel value={tabIndex} index={1}>
             {renderTable([
-              { key: 'year', label: 'Year', dow: 0 },
+              { key: 'year', label: 'Year', dow: -1 },
               { key: 'elevationgainsunday', label: "Sun", dow: 0 },
               { key: 'elevationgainmonday', label: "Mon", dow: 1 },
               { key: 'elevationgaintuesday', label: "Tue", dow: 2 },
@@ -233,13 +235,13 @@ const YearAndDOWComponent = () => {
               { key: 'elevationgainthursday', label:"Thu", dow: 4 },
               { key: 'elevationgainfriday', label:"Fri", dow: 5 },
               { key: 'elevationgainsaturday', label:"Sat", dow: 6 },
-              { key: 'elevationgain', label: "Total", dow: 7 },
+              { key: 'elevationgain', label: "Total", dow: -1 },
             ])}
           </TabPanel>
 
           <TabPanel value={tabIndex} index={2}>
             {renderTable([
-              { key: 'year', label: 'Year', dow: 0 },
+              { key: 'year', label: 'Year', dow: -1 },
               { key: 'elapsedtimesunday', label: "Sun", dow: 0 },
               { key: 'elapsedtimemonday', label: "Mon", dow: 1 },
               { key: 'elapsedtimetuesday', label:"Tue", dow: 2 },
@@ -247,13 +249,13 @@ const YearAndDOWComponent = () => {
               { key: 'elapsedtimethursday', label:"Thu", dow: 4 },
               { key: 'elapsedtimefriday', label:"Fri", dow: 5 },
               { key: 'elapsedtimesaturday', label:"Sat", dow: 6 },
-              { key: 'elapsedtime', label: "Total", dow: 7 },
+              { key: 'elapsedtime', label: "Total", dow: -1 },
             ])}
           </TabPanel>
 
           <TabPanel value={tabIndex} index={3}>
             {renderTable([
-              { key: 'year', label: 'Year', dow: 0 },
+              { key: 'year', label: 'Year', dow: -1 },
               { key: 'hraveragesunday', label: "Sun", dow: 0 },
               { key: 'hraveragemonday', label: "Mon", dow: 1 },
               { key: 'hraveragetuesday', label:"Tue", dow: 2 },
@@ -261,13 +263,13 @@ const YearAndDOWComponent = () => {
               { key: 'hraveragethursday', label:"Thu", dow: 4 },
               { key: 'hraveragefriday', label:"Fri", dow: 5 },
               { key: 'hraveragesaturday', label:"Sat", dow: 6 },
-              { key: 'hraverage', label: "Total", dow: 7 },
+              { key: 'hraverage', label: "Total", dow: -1 },
             ])}
           </TabPanel>
 
           <TabPanel value={tabIndex} index={4}>
             {renderTable([
-              { key: 'year', label: 'Year', dow: 0 },
+              { key: 'year', label: 'Year', dow: -1 },
               { key: 'poweraveragesunday', label: "Sun", dow: 0 },
               { key: 'poweraveragemonday', label: "Mon", dow: 1 },
               { key: 'poweraveragetuesday', label:"Tue", dow: 2 },
@@ -275,7 +277,7 @@ const YearAndDOWComponent = () => {
               { key: 'poweraveragethursday', label:"Thu", dow: 4 },
               { key: 'poweraveragefriday', label:"Fri", dow: 5 },
               { key: 'poweraveragesaturday', label:"Sat", dow: 6 },
-              { key: 'poweraverage', label: "Total", dow: 7 },
+              { key: 'poweraverage', label: "Total", dow: -1 },
             ])}
           </TabPanel>
 

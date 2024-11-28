@@ -3,14 +3,14 @@ import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
 import axios from 'axios';
 import RideDetail from './RideDetail';
 import { formatDate, formatDateHelper, formatElapsedTime, formatInteger, formatNumber } from '../utilities/formatUtilities';
-import { LocationId, RideDataWithTags } from '../types/types';
+import { ClusterDefinition, LocationId, RideDataWithTags } from '../types/types';
 import { dayFilterDefault, daysOfWeek } from '../utilities/daysOfWeek';
 import TagChips from './TagChips';
 import TagSelector from './TagSelector';
 import { splitCommaSeparatedString } from '../utilities/stringUtilities';
 import { getUniqueTags } from '../utilities/tagUtilities';
 import TagFilter from './TagFilter';
-import LinearLoader from './loaders/LieanLoader';
+import LinearLoader from './loaders/LinearLoader';
 
 type RideListComponentProps = {
   date?: string;
@@ -18,9 +18,10 @@ type RideListComponentProps = {
   month?: number;
   dow?: number;
   dom?: number;
+  cluster?: ClusterDefinition;
 };
 
-const RideListComponent = ( { date, year, month, dow, dom }: RideListComponentProps) => {
+const RideListComponent = ( { date, year, month, dow, dom, cluster }: RideListComponentProps) => {
   const [loadingState, setLoadingState] = React.useState({
     loading: false,
     message: "",
@@ -96,6 +97,9 @@ const RideListComponent = ( { date, year, month, dow, dom }: RideListComponentPr
 
     if(typeof date !== 'undefined'){
       url = `http://localhost:3000/ridesByDate?date=${date}`;
+    }
+    else if(typeof cluster !== 'undefined'){
+      url = `http://localhost:3000/getRidesByCluster?startYear=${cluster?.startyear}&endYear=${cluster.endyear}&cluster=${cluster.cluster}`;
     }
     else if(typeof year !== 'undefined' && typeof month !== 'undefined'){
       url = `http://localhost:3000/ridesByYearMonth?year=${year}&month=${month}`;
@@ -182,6 +186,18 @@ const RideListComponent = ( { date, year, month, dow, dom }: RideListComponentPr
       case 'title':
       case 'comment':{
         return theDatum as string;
+      }
+      case 'cluster':{
+        if(col.type === 'tags' && row?.cluster){
+          const tagArray =  [row.cluster.trim()];
+          return <TagChips
+            tags={tagArray}
+            color="secondary"  // Use theme color
+            onClick={(tag) => console.log(`Clicked on: ${tag}`)}
+            onDelete={(tag) => console.log(`Deleted: ${tag}`)}
+          />
+        }
+        return theDatum as string
       }
       case 'tags':{
         if(col.type === 'tags'){
@@ -375,6 +391,7 @@ const RideListComponent = ( { date, year, month, dow, dom }: RideListComponentPr
           { key: 'hravg', label: 'Avg HR', justify: 'center', width: '80', type: 'number' },
           { key: 'poweravg', label: 'Avg Power', justify: 'center', width: '80', type: 'number' },
           { key: 'title', label: 'Title', justify: 'left', width: '100', type: 'string' },
+          { key: 'cluster', label: 'Cluster', justify: 'center', width: '90', type: 'tags' },
           { key: 'tags', label: 'Tags', justify: 'left', width: '90', type: 'tags' },
         ])}
 

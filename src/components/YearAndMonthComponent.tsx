@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Tab, Tabs, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, Container } from '@mui/material';
+import { Box, Tab, Tabs, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, Container } from '@mui/material';
 import axios from 'axios';
 import { YearAndMonthData } from '../types/types';
 import { formatDateHelper, formatInteger, formatNumber1 } from '../utilities/formatUtilities';
@@ -50,7 +50,7 @@ const YearAndMonthComponent = () => {
   };
 
   const handleRowClick = (year: number, column: string, month: number) => {
-    if( month >= 0){
+    if( month >= 1 && month <= 12){
       setDialogInfo({ year, column, month });
       setDialogOpen(true);
     }
@@ -198,7 +198,7 @@ const YearAndMonthComponent = () => {
 
           <TabPanel value={tabIndex} index={0}>
             {renderTable([
-              { key: 'rideyear', label: 'Year', month: -1 },
+              { key: 'rideyear', label: 'Year', month: 0 },
               { key: 'jan_distance', label: "Jan", month: 1 },
               { key: 'feb_distance', label: "Feb", month: 2 },
               { key: 'mar_distance', label: "Mar", month: 3 },
@@ -217,7 +217,7 @@ const YearAndMonthComponent = () => {
 
           <TabPanel value={tabIndex} index={1}>
             {renderTable([
-              { key: 'rideyear', label: 'Year', month: -1 },
+              { key: 'rideyear', label: 'Year', month: 0 },
               { key: 'jan_elevationgain', label: "Jan", month: 1 },
               { key: 'feb_elevationgain', label: "Feb", month: 2 },
               { key: 'mar_elevationgain', label: "Mar", month: 3 },
@@ -236,7 +236,7 @@ const YearAndMonthComponent = () => {
 
           <TabPanel value={tabIndex} index={2}>
             {renderTable([
-              { key: 'rideyear', label: 'Year', month: -1 },
+              { key: 'rideyear', label: 'Year', month: 0 },
               { key: 'jan_elapsedtime_hours', label: "Jan", month: 1 },
               { key: 'feb_elapsedtime_hours', label: "Feb", month: 2 },
               { key: 'mar_elapsedtime_hours', label: "Mar", month: 3 },
@@ -255,7 +255,7 @@ const YearAndMonthComponent = () => {
 
           <TabPanel value={tabIndex} index={3}>
             {renderTable([
-              { key: 'rideyear', label: 'Year', month: -1 },
+              { key: 'rideyear', label: 'Year', month: 0 },
               { key: 'jan_avg_speed', label: "Jan", month: 1 },
               { key: 'feb_avg_speed', label: "Feb", month: 2 },
               { key: 'mar_avg_speed', label: "Mar", month: 3 },
@@ -274,7 +274,7 @@ const YearAndMonthComponent = () => {
 
           <TabPanel value={tabIndex} index={4}>
             {renderTable([
-              { key: 'rideyear', label: 'Year', month: -1 },
+              { key: 'rideyear', label: 'Year', month: 0 },
               { key: 'jan_avg_hr', label: "Jan", month: 1 },
               { key: 'feb_avg_hr', label: "Feb", month: 2 },
               { key: 'mar_avg_hr', label: "Mar", month: 3 },
@@ -293,7 +293,7 @@ const YearAndMonthComponent = () => {
 
           <TabPanel value={tabIndex} index={5}>
             {renderTable([
-              { key: 'rideyear', label: 'Year', month: -1 },
+              { key: 'rideyear', label: 'Year', month: 0 },
               { key: 'jan_max_hr', label: "Jan", month: 1 },
               { key: 'feb_max_hr', label: "Feb", month: 2 },
               { key: 'mar_max_hr', label: "Mar", month: 3 },
@@ -312,7 +312,7 @@ const YearAndMonthComponent = () => {
 
           <TabPanel value={tabIndex} index={6}>
             {renderTable([
-              { key: 'rideyear', label: 'Year', month: 1 },
+              { key: 'rideyear', label: 'Year', month: 0 },
               { key: 'jan_avg_power', label: "Jan", month: 1 },
               { key: 'feb_avg_power', label: "Feb", month: 2 },
               { key: 'mar_avg_power', label: "Mar", month: 3 },
@@ -331,7 +331,7 @@ const YearAndMonthComponent = () => {
 
           <TabPanel value={tabIndex} index={7}>
             {renderTable([
-              { key: 'rideyear', label: 'Year', month: -1 },
+              { key: 'rideyear', label: 'Year', month: 0 },
               { key: 'jan_max_power', label: "Jan", month: 1 },
               { key: 'feb_max_power', label: "Feb", month: 2 },
               { key: 'mar_max_power', label: "Mar", month: 3 },
