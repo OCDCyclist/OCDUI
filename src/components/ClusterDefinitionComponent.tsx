@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogContent, Container, TableCellProps, Typography, DialogTitle } from '@mui/material';
 import axios from 'axios';
-import { formatInteger, formatNumber } from '../utilities/formatUtilities';
 import { ClusterDefinition } from '../types/types';
 import RideListComponent from './RideListComponent';
+import { formatClusterDefinition } from './formatters/formatClusterDefinition';
 
 const ClusterDefinitionComponent = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -68,28 +68,6 @@ const ClusterDefinitionComponent = () => {
     setDialogOpen(false);
   };
 
-  const format = (col: { key: keyof ClusterDefinition; label: string; justify: string, width: string, type: string }, theDatum: number | string, row: ClusterDefinition) => {
-    switch (col.key) {
-      case 'name': {
-        return theDatum as string;
-      }
-      case 'ride_count':{
-        return formatInteger(theDatum as number);
-      }
-      case 'startyear':
-      case 'endyear':
-      case 'cluster':{
-        return theDatum as string;
-      }
-      case 'distance':
-      case 'speedavg':
-      case 'elevationgain':
-      case 'hravg':
-      case 'powernormalized':
-      default: return formatNumber(theDatum as number);
-    }
-  };
-
   const sortedData = React.useMemo(() => {
     if (!sortConfig.key) return data;
     const sorted = [...data].sort((a, b) => {
@@ -132,7 +110,7 @@ const ClusterDefinitionComponent = () => {
                     sx={{ paddingRight: '1em' }}
                     onClick={() => handleRowClick(row)}
                   >
-                    {format(col, row[col.key] ?? '', row)}
+                    {formatClusterDefinition(col, row[col.key] ?? '')}
                   </TableCell>
                 ))}
               </TableRow>

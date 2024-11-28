@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Box, Tab, Tabs, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, Container } from '@mui/material';
 import axios from 'axios';
 import { MonthAndDOMData } from '../types/types';
-import { formatDateHelper, formatInteger, formatNumber } from '../utilities/formatUtilities';
+import { formatInteger, formatNumber } from '../utilities/formatUtilities';
+import { formatDateHelper } from '../components/formatters/formatDateHelper';
 import RideListComponent from './RideListComponent';
 
 const TabPanel = ({ children, value, index }: { children: React.ReactNode; value: number; index: number }) => {

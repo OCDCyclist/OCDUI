@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogContent, Container, Button } from '@mui/material';
 import axios from 'axios';
 import RideDetail from './RideDetail';
-import { formatRideData } from '../utilities/formatUtilities';
+import { formatRideData } from './formatters/formatRideData';
 import { RideData } from '../types/types';
 import RideFilter from './filters/RideFilter';
 

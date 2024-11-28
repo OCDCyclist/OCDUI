@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogContent, Container, Checkbox, FormGroup, FormControlLabel, Button, TableCellProps } from '@mui/material';
+import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogContent, Container, Button, TableCellProps } from '@mui/material';
 import axios from 'axios';
 import RideDetail from './RideDetail';
-import { formatDate, formatDateHelper, formatElapsedTime, formatInteger, formatNumber } from '../utilities/formatUtilities';
+import { formatDateHelper } from '../components/formatters/formatDateHelper';
 import { ClusterDefinition, LocationId, RideDataWithTags } from '../types/types';
-import { dayFilterDefault, daysOfWeek } from '../utilities/daysOfWeek';
-import TagChips from './TagChips';
+import { formatRideDataWithTags } from  './formatters/formatRideDataWithTags';
 import TagSelector from './TagSelector';
 import { splitCommaSeparatedString } from '../utilities/stringUtilities';
 import { getUniqueTags } from '../utilities/tagUtilities';
 import TagFilter from './TagFilter';
 import LinearLoader from './loaders/LinearLoader';
+import { rideUrlHelper } from './formatters/rideUrlHelper';
 
 type RideListComponentProps = {
   date?: string;
@@ -36,7 +36,6 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster }: RideListCo
     direction: 'asc',
   });
   const [showFilters, setShowFilters] = useState<boolean>(false);
-  const [showAll, setShowAll] = useState<boolean>(false);
   const [tableHeight, setTableHeight] = useState(window.innerHeight - 190);
   const [refreshData, setRefreshData] = useState(false);
   const [uniqueTags, setUniqueTags] = useState<string[]>([]);
@@ -60,57 +59,12 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster }: RideListCo
     setShowFilters(prev => !prev);
   };
 
-  const toggleShowAll = () =>{
-    setShowAll(prev => {
-      if(prev){
-        setSelectedDays({
-          Sunday: true,
-          Monday: true,
-          Tuesday: true,
-          Wednesday: true,
-          Thursday: true,
-          Friday: true,
-          Saturday: true
-        });
-      }
-      else{
-        setSelectedDays({
-          Sunday: false,
-          Monday: false,
-          Tuesday: false,
-          Wednesday: false,
-          Thursday: false,
-          Friday: false,
-          Saturday: false
-        });
-      }
-      return !prev;
-    });
-  };
-
-  const [selectedDays, setSelectedDays] = useState<{ [key: string]: boolean }>(dayFilterDefault);
-
   useEffect(() => {
     const token = localStorage.getItem('token');
 
-    let url = 'http://localhost:3000/rides/lastmonth';
+    const theMessage: string = formatDateHelper({ date: date, year: year, month: month, dow: dow, dom: dom, cluster: cluster });
+    const url: string = rideUrlHelper({ date: date, year: year, month: month, dow: dow, dom: dom, cluster: cluster });
 
-    if(typeof date !== 'undefined'){
-      url = `http://localhost:3000/ridesByDate?date=${date}`;
-    }
-    else if(typeof cluster !== 'undefined'){
-      url = `http://localhost:3000/getRidesByCluster?startYear=${cluster?.startyear}&endYear=${cluster.endyear}&cluster=${cluster.cluster}`;
-    }
-    else if(typeof year !== 'undefined' && typeof month !== 'undefined'){
-      url = `http://localhost:3000/ridesByYearMonth?year=${year}&month=${month}`;
-    }
-    else if(typeof year !== 'undefined' && typeof dow !== 'undefined'){
-      url = `http://localhost:3000/ridesByYearDOW?year=${year}&dow=${dow}`;
-    }
-    else if(typeof dom !== 'undefined' && typeof month !== 'undefined'){
-      url = `http://localhost:3000/getRidesByDOMMonth?dom=${dom}&month=${month}`;
-    }
-    const theMessage: string = formatDateHelper({ date: date, year: year, month: month, dow: dow, dom: dom });
     setLoadingState({ loading: true, message: theMessage });
 
     axios.get(url, {
@@ -156,90 +110,16 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster }: RideListCo
     setRideData(null);
   };
 
-  const handleDayChange = (day: string) => {
-    setSelectedDays((prevSelectedDays) => ({
-      ...prevSelectedDays,
-      [day]: !prevSelectedDays[day],
-    }));
-  };
-
-  const filterByDay = (rides: RideDataWithTags[]) => {
-    return rides.filter(ride => {
-      const rideDate = new Date(ride.date);
-      const dayOfWeek = daysOfWeek[rideDate.getDay()];
-      return selectedDays[dayOfWeek];
-    });
-  };
-
-  const filterByTag = (segmentData: RideDataWithTags[], filterTags: string[]) => {
-    if(filterTags.length === 0 ) return segmentData;
-    return segmentData.filter(
-      segment => {
-        const segmentTags = segment.tags ? segment.tags.trim().split(',') : [];
-        return filterTags.every(tag => segmentTags.includes(tag));
+  const filterByTag = (rideDataWithTags: RideDataWithTags[], filterTags: string[]) => {
+    if(filterTags.length === 0 ) return rideDataWithTags;
+    return rideDataWithTags.filter(
+      tagsAsCsv => {
+        const tagArray = tagsAsCsv.tags ? tagsAsCsv.tags.trim().split(',') : [];
+        const clusterArray = tagsAsCsv?.cluster ? tagsAsCsv.cluster.trim().split(',') : [];
+        return filterTags.every(tag => [...tagArray, ...clusterArray].includes(tag));
       }
     );
   }
-
-  const format = (col: { key: keyof RideDataWithTags; label: string; justify: string, width: string, type: string }, theDatum: number | string, row: RideDataWithTags) => {
-    switch (col.key) {
-      case 'title':
-      case 'comment':{
-        return theDatum as string;
-      }
-      case 'cluster':{
-        if(col.type === 'tags' && row?.cluster){
-          const tagArray =  [row.cluster.trim()];
-          return <TagChips
-            tags={tagArray}
-            color="secondary"  // Use theme color
-            onClick={(tag) => console.log(`Clicked on: ${tag}`)}
-            onDelete={(tag) => console.log(`Deleted: ${tag}`)}
-          />
-        }
-        return theDatum as string
-      }
-      case 'tags':{
-        if(col.type === 'tags'){
-          const tagArray = (row?.tags ?? "").split(',').map(tag => tag.trim()).filter(Boolean);
-          return <TagChips
-            tags={tagArray}
-            color="primary"  // Use theme color
-            onClick={(tag) => console.log(`Clicked on: ${tag}`)}
-            onDelete={(tag) => console.log(`Deleted: ${tag}`)}
-          />
-        }
-        return theDatum as string;
-      }
-
-      case 'rideid':
-      case 'cadence':
-      case 'hravg':
-      case 'hrmax':
-      case 'poweravg':
-      case 'powermax':
-      case 'bikeid':
-      case 'stravaid':
-      case 'elevationgain':
-      case 'powernormalized':
-      case 'tss':
-      case 'matches':
-      case 'trainer':
-      case 'elevationloss': {
-        return formatInteger(theDatum as number);
-      }
-      case 'elapsedtime': {
-        return formatElapsedTime(theDatum as number);
-      }
-      case 'date': return formatDate(theDatum as string);
-      case 'distance':
-      case 'speedavg':
-      case 'speedmax':
-      case 'intensityfactor':
-      case 'fracdim':
-      default: return formatNumber(theDatum as number);
-    }
-  };
 
   const handleOnSaveTags = (locationId : number | string | null, assignmentId : number | string | null, tags: string[]) =>{
     const token = localStorage.getItem('token');
@@ -268,10 +148,9 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster }: RideListCo
   // Combine the filters using useMemo
   const filteredData = React.useMemo(() => {
     let result = data;
-    result = filterByDay(result);
     result = filterByTag(result, selectedTags);
     return result;
-  }, [data, selectedDays, selectedTags]);
+  }, [data, selectedTags]);
 
   const sortedData = React.useMemo(() => {
     if (!sortConfig.key) return filteredData;
@@ -318,7 +197,7 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster }: RideListCo
                     sx={{ paddingRight: '1em' }}
                     onClick={() => handleRowClick(row, col.label)}
                   >
-                    {format(col, row[col.key] ?? '', row)}
+                    {formatRideDataWithTags(col, row[col.key] ?? '', row)}
                   </TableCell>
                 ))}
               </TableRow>
@@ -349,34 +228,13 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster }: RideListCo
           {
             showFilters && (
               <>
-                <Button variant="text" color="primary" onClick={toggleShowAll}>
-                    {showAll ? 'Select All' : 'Unselect All'}
-                </Button>
-
-                <FormGroup row sx={{ marginY: 2 }} style={{ marginLeft: '16px' }}>
-                  {daysOfWeek.map((day) => (
-                    <FormControlLabel
-                      key={day}
-                      control={
-                        <Checkbox
-                          checked={selectedDays[day]}
-                          onChange={() => handleDayChange(day)}
-                          name={day}
-                        />
-                      }
-                      label={day}
-                    />
-                  ))}
-                </FormGroup>
-
-                <Box display="flex" alignItems="center">
+                <Box display="flex" alignItems="right">
                   <TagFilter
                     availableTags={uniqueTags}
                     selectedTags={selectedTags}
                     onTagChange={handleTagFilterChange}
                   />
                 </Box>
-
               </>
             )
           }

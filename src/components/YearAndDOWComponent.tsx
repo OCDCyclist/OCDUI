@@ -3,7 +3,8 @@ import { Box, Tab, Tabs, Table, TableBody, TableCell, TableContainer, TableHead,
 import axios from 'axios';
 import { YearAndDOWData } from '../types/types';
 import RideListComponent from './RideListComponent';
-import { formatDateHelper } from '../utilities/formatUtilities';
+import { formatDateHelper } from '../components/formatters/formatDateHelper';
+import { formatYearAndDOWData } from './formatters/formatYearAndDOWData';
 
 const TabPanel = ({ children, value, index }: { children: React.ReactNode; value: number; index: number }) => {
   return (
@@ -61,76 +62,6 @@ const YearAndDOWComponent = () => {
     setDialogInfo(null);
   };
 
-  const formatNumber = (num: string | number) => {
-    return new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 1,
-      maximumFractionDigits: 1,
-      useGrouping: true,
-    }).format(Number(num));
-  };
-
-  const formatInteger = (num: string | number) => {
-    return new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-      useGrouping: true,
-    }).format(Number(num));
-  };
-
-  const format = ( col:  { key: keyof YearAndDOWData; label: string }, theDatum: string | number) =>{
-    switch(col.key){
-      case 'elevationgainmonday':
-      case 'elevationgaintuesday':
-      case 'elevationgainwednesday':
-      case 'elevationgainthursday':
-      case 'elevationgainfriday':
-      case 'elevationgainsaturday':
-      case 'elevationgainsunday':
-      case 'elevationgain':
-      case 'elapsedtimemonday':
-      case 'elapsedtimetuesday':
-      case 'elapsedtimewednesday':
-      case 'elapsedtimethursday':
-      case 'elapsedtimefriday':
-      case 'elapsedtimesaturday':
-      case 'elapsedtimesunday':
-      case 'elapsedtime':
-      case 'hraveragemonday':
-      case 'hraveragetuesday':
-      case 'hraveragewednesday':
-      case 'hraveragethursday':
-      case 'hraveragefriday':
-      case 'hraveragesaturday':
-      case 'hraveragesunday':
-      case 'hraverage':
-      case 'poweraveragemonday':
-      case 'poweraveragetuesday':
-      case 'poweraveragewednesday':
-      case 'poweraveragethursday':
-      case 'poweraveragefriday':
-      case 'poweraveragesaturday':
-      case 'poweraveragesunday':
-      case 'poweraverage':{
-        return formatInteger(theDatum);
-      }
-      case 'distancemonday':
-      case 'distancetuesday':
-      case 'distancewednesday':
-      case 'distancethursday':
-      case 'distancefriday':
-      case 'distancesaturday':
-      case 'distancesunday':
-      case 'distance':{
-        return formatNumber(theDatum);
-      }
-      case 'year':{
-        return theDatum;
-      }
-
-      default: return formatNumber(theDatum);
-    }
-  }
-
   const sortedData = React.useMemo(() => {
     if (!sortConfig.key) return data;
     const sorted = [...data].sort((a, b) => {
@@ -173,7 +104,7 @@ const YearAndDOWComponent = () => {
                       sx={{ paddingRight: '1em' }}
                       onClick={() => handleRowClick(row.year, col.key, col.dow)}
                     >
-                      {format(col, row[col.key])}
+                      {formatYearAndDOWData(col, row[col.key])}
                   </TableCell>
                 ))}
               </TableRow>

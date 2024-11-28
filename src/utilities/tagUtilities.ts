@@ -1,11 +1,14 @@
 import { Tagable } from "../types/types";
 
-export const getUniqueTags = (segments: Tagable[]): string[] => {
+export const getUniqueTags = (tagables: Tagable[]): string[] => {
     const tagSet = new Set<string>();
 
-    segments.forEach(segment => {
-      if (segment.tags && segment.tags.trim().length > 0) {
-        segment.tags.split(',').forEach(tag => tagSet.add(tag));
+    tagables.forEach(tagable => {
+      if (tagable?.tags && tagable.tags.trim().length > 0) {
+        tagable.tags.split(',').forEach(tag => tagSet.add(tag));
+      }
+      if (tagable?.cluster && tagable.cluster.trim().length > 0) {
+        tagable.cluster.split(',').forEach(tag => tagSet.add(tag));
       }
     });
 

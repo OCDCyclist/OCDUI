@@ -469,7 +469,8 @@ export interface TagResult{
 }
 
 export interface Tagable{
-    tags?: string,
+    tags?: string;
+    cluster?: string;
 }
 
 export interface FetchTagsResult {
@@ -486,3 +487,12 @@ export enum LocationId {
 export type RideDataWithTags = RideData & Tagable;
 export type SegmentDataWithTags = SegmentData & Tagable;
 export type SegmentEffortWithTags = SegmentEffort & Tagable;
+
+export type FormatDateParams = {
+    date?: string; // YYYY-MM-DD format
+    year?: number;
+    month?: number; // 1-12, with 0 meaning All months
+    dow?: number; // 0 = Sunday, 6 = Saturday, 7 = All days of week
+    dom?: number; // 1-31
+    cluster?: ClusterDefinition;
+};
