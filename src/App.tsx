@@ -18,6 +18,7 @@ import RideLookbackComponent from './components/RideLookbackComponent';
 import StarredSegmentsComponent from './components/StarredSegmentsComponent';
 import UpdateStravaStarredSegments from './pages/UpdateStravaStarredSegments';
 import ClusterDefinitionComponent from './components/ClusterDefinitionComponent';
+import PairwiseProjections from './components/PairwiseProjections';
 
 const App: React.FC = () => {
   return (
@@ -41,7 +42,7 @@ const App: React.FC = () => {
           <Route path="segments/starred" element={<StarredSegmentsComponent />} />
           <Route path="segments/updatestarred" element={<UpdateStravaStarredSegments />} />
           <Route path="/analysis/clusterdefinition" element={<ClusterDefinitionComponent />} />
-          <Route path="/analysis/clustervisuals" element={<StarredSegmentsComponent />} />
+          <Route path="/analysis/clustervisuals" element={<PairwiseProjections />} />
         </Route>
       </Routes>
     </Router>

@@ -478,15 +478,25 @@ export interface FetchTagsResult {
     error: string | null;
 }
 
+export interface FetchClusterDataResult {
+    data: RideDataWithTagsClusters[];
+    error: string | null;
+}
+
 export enum LocationId {
     Segments = 1,
     Rides = 2,
     SegmentEfforts = 3,
 }
 
+export interface ClusterInfo{
+    clusterindex?: number;
+}
+
 export type RideDataWithTags = RideData & Tagable;
 export type SegmentDataWithTags = SegmentData & Tagable;
 export type SegmentEffortWithTags = SegmentEffort & Tagable;
+export type RideDataWithTagsClusters = RideData & Tagable & ClusterInfo;
 
 export type FormatDateParams = {
     date?: string; // YYYY-MM-DD format
