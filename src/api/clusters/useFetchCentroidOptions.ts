@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { CentroidSelectorData, RideDataWithTagsClusters } from "../../types/types";
+import { CentroidSelectorData } from "../../types/types";
 
-export const useFetchClusterData = (token: string, centroid: CentroidSelectorData) => {
-  const [data, setData] = useState<RideDataWithTagsClusters[]>([]);
+export const useFetchCentroidOptions = (token: string) => {
+  const [data, setData] = useState<CentroidSelectorData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -11,11 +11,8 @@ export const useFetchClusterData = (token: string, centroid: CentroidSelectorDat
       setLoading(true);
       setError(null);
 
-      if(!centroid){
-        setLoading(false);
-      }
       try {
-        const response = await fetch(`http://localhost:3000/cluster/getRidesByCentroid?startYear=${centroid.clusterid}`, {
+        const response = await fetch('http://localhost:3000/cluster/distinctClusterCentroids', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -27,18 +24,18 @@ export const useFetchClusterData = (token: string, centroid: CentroidSelectorDat
           const data = await response.json();
           setData(data);
         } else {
-          setError("Failed to fetch cluster data");
+          setError("Failed to make cluster centroid option request");
         }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch ( _erroe) {
-        setError('Failed to fetch cluster data');
+      } catch ( _error) {
+        setError('Failed to read cluster centroid options');
       } finally {
-        setLoading(false); // Always stop the loading state
+        setLoading(false);
       }
     };
 
     fetchData();
-  }, [centroid]);
+  }, []);
 
   return { data, loading, error };
 };

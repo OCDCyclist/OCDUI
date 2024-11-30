@@ -36,7 +36,7 @@ const RideAllComponent = () => {
     const token = localStorage.getItem('token');
 
     axios.post(
-      'http://localhost:3000/rides/history',
+      'http://localhost:3000/ride/rides/history',
       {
         years, // Include the years array in the request body
       },

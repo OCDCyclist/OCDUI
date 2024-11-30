@@ -34,7 +34,7 @@ const ClusterDefinitionComponent = () => {
     setLoading(true);
     const token = localStorage.getItem('token');
 
-    axios.get('http://localhost:3000/ride/clusterDefinitions', {
+    axios.get('http://localhost:3000/cluster/clusterDefinitions', {
       method: 'GET',
       headers: {
           'Content-Type': 'application/json',

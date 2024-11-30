@@ -122,7 +122,7 @@ const AddRideForm: React.FC = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:3000/addRide', {
+      const response = await fetch('http://localhost:3000/ride/addRide', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

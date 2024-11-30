@@ -464,6 +464,13 @@ export interface ClusterDefinition {
     ride_count: number,
 }
 
+export interface CentroidSelectorData {
+    clusterid: number,
+    startyear: number,
+    endyear: number
+    active: boolean,
+}
+
 export interface TagResult{
     name: string;
 }
