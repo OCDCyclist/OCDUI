@@ -3,7 +3,7 @@ import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
 import axios from 'axios';
 import RideDetail from './RideDetail';
 import { formatDateHelper } from '../components/formatters/formatDateHelper';
-import { ClusterDefinition, LocationId, RideDataWithTags } from '../types/types';
+import { CentroidDefinition, LocationId, RideDataWithTags } from '../types/types';
 import { formatRideDataWithTags } from  './formatters/formatRideDataWithTags';
 import TagSelector from './TagSelector';
 import { splitCommaSeparatedString } from '../utilities/stringUtilities';
@@ -18,7 +18,7 @@ type RideListComponentProps = {
   month?: number;
   dow?: number;
   dom?: number;
-  cluster?: ClusterDefinition;
+  cluster?: CentroidDefinition;
 };
 
 const RideListComponent = ( { date, year, month, dow, dom, cluster }: RideListComponentProps) => {
@@ -79,7 +79,6 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster }: RideListCo
         setUniqueTags(uniqueTags);
         setData(response.data);
         setLoadingState({ loading: false, message: '' });
-
       })
       .catch((error) => {
         console.error('Error fetching last month ride data:', error);

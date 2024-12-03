@@ -24,7 +24,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/AuthContext';
 import LoginStatus from './authentication/LoginStatus';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
-import ScatterPlotIcon from '@mui/icons-material/ScatterPlot';
+import TuneIcon from '@mui/icons-material/Tune';
 import PivotTableChartIcon from '@mui/icons-material/PivotTableChart';
 
 const drawerWidth = 240;
@@ -106,7 +106,8 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
       text: 'Analysis',
       icon: <AnalyticsIcon />,
       children: [
-        { text: 'Cluster Definition', icon: <QueryStatsIcon />, path: '/analysis/clusterdefinition' },
+        { text: 'Cluster Setup', icon: <TuneIcon />, path: '/analysis/clustersetup' },
+        { text: 'Cluster Centroids', icon: <QueryStatsIcon />, path: '/analysis/clustercentroids' },
         { text: 'Cluster Visuals', icon: <PivotTableChartIcon />, path: '/analysis/clustervisuals' },
       ]
     },

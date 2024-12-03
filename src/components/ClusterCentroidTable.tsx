@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogContent, Container, TableCellProps, Typography, DialogTitle } from '@mui/material';
-import axios from 'axios';
-import { ClusterDefinition } from '../types/types';
+import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogContent, Container, TableCellProps, Typography, DialogTitle, Alert } from '@mui/material';
+import { CentroidDefinition } from '../types/types';
 import RideListComponent from './RideListComponent';
-import { formatClusterDefinition } from './formatters/formatClusterDefinition';
+import { formatCentroidDefinition } from './formatters/formatCentroidDefinition';
+import { useFetchClusterDefinitions } from '../api/clusters/useFetchClusterDefinitions';
 
-const ClusterDefinitionComponent = () => {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [data, setData] = useState<ClusterDefinition[]>([]);
+const ClusterCentroidTable = () => {
+  const token = localStorage.getItem('token');
+  const { data, loading, error } = useFetchClusterDefinitions(token || '');
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogInfo, setDialogInfo] = useState<ClusterDefinition | null>(null);
-  const [sortConfig, setSortConfig] = useState<{ key: keyof ClusterDefinition | null, direction: 'asc' | 'desc' }>({
+  const [dialogInfo, setDialogInfo] = useState<CentroidDefinition | null>(null);
+  const [sortConfig, setSortConfig] = useState<{ key: keyof CentroidDefinition | null, direction: 'asc' | 'desc' }>({
     key: null,
     direction: 'asc',
   });
@@ -23,35 +23,14 @@ const ClusterDefinitionComponent = () => {
     };
 
     window.addEventListener('resize', handleResize);
-    handleResize(); // Initial calculation
+    handleResize();
 
     return () => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
 
-  useEffect(() => {
-    setLoading(true);
-    const token = localStorage.getItem('token');
-
-    axios.get('http://localhost:3000/cluster/clusterDefinitions', {
-      method: 'GET',
-      headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // Include the token in the Authorization header
-      },
-    })
-      .then((response) =>{
-        setData(response.data);
-        setLoading(false);
-      })
-      .catch((error) =>{
-        console.error('Error fetching cluster definition data:', error)
-        setLoading(false);
-      });
-  }, []);
-
-  const handleSort = (columnKey: keyof ClusterDefinition) => {
+  const handleSort = (columnKey: keyof CentroidDefinition) => {
     let direction: 'asc' | 'desc' = 'asc';
     if (sortConfig.key === columnKey && sortConfig.direction === 'asc') {
       direction = 'desc';
@@ -59,7 +38,7 @@ const ClusterDefinitionComponent = () => {
     setSortConfig({ key: columnKey, direction });
   };
 
-  const handleRowClick = (clusterDefinition: ClusterDefinition) => {
+  const handleRowClick = (clusterDefinition: CentroidDefinition) => {
     setDialogInfo(clusterDefinition);
     setDialogOpen(true);
   };
@@ -78,7 +57,7 @@ const ClusterDefinitionComponent = () => {
     return sorted;
   }, [data, sortConfig]);
 
-  const renderTableRecent = (columns: { key: keyof ClusterDefinition; label: string; justify: string, width: string, type: string }[]) => {
+  const renderTableRecent = (columns: { key: keyof CentroidDefinition; label: string; justify: string, width: string, type: string }[]) => {
     return (
       <TableContainer sx={{ maxHeight: tableHeight }}>
         <Table stickyHeader>
@@ -89,7 +68,7 @@ const ClusterDefinitionComponent = () => {
                   key={col.key}
                   align={col.justify as unknown as TableCellProps["align"]}
                   onClick={() => handleSort(col.key)}
-                  sx={{ cursor: 'pointer', width: col.width }}
+                  sx={{ backgroundColor: '#e0e0e0', cursor: 'pointer', width: col.width }}
                 >
                   {col.label}
                   {sortConfig.key === col.key ? (sortConfig.direction === 'asc' ? ' ▲' : ' ▼') : ''}
@@ -98,28 +77,47 @@ const ClusterDefinitionComponent = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {sortedData.map((row, index) => (
-              <TableRow
-                key={`${row.startyear}-${row.endyear}-${row.cluster}`}
-                sx={{ backgroundColor: index % 4 === 0 ? '#f9f9f9' : '#fff' }}
-              >
-                {columns.map((col) => (
-                  <TableCell
-                    key={col.key}
-                    align={col.justify as unknown as TableCellProps["align"]}
-                    sx={{ paddingRight: '1em' }}
-                    onClick={() => handleRowClick(row)}
+            {(() => {
+              let currentColor = '#fff';
+              let lastClusterWasZero = false; // Track the state of the last row's cluster
+
+              return sortedData.map((row) => {
+                if (row.cluster === 0) {
+                  // Switch color only when cluster is 0 and it wasn't already 0
+                  if (!lastClusterWasZero) {
+                    currentColor = currentColor === '#f9f9f9' ? '#fff' : '#f9f9f9';
+                  }
+                  lastClusterWasZero = true;
+                } else {
+                  lastClusterWasZero = false;
+                }
+
+                return (
+                  <TableRow
+                    key={`${row.startyear}-${row.endyear}-${row.cluster}`}
+                    sx={{ backgroundColor: currentColor }}
                   >
-                    {formatClusterDefinition(col, row[col.key] ?? '')}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
+                    {columns.map((col) => (
+                      <TableCell
+                        key={col.key}
+                        align={col.justify as unknown as TableCellProps["align"]}
+                        sx={{ paddingRight: '1em' }}
+                        onClick={() => handleRowClick(row)}
+                      >
+                        {formatCentroidDefinition(col, row[col.key] ?? '')}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                );
+              });
+            })()}
           </TableBody>
         </Table>
       </TableContainer>
     );
   };
+
+  if (error) return <Alert severity="error">{error}</Alert>;
 
   return (
     <Container maxWidth='xl' sx={{ marginY: 0 }}>
@@ -134,8 +132,8 @@ const ClusterDefinitionComponent = () => {
         }}
       >
         <Box display="flex" flexDirection= 'column' alignItems="left">
-          <Typography>
-            { loading ? "Loading Cluster Definitions" : 'Cluster Definitions'}
+          <Typography component="span">
+            { loading ? "Loading cluster centroids" : 'Cluster Centroids'}
           </Typography>
         </Box>
 
@@ -168,4 +166,4 @@ const ClusterDefinitionComponent = () => {
   );
 };
 
-export default ClusterDefinitionComponent;
+export default ClusterCentroidTable;

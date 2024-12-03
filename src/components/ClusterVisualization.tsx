@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Grid, CircularProgress, Alert, Stack } from "@mui/material";
+import { Grid, Alert, Stack } from "@mui/material";
 import ScatterPlot from "./plotting/ScatterPlot";
-import { useFetchClusterData } from "../api/clusters/fetchClusterData";
+import { useFetchClusterData } from "../api/clusters/useFetchClusterData";
 import { CentroidSelectorData, RideDataWithTagsClusters } from "../types/types";
 import ClusterCentroidSelector from "./ClusterCentroidSelector";
+import LinearLoader from "./loaders/LinearLoader";
 
 const ClusterVisualization: React.FC = () => {
   const defaultCentroid: CentroidSelectorData =  {clusterid: 0, startyear: 0, endyear: 0, active: true};
@@ -11,7 +12,7 @@ const ClusterVisualization: React.FC = () => {
   const [selectedCentroid, setSelectedCentroid] = useState<CentroidSelectorData>(defaultCentroid);
   const { data, loading, error } = useFetchClusterData(token || '', selectedCentroid);
 
-  if (loading) return <CircularProgress />;
+  if (loading) return <LinearLoader message="Loading cluster visualizations" />;
   if (error) return <Alert severity="error">{error}</Alert>;
 
   const dimensionPairs = [

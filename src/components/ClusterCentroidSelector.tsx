@@ -4,12 +4,12 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  CircularProgress,
   Typography,
   Box,
 } from '@mui/material';
 import { useFetchCentroidOptions } from '../api/clusters/useFetchCentroidOptions';
 import { CentroidSelectorData } from '../types/types';
+import LinearLoader from './loaders/LinearLoader';
 
 interface ClusterCentroidSelectorProps {
   clusterCentroidSelected: CentroidSelectorData | null;
@@ -26,7 +26,7 @@ const ClusterCentroidSelector: React.FC<ClusterCentroidSelectorProps> = ({
   if (loading) {
     return (
       <Box display="flex" alignItems="center" justifyContent="center" height={200}>
-        <CircularProgress />
+        <LinearLoader message={"Loading available centroids"} />
       </Box>
     );
   }

@@ -452,6 +452,15 @@ export interface SegmentEffort {
 }
 
 export interface ClusterDefinition {
+    clusterid: number,
+    startyear: number,
+    endyear: number
+    clustercount: number,
+    fields: string,
+    active: boolean,
+}
+
+export interface CentroidDefinition {
     startyear: number,
     endyear: number
     cluster: number,
@@ -511,5 +520,5 @@ export type FormatDateParams = {
     month?: number; // 1-12, with 0 meaning All months
     dow?: number; // 0 = Sunday, 6 = Saturday, 7 = All days of week
     dom?: number; // 1-31
-    cluster?: ClusterDefinition;
+    cluster?: CentroidDefinition;
 };

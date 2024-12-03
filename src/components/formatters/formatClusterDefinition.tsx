@@ -1,24 +1,22 @@
 import { ClusterDefinition } from "../../types/types";
 import { formatInteger, formatNumber } from "../../utilities/formatUtilities";
 
-export const formatClusterDefinition = (col: { key: keyof ClusterDefinition; label: string; justify: string, width: string, type: string }, theDatum: number | string) => {
+export const formatClusterDefinition = (col: { key: keyof ClusterDefinition; label: string; justify: string, width: string, type: string }, theDatum: number | string | boolean) => {
     switch (col.key) {
-      case 'name': {
+      case 'active':{
+        return theDatum ? 'Active' : 'Not Active';
+      }
+      case 'fields': {
         return theDatum as string;
       }
-      case 'ride_count':{
+      case 'clusterid':
+      case 'clustercount':{
         return formatInteger(theDatum as number);
       }
       case 'startyear':
-      case 'endyear':
-      case 'cluster':{
+      case 'endyear':{
         return theDatum as string;
       }
-      case 'distance':
-      case 'speedavg':
-      case 'elevationgain':
-      case 'hravg':
-      case 'powernormalized':
       default: return formatNumber(theDatum as number);
     }
   };
