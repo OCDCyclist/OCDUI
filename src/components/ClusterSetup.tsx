@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Container, TableCellProps, Typography, Alert, Dialog, DialogTitle, DialogContent } from '@mui/material';
+import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Container, TableCellProps, Typography, Alert, Dialog, DialogTitle, DialogContent, Button } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import { ClusterDefinition } from '../types/types';
 import { formatClusterDefinition } from './formatters/formatClusterDefinition';
 import { useFetchAllClusterDefinitions } from '../api/clusters/useFetchAllClusterDefinitions';
 import RowActions from './utility/RowActions';
+import ClusterEdit from './ClusterEdit';
 
 const ClusterSetup = () => {
   const token = localStorage.getItem('token');
@@ -46,6 +48,11 @@ const ClusterSetup = () => {
 
   const handleCloseDialog = () => {
     setDialogOpen(false);
+  };
+
+  const handleSaveDialog = ( clusterDefinition: ClusterDefinition) => {
+    setDialogOpen(false);
+    console.log(clusterDefinition.clusterid);
   };
 
   const sortedData = React.useMemo(() => {
@@ -161,46 +168,63 @@ const ClusterSetup = () => {
   if (error) return <Alert severity="error">{error}</Alert>;
 
   return (
-    <Container maxWidth='xl' sx={{ marginY: 0 }}>
-      <Paper
-        elevation={3}
-        sx={{
-          backgroundColor: '#fbeacd',
-          padding: 2,
-          marginBottom: '1em',
-          margin: 'auto',
-          width: '100%',
+<Container maxWidth="xl" sx={{ marginY: 0 }}>
+  <Paper
+    elevation={3}
+    sx={{
+      backgroundColor: '#fbeacd',
+      padding: 2,
+      marginBottom: '1em',
+      margin: 'auto',
+      width: '100%',
+    }}
+  >
+    <Box display="flex" flexDirection="row" alignItems="center" justifyContent="space-between">
+      {/* Title on the right */}
+      <Typography component="span">
+        {loading ? 'Loading Cluster Setup' : 'Cluster Setup'}
+      </Typography>
+
+      {/* Button on the left */}
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => {
+          setDialogOpen(true);
         }}
+        sx={{ marginRight: '1em' }}
+        startIcon={<AddIcon />}
       >
-        <Box display="flex" flexDirection= 'column' alignItems="left">
-          <Typography component="span">
-            { loading ? "Loading Cluster Setup" : 'Cluster Setup'}
-          </Typography>
-        </Box>
+        Add Cluster
+      </Button>
+    </Box>
 
-        {renderTableRecent([
-          { key: 'startyear', label: 'Start Year', justify: 'center', width: '80', type: 'number' },
-          { key: 'endyear', label: 'End Year', justify: 'center', width: '80', type: 'number' },
-          { key: 'clustercount', label: 'Cluster Count', justify: 'center', width: '80', type: 'number' },
-          { key: 'fields', label: 'Fields', justify: 'center', width: '80', type: 'string' },
-          { key: 'active', label: 'Active', justify: 'center', width: '80', type: 'string' },
-          { key: 'clusterid', label: 'ID', justify: 'center', width: '80', type: 'number' },
-        ])}
+    {renderTableRecent([
+      { key: 'startyear', label: 'Start Year', justify: 'center', width: '80', type: 'number' },
+      { key: 'endyear', label: 'End Year', justify: 'center', width: '80', type: 'number' },
+      { key: 'clustercount', label: 'Cluster Count', justify: 'center', width: '80', type: 'number' },
+      { key: 'fields', label: 'Fields', justify: 'center', width: '80', type: 'string' },
+      { key: 'active', label: 'Active', justify: 'center', width: '80', type: 'string' },
+      { key: 'clusterid', label: 'ID', justify: 'center', width: '80', type: 'number' },
+    ])}
 
-        <Dialog
-          open={dialogOpen}
+    <Dialog
+      open={dialogOpen}
+      onClose={handleCloseDialog}
+      fullWidth
+      maxWidth="md" // You can set 'sm', 'md', 'lg' or 'xl'
+    >
+      <DialogTitle>Add or Edit Cluster Characteristics</DialogTitle>
+      <DialogContent>
+        <ClusterEdit
+          clusterId={dialogInfo?.clusterid || -1}
           onClose={handleCloseDialog}
-          fullWidth
-          maxWidth="xl" // You can set 'lg' or 'xl' for larger widths
-        >
-          <DialogTitle>Doing nothing yet</DialogTitle>
-          <DialogContent>
-            Content to happen later
-          </DialogContent>
-        </Dialog>
-
-      </Paper>
-    </Container>
+          onSave={handleSaveDialog}
+        />
+      </DialogContent>
+    </Dialog>
+  </Paper>
+</Container>
   );
 };
 
