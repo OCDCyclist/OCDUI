@@ -65,9 +65,9 @@ const ClusterSetup = () => {
     return sorted;
   }, [data, sortConfig]);
 
-  const handleRecalculate = async (id: string | number) => {
+  const handleRecalculate = async (clusterDefinition: ClusterDefinition) => {
     try {
-      const response = await fetch(`http://localhost:3000/cluster/cluster?clusterid=${id}`, {
+      const response = await fetch(`http://localhost:3000/cluster/cluster?clusterid=${clusterDefinition.clusterid}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -83,9 +83,9 @@ const ClusterSetup = () => {
     }
   };
 
-  const handleSetActive = async (id: string | number) => {
+  const handleSetActive = async (clusterDefinition: ClusterDefinition) => {
     try {
-      const response = await fetch(`http://localhost:3000/cluster/setActive?clusterid=${id}`, {
+      const response = await fetch(`http://localhost:3000/cluster/setActive?clusterid=${clusterDefinition.clusterid}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -103,9 +103,15 @@ const ClusterSetup = () => {
     }
   };
 
+  const handleEdit = async (clusterDefinition: ClusterDefinition) => {
+    setDialogInfo(clusterDefinition);
+    setDialogOpen(true);
+  };
+
   const actions = [
     { label: 'Recalculate', callback: handleRecalculate },
     { label: 'Set as Active', callback: handleSetActive },
+    { label: 'Edit Cluster', callback: handleEdit },
   ];
 
   const renderTableRecent = (columns: { key: keyof ClusterDefinition; label: string; justify: string, width: string, type: string }[]) => {
@@ -153,7 +159,7 @@ const ClusterSetup = () => {
                       </TableCell>
                     ))}
                     <TableCell>
-                      <RowActions id={row.clusterid} actions={actions} />
+                      <RowActions actions={actions} clusterDefinition={row} />
                     </TableCell>
                   </TableRow>
                 );

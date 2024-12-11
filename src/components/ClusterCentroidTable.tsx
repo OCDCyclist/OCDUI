@@ -3,13 +3,15 @@ import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
 import { CentroidDefinition } from '../types/types';
 import RideListComponent from './RideListComponent';
 import { formatCentroidDefinition } from './formatters/formatCentroidDefinition';
-import { useFetchClusterDefinitions } from '../api/clusters/useFetchClusterDefinitions';
+import { useFetchAllClusterCentroids } from '../api/clusters/useFetchAllClusterCentroids';
+import { useClusterCentroidUpdates } from '../api/clusters/useClusterCentroidUpdates';
 
 const ClusterCentroidTable = () => {
   const token = localStorage.getItem('token');
-  const { data, loading, error } = useFetchClusterDefinitions(token || '');
+  const { data, loading, error } = useFetchAllClusterCentroids(token || '');
+  const { setName, setColor, loading: loadingUpdates, error: errorUpdates } = useClusterCentroidUpdates(token || '');
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogInfo, setDialogInfo] = useState<CentroidDefinition | null>(null);
+  const [dialogInfo, setDialogInfo] = useState<{ centroidDefinition: CentroidDefinition; column: string } | null>(null);
   const [sortConfig, setSortConfig] = useState<{ key: keyof CentroidDefinition | null, direction: 'asc' | 'desc' }>({
     key: null,
     direction: 'asc',
@@ -38,9 +40,19 @@ const ClusterCentroidTable = () => {
     setSortConfig({ key: columnKey, direction });
   };
 
-  const handleRowClick = (clusterDefinition: CentroidDefinition) => {
-    setDialogInfo(clusterDefinition);
+  const handleRowClick = (centroidDefinition: CentroidDefinition, column: string) => {
+    setDialogInfo({centroidDefinition, column});
     setDialogOpen(true);
+  };
+
+  const handleUpdateName = async (centroidDefinition: CentroidDefinition) => {
+    console.log("Updated Name:", centroidDefinition);
+    await setName( {clusterId: centroidDefinition.clusterid, cluster: centroidDefinition.cluster, name: centroidDefinition.name });
+  };
+
+  const handleUpdateColor = async (centroidDefinition: CentroidDefinition) => {
+    console.log("Updated Color:", centroidDefinition);
+    await setColor( {clusterId: centroidDefinition.clusterid, cluster: centroidDefinition.cluster, name: centroidDefinition.color });
   };
 
   const handleCloseDialog = () => {
@@ -56,6 +68,11 @@ const ClusterCentroidTable = () => {
     });
     return sorted;
   }, [data, sortConfig]);
+
+  const isNameOrColor = (value: string): boolean => {
+    const allowedValues = new Set(['name', 'color']);
+    return allowedValues.has(value);
+  };
 
   const renderTableRecent = (columns: { key: keyof CentroidDefinition; label: string; justify: string, width: string, type: string }[]) => {
     return (
@@ -102,9 +119,9 @@ const ClusterCentroidTable = () => {
                         key={col.key}
                         align={col.justify as unknown as TableCellProps["align"]}
                         sx={{ paddingRight: '1em' }}
-                        onClick={() => handleRowClick(row)}
+                        onClick={ !isNameOrColor(col.key) ? () => handleRowClick(row, col.key) : undefined}
                       >
-                        {formatCentroidDefinition(col, row[col.key] ?? '')}
+                        {formatCentroidDefinition(col, row[col.key] ?? '', row, handleUpdateName, handleUpdateColor)}
                       </TableCell>
                     ))}
                   </TableRow>
@@ -118,6 +135,7 @@ const ClusterCentroidTable = () => {
   };
 
   if (error) return <Alert severity="error">{error}</Alert>;
+  if (errorUpdates) return <Alert severity="error">{errorUpdates}</Alert>;
 
   return (
     <Container maxWidth='xl' sx={{ marginY: 0 }}>
@@ -133,7 +151,7 @@ const ClusterCentroidTable = () => {
       >
         <Box display="flex" flexDirection= 'column' alignItems="left">
           <Typography component="span">
-            { loading ? "Loading cluster centroids" : 'Cluster Centroids'}
+            { loading || loadingUpdates ? "Loading cluster centroids" : 'Cluster Centroids'}
           </Typography>
         </Box>
 
@@ -147,6 +165,7 @@ const ClusterCentroidTable = () => {
           { key: 'hravg', label: 'Avg HR', justify: 'right', width: '100', type: 'number' },
           { key: 'powernormalized', label: 'Normalized Power', justify: 'right', width: '90', type: 'number' },
           { key: 'name', label: 'Name', justify: 'center', width: '90', type: 'string' },
+          { key: 'color', label: 'Color', justify: 'center', width: '90', type: 'string' },
           { key: 'ride_count', label: 'Ride Count', justify: 'right', width: '90', type: 'number' },
         ])}
 
@@ -156,9 +175,15 @@ const ClusterCentroidTable = () => {
           fullWidth
           maxWidth="xl" // You can set 'lg' or 'xl' for larger widths
         >
-          <DialogTitle>Rides for {`Cluster ${dialogInfo?.cluster} ${dialogInfo?.name}`} </DialogTitle>
+          <DialogTitle>{`Rides in cluster ${dialogInfo?.centroidDefinition.startyear} - ${dialogInfo?.centroidDefinition.endyear}: ${dialogInfo?.centroidDefinition.name} (#${dialogInfo?.centroidDefinition.cluster})`} </DialogTitle>
           <DialogContent>
-            {dialogInfo ? <RideListComponent cluster={dialogInfo} /> : undefined}
+            {
+              dialogInfo && dialogInfo.column.toLowerCase() !== 'name'
+              ?
+              <RideListComponent cluster={dialogInfo?.centroidDefinition} />
+              :
+              undefined
+            }
           </DialogContent>
         </Dialog>
       </Paper>

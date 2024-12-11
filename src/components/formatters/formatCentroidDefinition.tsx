@@ -1,10 +1,22 @@
+import React from 'react';
 import { CentroidDefinition } from "../../types/types";
 import { formatInteger, formatNumber } from "../../utilities/formatUtilities";
+import CentroidName from "../CentroidName";
+import CentroidColor from '../CentroidColor';
 
-export const formatCentroidDefinition = (col: { key: keyof CentroidDefinition; label: string; justify: string, width: string, type: string }, theDatum: number | string) => {
+export const formatCentroidDefinition = (
+  col: { key: keyof CentroidDefinition; label: string; justify: string, width: string, type: string },
+  theDatum: number | string,
+  centroidDefinition: CentroidDefinition,
+  onUpdateName: (centroidDefinition: CentroidDefinition) => void,
+  onUpdateColor: (centroidDefinition: CentroidDefinition) => void,
+) => {
     switch (col.key) {
       case 'name': {
-        return theDatum as string;
+        return <CentroidName centroidDefinition={centroidDefinition} onUpdate={onUpdateName} />
+      }
+      case 'color': {
+        return <CentroidColor centroidDefinition={centroidDefinition} onUpdate={onUpdateColor} />
       }
       case 'ride_count':{
         return formatInteger(theDatum as number);

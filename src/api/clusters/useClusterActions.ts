@@ -11,7 +11,7 @@ export const useClusterActions = (token: string) => {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`/api/clusters/${endpoint}/${id}`, {
+      const response = await fetch(`http://localhost:3000/cluster/${endpoint}/${id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

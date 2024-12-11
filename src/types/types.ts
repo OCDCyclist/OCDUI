@@ -461,6 +461,7 @@ export interface ClusterDefinition {
 }
 
 export interface CentroidDefinition {
+    clusterid: number,
     startyear: number,
     endyear: number
     cluster: number,
@@ -470,6 +471,7 @@ export interface CentroidDefinition {
     hravg: number,
     powernormalized: number,
     name: string,
+    color: string,
     ride_count: number,
 }
 

@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import { Menu, MenuItem, IconButton } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { ClusterDefinition } from '../../types/types';
 
 export interface RowActionsProps {
-  id: string | number;
   actions: {
     label: string;
-    callback: (id: string | number) => void;
+    callback: (clusterDefinition: ClusterDefinition) => void;
   }[];
+  clusterDefinition: ClusterDefinition;
 }
 
-const RowActions: React.FC<RowActionsProps> = ({ id, actions }) => {
+const RowActions: React.FC<RowActionsProps> = ({ actions, clusterDefinition }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -22,8 +23,8 @@ const RowActions: React.FC<RowActionsProps> = ({ id, actions }) => {
     setAnchorEl(null);
   };
 
-  const handleActionClick = (callback: (id: string | number) => void) => {
-    callback(id);
+  const handleActionClick = (callback: (clusterDefinition: ClusterDefinition) => void) => {
+    callback(clusterDefinition);
     handleMenuClose();
   };
 

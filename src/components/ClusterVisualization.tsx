@@ -44,7 +44,7 @@ const ClusterVisualization: React.FC = () => {
       setSelectedCentroid(value);
     }
   }
-
+  const colors = ["#FF0000", "#00FF00", "#0000FF", "#FFFF00"]; // Colors for clusters
   return (
     <Stack direction="column" spacing={1} alignItems="center">
       <ClusterCentroidSelector clusterCentroidSelected={selectedCentroid} onCentroidChange={handleCentroidSelection} />
@@ -52,7 +52,13 @@ const ClusterVisualization: React.FC = () => {
       <Grid container spacing={2}>
         {dimensionPairs.map(({ x, y }, index) => (
           <Grid item xs={12} md={6} key={index}>
-            <ScatterPlot data={data} xKey={x as keyof RideDataWithTagsClusters} yKey={y as keyof RideDataWithTagsClusters} fieldLabels = {fieldLabels} />
+            <ScatterPlot
+              data={data}
+              xKey={x as keyof RideDataWithTagsClusters}
+              yKey={y as keyof RideDataWithTagsClusters}
+              fieldLabels = {fieldLabels}
+              colors={colors}
+           />
           </Grid>
         ))}
       </Grid>

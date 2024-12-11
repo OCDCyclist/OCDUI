@@ -25,7 +25,7 @@ export const useFetchClusterDefinition = (token: string, clusterId: number) => {
           setLoading(false);
           return;
         }
-        const response = await fetch(`http://localhost:3000/cluster/clusterDefinition?clusterId=${clusterId}`, {
+        const response = await fetch(`http://localhost:3000/cluster/getClusterDefinition?clusterId=${clusterId}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
