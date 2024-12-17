@@ -1,44 +1,40 @@
-import { useEffect, useState } from "react";
+import { useState, useCallback } from "react";
 import { CentroidSelectorData, RideDataWithTagsClusters } from "../../types/types";
 
-export const useFetchClusterData = (token: string, centroid: CentroidSelectorData) => {
+export const useFetchClusterData = () => {
   const [data, setData] = useState<RideDataWithTagsClusters[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
+  const fetchClusterData = useCallback(async (token: string, centroid: CentroidSelectorData) => {
+    if (!centroid) return;
 
-      if(!centroid){
-        setLoading(false);
-      }
-      try {
-        const response = await fetch(`http://localhost:3000/cluster/getRidesByCentroid?startYear=${centroid.clusterid}`, {
-          method: 'GET',
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `http://localhost:3000/cluster/getRidesByCentroid?clusterId=${centroid.clusterid}`,
+        {
+          method: "GET",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setData(data);
-        } else {
-          setError("Failed to fetch cluster data");
         }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch ( _erroe) {
-        setError('Failed to fetch cluster data');
-      } finally {
-        setLoading(false); // Always stop the loading state
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setData(data);
+      } else {
+        setError("Failed to fetch cluster data");
       }
-    };
+    } catch {
+      setError("Failed to fetch cluster data");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-    fetchData();
-  }, [centroid]);
-
-  return { data, loading, error };
+  return { data, loading, error, fetchClusterData };
 };

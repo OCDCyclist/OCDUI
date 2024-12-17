@@ -8,7 +8,7 @@ import { useClusterCentroidUpdates } from '../api/clusters/useClusterCentroidUpd
 
 const ClusterCentroidTable = () => {
   const token = localStorage.getItem('token');
-  const { data, loading, error } = useFetchAllClusterCentroids(token || '');
+  const { data, loading, error, refetch  } = useFetchAllClusterCentroids(token || '');
   const { setName, setColor, loading: loadingUpdates, error: errorUpdates } = useClusterCentroidUpdates(token || '');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogInfo, setDialogInfo] = useState<{ centroidDefinition: CentroidDefinition; column: string } | null>(null);
@@ -48,11 +48,13 @@ const ClusterCentroidTable = () => {
   const handleUpdateName = async (centroidDefinition: CentroidDefinition) => {
     console.log("Updated Name:", centroidDefinition);
     await setName( {clusterId: centroidDefinition.clusterid, cluster: centroidDefinition.cluster, name: centroidDefinition.name });
+    refetch();
   };
 
   const handleUpdateColor = async (centroidDefinition: CentroidDefinition) => {
     console.log("Updated Color:", centroidDefinition);
-    await setColor( {clusterId: centroidDefinition.clusterid, cluster: centroidDefinition.cluster, name: centroidDefinition.color });
+    await setColor( {clusterId: centroidDefinition.clusterid, cluster: centroidDefinition.cluster, color: centroidDefinition.color });
+    refetch();
   };
 
   const handleCloseDialog = () => {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogContent, Container, Link,TableCellProps, Typography, Box } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogContent, Container, Link,TableCellProps, Box } from '@mui/material';
 import axios from 'axios';
 import { formatDate, formatElapsedTime, formatInteger, formatNumber } from '../utilities/formatUtilities';
 import { LocationId, SegmentDataWithTags } from '../types/types';

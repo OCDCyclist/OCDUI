@@ -489,6 +489,7 @@ export interface TagResult{
 export interface Tagable{
     tags?: string;
     cluster?: string;
+    color?: string;
 }
 
 export interface FetchTagsResult {
@@ -524,3 +525,39 @@ export type FormatDateParams = {
     dom?: number; // 1-31
     cluster?: CentroidDefinition;
 };
+
+export interface CumulativeData {
+    ride_date: string;
+    moving_total_distance1: number;
+    moving_total_elevationgain1: number;
+    moving_total_elapsedtime1: number;
+    moving_hr_average1: number;
+    moving_power_average1: number;
+    moving_total_distance7: number;
+    moving_total_elevationgain7: number;
+    moving_total_elapsedtime7: number;
+    moving_hr_average7: number;
+    moving_power_average7: number;
+    moving_total_distance30: number;
+    moving_total_elevationgain30: number;
+    moving_total_elapsedtime30: number;
+    moving_hr_average30: number;
+    moving_power_average30: number;
+    moving_total_distance365: number;
+    moving_total_elevationgain365: number;
+    moving_total_elapsedtime365: number;
+    moving_hr_average365: number;
+    moving_power_average365: number;
+    moving_total_distancealltime: number;
+    moving_total_elevationgainalltime: number;
+    moving_total_elapsedtimealltime: number;
+    moving_hr_averagealltime: number;
+    moving_power_averagealltime: number;
+    total_tss: number;
+    fatigue: number;
+    fitness: number;
+    form: number;
+    tss30: number;
+    runconsecutivedays: number;
+    run7days200: number;
+}

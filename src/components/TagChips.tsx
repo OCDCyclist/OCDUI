@@ -12,7 +12,7 @@ interface TagChipsProps {
 }
 
 // Component definition
-const TagChips: React.FC<TagChipsProps> = ({ tags, color = 'default', onClick, onDelete }) => {
+const TagChips: React.FC<TagChipsProps> = ({ tags, color = 'default' }) => {
   // Determine if color is a theme color or custom color
   const chipColor: ChipProps['color'] | undefined =
     ['primary', 'secondary', 'default'].includes(color) ? color as ChipProps['color'] : undefined;

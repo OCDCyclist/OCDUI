@@ -23,6 +23,7 @@ interface ScatterPlotProps {
 }
 
 const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, xKey, yKey, fieldLabels, colors }) => {
+
   const chartData: ChartData<"scatter"> = {
     datasets: Array.from(new Set(data.map((point) => point.cluster))).map((cluster) => {
       const clusterIndex = data.find((point) => point.cluster === cluster)?.clusterindex ?? 0;

@@ -1,15 +1,16 @@
 import { useState } from 'react';
+import { ClusterDefinition } from '../../types/types';
 
-export const useClusterCentroidUpdates = (token: string) => {
+export const useClusterDefinitionUpdates = (token: string) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const postAction = async (endpoint: string, payload: object) => {
+  const postAction = async (payload: object) => {
     try {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`http://localhost:3000/cluster/centroid/${endpoint}`, {
+      const response = await fetch(`http://localhost:3000/cluster/update`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -29,8 +30,7 @@ export const useClusterCentroidUpdates = (token: string) => {
     }
   };
 
-  const setName = (payload: {clusterId: string | number, cluster: number, name: string}) => postAction('name', payload);
-  const setColor = (payload: {clusterId: string | number, cluster: number, color: string}) => postAction('color', payload);
+  const setClusterDefinition = (payload: ClusterDefinition) => postAction(payload);
 
-  return { setName, setColor, loading, error };
+  return { setClusterDefinition, loading, error };
 };

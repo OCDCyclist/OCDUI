@@ -4,7 +4,8 @@ import axios from 'axios';
 import RideDetail from './RideDetail';
 import { formatRideData } from './formatters/formatRideData';
 import { RideData } from '../types/types';
-import RideFilter from './filters/RideFilter';
+import RideYearFilter from './filters/RideYearFilter';
+import DaysOfWeekFilter from './filters/DaysOfWeekFilter';
 
 const RideAllComponent = () => {
   const [data, setData] = useState<RideData[]>([]);
@@ -81,7 +82,7 @@ const RideAllComponent = () => {
     return (
       <>
         <Button variant="text" onClick={toggleSelectFilters}>
-          Select Filters
+          Select Years
         </Button>
 
         <TableContainer sx={{ maxHeight: tableHeight }}>
@@ -138,6 +139,7 @@ const RideAllComponent = () => {
           width: '100%', // Occupy the full width of the container
         }}
       >
+        <DaysOfWeekFilter />
         <Box>
           Years selected {years.join(", ")}
         </Box>
@@ -181,7 +183,7 @@ const RideAllComponent = () => {
                 width: '100%',
               }}
             >
-              <RideFilter onClose={(years) =>{
+              <RideYearFilter onClose={(years) =>{
                   if(years){
                     setYears(years);
                   }

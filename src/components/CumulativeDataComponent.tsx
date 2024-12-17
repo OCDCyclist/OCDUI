@@ -2,42 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Box, Tab, Tabs, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, Container } from '@mui/material';
 import axios from 'axios';
 import RideListComponent from './RideListComponent';
+import { CumulativeData } from '../types/types';
 
-interface CumulativeData {
-  ride_date: string;
-  moving_total_distance1: number;
-  moving_total_elevationgain1: number;
-  moving_total_elapsedtime1: number;
-  moving_hr_average1: number;
-  moving_power_average1: number;
-  moving_total_distance7: number;
-  moving_total_elevationgain7: number;
-  moving_total_elapsedtime7: number;
-  moving_hr_average7: number;
-  moving_power_average7: number;
-  moving_total_distance30: number;
-  moving_total_elevationgain30: number;
-  moving_total_elapsedtime30: number;
-  moving_hr_average30: number;
-  moving_power_average30: number;
-  moving_total_distance365: number;
-  moving_total_elevationgain365: number;
-  moving_total_elapsedtime365: number;
-  moving_hr_average365: number;
-  moving_power_average365: number;
-  moving_total_distancealltime: number;
-  moving_total_elevationgainalltime: number;
-  moving_total_elapsedtimealltime: number;
-  moving_hr_averagealltime: number;
-  moving_power_averagealltime: number;
-  total_tss: number;
-  fatigue: number;
-  fitness: number;
-  form: number;
-  tss30: number;
-  runconsecutivedays: number;
-  run7days200: number;
-}
 
 const TabPanel = ({ children, value, index }: { children: React.ReactNode; value: number; index: number }) => {
   return (
@@ -93,7 +59,7 @@ const CumulativeDataComponent = () => {
     setDialogInfo(null);
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | number) => {
     const date = new Date(dateString);
 
     const datePart = new Intl.DateTimeFormat('en-US', {
@@ -168,6 +134,12 @@ const CumulativeDataComponent = () => {
   }, [data, sortConfig]);
 
   const renderTable = (columns: { key: keyof CumulativeData; label: string }[]) => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const day = String(today.getDate()).padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+
     return (
       <TableContainer>
         <Table>
@@ -196,7 +168,7 @@ const CumulativeDataComponent = () => {
                   <TableCell
                       key={col.key}
                       align="right"
-                      sx={{ paddingRight: '1em' }}
+                      sx={{ paddingRight: '1em',  backgroundColor: (row.ride_date.split('T')[0]) === formattedDate ? '#e3f1c4' : 'inherit', }}
                       onClick={() => handleRowClick(row.ride_date, col.key)}
                     >
                       {format(col, row[col.key])}

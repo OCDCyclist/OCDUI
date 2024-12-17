@@ -1,64 +1,39 @@
-import React from 'react';
-import {
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Typography,
-  Box,
-} from '@mui/material';
-import { useFetchCentroidOptions } from '../api/clusters/useFetchCentroidOptions';
+import React  from 'react';
+import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { CentroidSelectorData } from '../types/types';
-import LinearLoader from './loaders/LinearLoader';
 
 interface ClusterCentroidSelectorProps {
+  clustersAvailable: CentroidSelectorData[];
   clusterCentroidSelected: CentroidSelectorData | null;
   onCentroidChange: (centroid: CentroidSelectorData) => void;
 }
 
 const ClusterCentroidSelector: React.FC<ClusterCentroidSelectorProps> = ({
+  clustersAvailable,
   clusterCentroidSelected,
   onCentroidChange,
 }) => {
-    const token = localStorage.getItem('token');
-    const { data, loading, error } = useFetchCentroidOptions(token ?? '');
 
-  if (loading) {
-    return (
-      <Box display="flex" alignItems="center" justifyContent="center" height={200}>
-        <LinearLoader message={"Loading available centroids"} />
-      </Box>
-    );
-  }
+  const centroidToDisplay = (centroid: CentroidSelectorData | null) =>
+    centroid
+      ? `${centroid.startyear} to ${centroid.endyear} (${centroid.active ? 'Active' : 'Not Active)'}`
+      : 'Select a centroid';
 
-  if (data && !clusterCentroidSelected && data.length > 0) {
-    clusterCentroidSelected = data.find( cluster => cluster.active) ?? null;
-  }
-
-  if (error) {
-    return (
-      <Typography color="error" align="center">
-        Failed to load centroids. Please try again later.
-      </Typography>
-    );
-  }
-
-  const centroidToDisplay = (centroid: CentroidSelectorData | null) => centroid ? `${centroid.active ? 'Active' : 'Not Active'} from ${centroid.startyear} to ${centroid.endyear}` : 'Select a centroid';
-  const activeCentroid = data && clusterCentroidSelected?.active ? data.find( centroid => centroid.active) : undefined;
   return (
     <FormControl fullWidth>
-      <InputLabel id="cluster-centroid-selector-label">Select Centroid</InputLabel>
+      <InputLabel id="cluster-centroid-selector-label">Select Cluster to Visualize</InputLabel>
       <Select
         labelId="cluster-centroid-selector-label"
         value={
-          clusterCentroidSelected?.clusterid
+          clusterCentroidSelected
             ? centroidToDisplay(clusterCentroidSelected)
-            : centroidToDisplay(activeCentroid || clusterCentroidSelected)
+            : centroidToDisplay(
+                clustersAvailable.find((centroid) => centroid.active) || clustersAvailable[0]
+              )
         }
         onChange={(e) => {
-          const selectedCentroid = data.find(
-            (centroid: CentroidSelectorData) =>
-                centroidToDisplay(centroid) === e.target.value
+          const selectedCentroid = clustersAvailable.find(
+            (centroid) => centroidToDisplay(centroid) === e.target.value
           );
           if (selectedCentroid) {
             onCentroidChange(selectedCentroid);
@@ -66,7 +41,7 @@ const ClusterCentroidSelector: React.FC<ClusterCentroidSelectorProps> = ({
         }}
         data-testid="centroid-selector"
       >
-        {data.map((centroid: CentroidSelectorData) => (
+        {clustersAvailable.map((centroid) => (
           <MenuItem
             key={`${centroid.active}-${centroid.startyear}-${centroid.endyear}`}
             value={centroidToDisplay(centroid)}

@@ -12,7 +12,7 @@ interface RideFilterProps {
   defaultSelectedYears: number[]; // New prop to set default selected years
 }
 
-const RideFilter = ({ onClose, defaultSelectedYears }: RideFilterProps) => {
+const RideYearFilter = ({ onClose, defaultSelectedYears }: RideFilterProps) => {
   const [selectedYears, setSelectedYears] = useState<number[]>(defaultSelectedYears);
 
   useEffect(() => {
@@ -64,4 +64,4 @@ const RideFilter = ({ onClose, defaultSelectedYears }: RideFilterProps) => {
   );
 };
 
-export default RideFilter;
+export default RideYearFilter;

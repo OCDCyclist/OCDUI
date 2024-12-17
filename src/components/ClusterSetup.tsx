@@ -6,10 +6,13 @@ import { formatClusterDefinition } from './formatters/formatClusterDefinition';
 import { useFetchAllClusterDefinitions } from '../api/clusters/useFetchAllClusterDefinitions';
 import RowActions from './utility/RowActions';
 import ClusterEdit from './ClusterEdit';
+import { useClusterDefinitionUpdates } from '../api/clusters/useClusterDefinitionUpdates';
 
 const ClusterSetup = () => {
   const token = localStorage.getItem('token');
   const { data, loading, error, refetch } = useFetchAllClusterDefinitions(token || '');
+  const { setClusterDefinition, loading: loadingUpdates, error: errorUpdates } = useClusterDefinitionUpdates(token || '');
+
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogInfo, setDialogInfo] = useState<ClusterDefinition | null>(null);
   const [sortConfig, setSortConfig] = useState<{ key: keyof ClusterDefinition | null, direction: 'asc' | 'desc' }>({
@@ -52,7 +55,8 @@ const ClusterSetup = () => {
 
   const handleSaveDialog = ( clusterDefinition: ClusterDefinition) => {
     setDialogOpen(false);
-    console.log(clusterDefinition.clusterid);
+    setClusterDefinition(clusterDefinition);
+    refetch();
   };
 
   const sortedData = React.useMemo(() => {
@@ -108,10 +112,31 @@ const ClusterSetup = () => {
     setDialogOpen(true);
   };
 
+  const handleDelete = async (clusterDefinition: ClusterDefinition) => {
+    try {
+      const response = await fetch(`http://localhost:3000/cluster/delete?clusterid=${clusterDefinition.clusterid}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete cluster');
+      }
+
+      refetch();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const actions = [
     { label: 'Recalculate', callback: handleRecalculate },
     { label: 'Set as Active', callback: handleSetActive },
     { label: 'Edit Cluster', callback: handleEdit },
+    { label: 'Delete Cluster', callback: handleDelete },
   ];
 
   const renderTableRecent = (columns: { key: keyof ClusterDefinition; label: string; justify: string, width: string, type: string }[]) => {
@@ -172,6 +197,7 @@ const ClusterSetup = () => {
   };
 
   if (error) return <Alert severity="error">{error}</Alert>;
+  if (errorUpdates) return <Alert severity="error">{errorUpdates}</Alert>;
 
   return (
 <Container maxWidth="xl" sx={{ marginY: 0 }}>
@@ -188,7 +214,7 @@ const ClusterSetup = () => {
     <Box display="flex" flexDirection="row" alignItems="center" justifyContent="space-between">
       {/* Title on the right */}
       <Typography component="span">
-        {loading ? 'Loading Cluster Setup' : 'Cluster Setup'}
+        {loading || loadingUpdates ? 'Loading Cluster Setup' : 'Cluster Setup'}
       </Typography>
 
       {/* Button on the left */}
