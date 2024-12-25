@@ -561,3 +561,4 @@ export interface CumulativeData {
     runconsecutivedays: number;
     run7days200: number;
 }
+

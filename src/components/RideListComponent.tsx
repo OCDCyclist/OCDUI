@@ -11,6 +11,7 @@ import { getUniqueTags } from '../utilities/tagUtilities';
 import TagFilter from './TagFilter';
 import LinearLoader from './loaders/LinearLoader';
 import { rideUrlHelper } from './formatters/rideUrlHelper';
+import RideDataFilter, { FilterObject } from './filters2/RideDataFilter';
 
 type RideListComponentProps = {
   date?: string;
@@ -35,11 +36,16 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster }: RideListCo
     key: null,
     direction: 'asc',
   });
-  const [showFilters, setShowFilters] = useState<boolean>(false);
   const [tableHeight, setTableHeight] = useState(window.innerHeight - 190);
   const [refreshData, setRefreshData] = useState(false);
-  const [uniqueTags, setUniqueTags] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [filters, setFilters] = useState<FilterObject>({
+    dayOfWeek: [],
+    month: [],
+    tags: [],
+    availableTags: [],
+    search: '',
+  });
 
   useEffect(() => {
     const handleResize = () => {
@@ -54,10 +60,6 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster }: RideListCo
       window.removeEventListener('resize', handleResize);
     };
   }, []);
-
-  const toggleShowFilters = () => {
-    setShowFilters(prev => !prev);
-  };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -76,7 +78,8 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster }: RideListCo
     })
       .then((response) =>{
         const uniqueTags = getUniqueTags(response.data);
-        setUniqueTags(uniqueTags);
+        const availableTags = uniqueTags;
+        setFilters({...filters, availableTags})
         setData(response.data);
         setLoadingState({ loading: false, message: '' });
       })
@@ -100,8 +103,8 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster }: RideListCo
     setDialogOpen(true);
   };
 
-  const handleTagFilterChange = (tags: string[]) => {
-    setSelectedTags(tags);
+  const handleFilterChange = (updatedFilters: typeof filters) => {
+    setFilters(updatedFilters);
   };
 
   const handleCloseDialog = () => {
@@ -119,6 +122,37 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster }: RideListCo
       }
     );
   }
+
+  const filterByText = (rideDataWithTags: RideDataWithTags[], query: string): RideDataWithTags[] => {
+    if (!query) return rideDataWithTags;
+
+    const lowerQuery = query.toLowerCase();
+
+    return rideDataWithTags.filter((ride) =>
+        Object.values(ride).some((value) =>
+            value != null &&
+            value.toString().toLowerCase().includes(lowerQuery)
+        )
+    );
+  };
+
+  const filterByMonth = (rideDataWithTags: RideDataWithTags[], months: number[]): RideDataWithTags[] => {
+    if (!Array.isArray(months) || months.length === 0) return rideDataWithTags;
+
+    return rideDataWithTags.filter((ride) => {
+        const rideMonth = new Date(ride.date).getMonth() + 1; // Months are 0-indexed, so add 1
+        return months.includes(0) || months.includes(rideMonth);
+    });
+  };
+
+  const filterByDayOfWeek = (rideDataWithTags: RideDataWithTags[], dayOfWeek: number[]): RideDataWithTags[] => {
+    if (!Array.isArray(dayOfWeek) || dayOfWeek.length === 0) return rideDataWithTags;
+
+    return rideDataWithTags.filter((ride) => {
+        const rideDay = new Date(ride.date).getDay(); // Get the day of the week (Sunday = 0, Monday = 1, etc.)
+        return dayOfWeek.includes(rideDay); // Check if the ride's day matches any in the dayOfWeek array
+    });
+};
 
   const handleOnSaveTags = (locationId : number | string | null, assignmentId : number | string | null, tags: string[]) =>{
     const token = localStorage.getItem('token');
@@ -147,9 +181,21 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster }: RideListCo
   // Combine the filters using useMemo
   const filteredData = React.useMemo(() => {
     let result = data;
-    result = filterByTag(result, selectedTags);
+    if(filters.tags && filters.tags.length > 0){
+      result = filterByTag(result, filters.tags);
+    }
+    if(filters.search && filters.search.length > 0){
+      result = filterByText(result, filters.search);
+    }
+    if(filters.month && filters.month.length > 0){
+      result = filterByMonth(result, filters.month);
+    }
+    if(filters.dayOfWeek && filters.dayOfWeek.length > 0){
+      result = filterByDayOfWeek(result, filters.dayOfWeek);
+    }
+
     return result;
-  }, [data, selectedTags]);
+  }, [data, filters]);
 
   const sortedData = React.useMemo(() => {
     if (!sortConfig.key) return filteredData;
@@ -219,25 +265,8 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster }: RideListCo
           width: '100%', // Occupy the full width of the container
         }}
       >
-        <Box display="flex" alignItems="center">
-          <Button variant="text" color="primary" onClick={toggleShowFilters}>
-            {showFilters ? 'Hide Filters' : 'Show Filters'}
-          </Button>
 
-          {
-            showFilters && (
-              <>
-                <Box display="flex" alignItems="right">
-                  <TagFilter
-                    availableTags={uniqueTags}
-                    selectedTags={selectedTags}
-                    onTagChange={handleTagFilterChange}
-                  />
-                </Box>
-              </>
-            )
-          }
-        </Box>
+        <RideDataFilter filters={filters} onFilterChange={handleFilterChange}  />
 
         {renderTableRecent([
           { key: 'date', label: 'Ride Date', justify: 'center', width: '80', type: 'number' },
