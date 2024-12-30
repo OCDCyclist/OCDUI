@@ -19,36 +19,36 @@ const ConfirmWeight: React.FC<{ weightData: WeightReading }> = ({ weightData }) 
   return (
     <Container maxWidth="sm" sx={{ marginY: 5 }}>
       <Paper elevation={3} sx={{ padding: 4 }}>
-        <Typography variant="h5" align="center" gutterBottom>
+        <Typography variant="h5" align="center" gutterBottom component={"span"}>
           Weight Measurement Confirmation
         </Typography>
         <Grid container spacing={2}>
           <Grid item xs={6}>
-            <Typography variant="subtitle1">Date:</Typography>
+            <Typography variant="subtitle1" component={"span"}>Date:</Typography>
           </Grid>
           <Grid item xs={6}>
-            <Typography variant="body1">{formattedDate}</Typography>
-          </Grid>
-
-          <Grid item xs={6}>
-            <Typography variant="subtitle1">Weight:</Typography>
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant="body1">{weight}</Typography>
+            <Typography variant="body1" component={"span"}>{formattedDate}</Typography>
           </Grid>
 
           <Grid item xs={6}>
-            <Typography variant="subtitle1">Body Fat:</Typography>
+            <Typography variant="subtitle1" component={"span"}>Weight:</Typography>
           </Grid>
           <Grid item xs={6}>
-            <Typography variant="body1">{bodyFat}</Typography>
+            <Typography variant="body1" component={"span"}>{weight}</Typography>
           </Grid>
 
           <Grid item xs={6}>
-            <Typography variant="subtitle1">Body Water:</Typography>
+            <Typography variant="subtitle1" component={"span"}>Body Fat:</Typography>
           </Grid>
           <Grid item xs={6}>
-            <Typography variant="body1">{bodyWater}</Typography>
+            <Typography variant="body1" component={"span"}>{bodyFat}</Typography>
+          </Grid>
+
+          <Grid item xs={6}>
+            <Typography variant="subtitle1" component={"span"}>Body Water:</Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <Typography variant="body1" component={"span"}>{bodyWater}</Typography>
           </Grid>
         </Grid>
       </Paper>

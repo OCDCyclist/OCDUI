@@ -28,7 +28,7 @@ const MonthFilter: React.FC<FilterComponentProps<number[]>> = ({ value, onChange
   return (
     <Box display="flex" alignItems="center" flexWrap="wrap">
       {/* Title */}
-      <Typography variant="subtitle1" style={{ marginRight: '16px' }}>
+      <Typography variant="subtitle1" style={{ marginRight: '16px' }} component={"span"}>
         Month
       </Typography>
 

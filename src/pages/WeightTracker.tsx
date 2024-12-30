@@ -87,38 +87,39 @@ const WeightTracker: React.FC = () => {
           <Typography
             variant="h5"
             align="center"
+            component={"span"}
             paddingBottom={3}
           >
             Weight Tracker
           </Typography>
           <Grid container spacing={2}>
             {/* Header Row */}
-            <Grid item xs={3}><Typography variant="h6"></Typography></Grid>
-            <Grid item xs={3}><Typography variant="h6" sx={{ textAlign: 'right' }}>{`${formatDate(weightData.date)}`}</Typography></Grid>
-            <Grid item xs={2}><Typography variant="h6" sx={{ textAlign: 'right' }}>7 Day Avg</Typography></Grid>
-            <Grid item xs={2}><Typography variant="h6" sx={{ textAlign: 'right' }}>30 Day Avg</Typography></Grid>
-            <Grid item xs={2}><Typography variant="h6" sx={{ textAlign: 'right' }}>365 Day Avg</Typography></Grid>
+            <Grid item xs={3}><Typography variant="h6" component={"span"}></Typography></Grid>
+            <Grid item xs={3}><Typography variant="h6" component={"span"} sx={{ textAlign: 'right' }}>{`${formatDate(weightData.date)}`}</Typography></Grid>
+            <Grid item xs={2}><Typography variant="h6" component={"span"} sx={{ textAlign: 'right' }}>7 Day Avg</Typography></Grid>
+            <Grid item xs={2}><Typography variant="h6" component={"span"} sx={{ textAlign: 'right' }}>30 Day Avg</Typography></Grid>
+            <Grid item xs={2}><Typography variant="h6" component={"span"} sx={{ textAlign: 'right' }}>365 Day Avg</Typography></Grid>
 
             {/* Weight Row */}
             <Grid item xs={4}><Typography>Weight (lbs)</Typography></Grid>
-            <Grid item xs={2}><Typography sx={{ textAlign: 'right' }}>{formatNumber(weightData.weight)}</Typography></Grid>
-            <Grid item xs={2}><Typography sx={{ textAlign: 'right' }}>{formatNumber(weightData.weight7)}</Typography></Grid>
-            <Grid item xs={2}><Typography sx={{ textAlign: 'right' }}>{formatNumber(weightData.weight30)}</Typography></Grid>
-            <Grid item xs={2}><Typography sx={{ textAlign: 'right' }}>{formatNumber(weightData.weight365)}</Typography></Grid>
+            <Grid item xs={2}><Typography component={"span"} sx={{ textAlign: 'right' }}>{formatNumber(weightData.weight)}</Typography></Grid>
+            <Grid item xs={2}><Typography component={"span"} sx={{ textAlign: 'right' }}>{formatNumber(weightData.weight7)}</Typography></Grid>
+            <Grid item xs={2}><Typography component={"span"} sx={{ textAlign: 'right' }}>{formatNumber(weightData.weight30)}</Typography></Grid>
+            <Grid item xs={2}><Typography component={"span"} sx={{ textAlign: 'right' }}>{formatNumber(weightData.weight365)}</Typography></Grid>
 
             {/* Body Fat Row */}
-            <Grid item xs={4}><Typography>Body Fat (%)</Typography></Grid>
-            <Grid item xs={2}><Typography sx={{ textAlign: 'right' }}>{formatPercent(weightData.bodyfatfraction)}</Typography></Grid>
-            <Grid item xs={2}><Typography sx={{ textAlign: 'right' }}>{formatPercent(weightData.bodyfatfraction7)}</Typography></Grid>
-            <Grid item xs={2}><Typography sx={{ textAlign: 'right' }}>{formatPercent(weightData.bodyfatfraction30)}</Typography></Grid>
-            <Grid item xs={2}><Typography sx={{ textAlign: 'right' }}>{formatPercent(weightData.bodyfatfraction365)}</Typography></Grid>
+            <Grid item xs={4}><Typography component={"span"}>Body Fat (%)</Typography></Grid>
+            <Grid item xs={2}><Typography component={"span"} sx={{ textAlign: 'right' }}>{formatPercent(weightData.bodyfatfraction)}</Typography></Grid>
+            <Grid item xs={2}><Typography component={"span"} sx={{ textAlign: 'right' }}>{formatPercent(weightData.bodyfatfraction7)}</Typography></Grid>
+            <Grid item xs={2}><Typography component={"span"} sx={{ textAlign: 'right' }}>{formatPercent(weightData.bodyfatfraction30)}</Typography></Grid>
+            <Grid item xs={2}><Typography component={"span"} sx={{ textAlign: 'right' }}>{formatPercent(weightData.bodyfatfraction365)}</Typography></Grid>
 
             {/* Body H2O Row */}
-            <Grid item xs={4}><Typography>Body H2O (%)</Typography></Grid>
-            <Grid item xs={2}><Typography sx={{ textAlign: 'right' }}>{formatPercent(weightData.bodyh2ofraction)}</Typography></Grid>
-            <Grid item xs={2}><Typography sx={{ textAlign: 'right' }}>{formatPercent(weightData.bodyh2ofraction7)}</Typography></Grid>
-            <Grid item xs={2}><Typography sx={{ textAlign: 'right' }}>{formatPercent(weightData.bodyh2ofraction30)}</Typography></Grid>
-            <Grid item xs={2}><Typography sx={{ textAlign: 'right' }}>{formatPercent(weightData.bodyh2ofraction365)}</Typography></Grid>
+            <Grid item xs={4}><Typography component={"span"}>Body H2O (%)</Typography></Grid>
+            <Grid item xs={2}><Typography component={"span"} sx={{ textAlign: 'right' }}>{formatPercent(weightData.bodyh2ofraction)}</Typography></Grid>
+            <Grid item xs={2}><Typography component={"span"} sx={{ textAlign: 'right' }}>{formatPercent(weightData.bodyh2ofraction7)}</Typography></Grid>
+            <Grid item xs={2}><Typography component={"span"} sx={{ textAlign: 'right' }}>{formatPercent(weightData.bodyh2ofraction30)}</Typography></Grid>
+            <Grid item xs={2}><Typography component={"span"} sx={{ textAlign: 'right' }}>{formatPercent(weightData.bodyh2ofraction365)}</Typography></Grid>
           </Grid>
         </Paper>
       </Container>

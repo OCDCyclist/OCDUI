@@ -51,6 +51,7 @@ const CentroidName: React.FC<CentroidNameProps> = ({ centroidDefinition, onUpdat
       variant="body1"
       onClick={handleNameClick}
       style={{ cursor: 'pointer' }}
+      component={"span"}
     >
       {centroidDefinition.name}
     </Typography>

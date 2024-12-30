@@ -63,9 +63,9 @@ const ClusterEdit: React.FC<ClusterEditProps> = ({ clusterId, onClose, onSave })
 
   return (
     <Box>
-      <Typography variant="h6">Create / Edit a Cluster Definition</Typography>
+      <Typography variant="h6" component={"span"}>Create / Edit a Cluster Definition</Typography>
 
-      {error && <Typography color="error">Error: {error}</Typography>}
+      {error && <Typography color="error" component={"span"}>Error: {error}</Typography>}
 
       <Stack spacing={2} mt={2}>
         {/* Cluster ID (Read-only) */}
@@ -118,7 +118,7 @@ const ClusterEdit: React.FC<ClusterEditProps> = ({ clusterId, onClose, onSave })
         />
 
         {/* Active Flag */}
-        <Typography variant="subtitle1">Active</Typography>
+        <Typography variant="subtitle1" component={"span"}>Active</Typography>
         <FormControlLabel
           control={
             <Switch

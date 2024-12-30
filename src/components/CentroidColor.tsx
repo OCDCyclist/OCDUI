@@ -51,6 +51,7 @@ const CentroidColor: React.FC<CentroidColorProps> = ({ centroidDefinition, onUpd
       variant="body1"
       onClick={handleColorClick}
       style={{ cursor: 'pointer' }}
+      component={"span"}
     >
       {centroidDefinition.color}
     </Typography>

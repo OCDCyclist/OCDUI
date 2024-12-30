@@ -34,7 +34,7 @@ const YearPicker: React.FC<YearPickerProps> = ({ startYear, initialSelectedYears
             color: 'green'
           }}
         />
-        <Typography variant="body2" sx={{ color:'green' }}>
+        <Typography variant="body2" sx={{ color:'green' }} component={"span"}>
           {year}
         </Typography>
       </Grid>
@@ -64,7 +64,7 @@ const YearPicker: React.FC<YearPickerProps> = ({ startYear, initialSelectedYears
 
   return (
     <div>
-      <Typography variant="h6" gutterBottom>
+      <Typography variant="h6" gutterBottom component={"span"}>
         Select one or more years to display
       </Typography>
       {renderYearRows()}

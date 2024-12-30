@@ -1,6 +1,6 @@
 import { FormatDateParams } from "../../types/types";
 
-export function rideUrlHelper({ date, year, month, dow, dom, cluster }: FormatDateParams = {}): string {
+export function rideUrlHelper({ date, year, month, dow, dom, cluster, years }: FormatDateParams = {}): string {
   let url = 'http://localhost:3000/ride/rides/lastmonth';
 
   if(typeof date !== 'undefined'){
@@ -17,6 +17,9 @@ export function rideUrlHelper({ date, year, month, dow, dom, cluster }: FormatDa
   }
   else if(typeof dom !== 'undefined' && typeof month !== 'undefined'){
     url = `http://localhost:3000/ride/getRidesByDOMMonth?dom=${dom}&month=${month}`;
+  }
+  else if(Array.isArray(years)){
+    url = 'http://localhost:3000/ride/rides/years?years=' + years.join(',');
   }
   return url;
 };

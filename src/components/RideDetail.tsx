@@ -80,7 +80,7 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
   }, []);
 
   if (!rideData) {
-    return <Typography variant="h6">No ride data available.</Typography>;
+    return <Typography variant="h6" component={"span"}>No ride data available.</Typography>;
   }
 
   const handleFieldClick = (field: string, currentValue: string | number) => {
@@ -296,7 +296,7 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
       <Paper elevation={3} sx={{ padding: 2, width: '100%', margin: '0 auto' }}>
         { loading ? <LinearIndeterminate /> : null}
 
-        <Typography variant="h5" align="center" paddingBottom={3}>
+        <Typography variant="h5" align="center" paddingBottom={3} component={"span"}>
           {editingField === 'title' ? (
             <TextField
               fullWidth
@@ -401,7 +401,7 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
                       </FormControl>
                     ) : (
                       <span onClick={() => handleFieldClick('bikeid', rideData.bikeid)}>
-                        <Typography variant='body2'>{`${rideData.bikename}`}</Typography>
+                        <Typography variant='body2' component={"span"}>{`${rideData.bikename}`}</Typography>
                       </span>
                     )}
                 </TableCell>

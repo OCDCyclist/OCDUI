@@ -524,6 +524,7 @@ export type FormatDateParams = {
     dow?: number; // 0 = Sunday, 6 = Saturday, 7 = All days of week
     dom?: number; // 1-31
     cluster?: CentroidDefinition;
+    years?: number[];
 };
 
 export interface CumulativeData {

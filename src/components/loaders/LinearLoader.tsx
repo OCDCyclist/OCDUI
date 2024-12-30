@@ -20,6 +20,7 @@ const LinearLoader: React.FC<LoadingProps> = ({ message }) => {
           sx={{
             marginBottom: 1,
           }}
+          component={"span"}
         >
           {message}
         </Typography>

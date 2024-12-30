@@ -8,7 +8,7 @@ import {
 import YearPicker from './YearPicker';
 
 interface RideFilterProps {
-  onClose: (years?: number[]) => void;
+  onClose: (years: number[] | undefined) => void;
   defaultSelectedYears: number[]; // New prop to set default selected years
 }
 
@@ -25,12 +25,10 @@ const RideYearFilter = ({ onClose, defaultSelectedYears }: RideFilterProps) => {
 
   const handleApply = () => {
     onClose(selectedYears);
-    setSelectedYears([]);
   };
 
   const handleCancel = () => {
-    onClose();
-    setSelectedYears([]);
+    onClose(undefined);
   };
 
   return (

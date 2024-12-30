@@ -1,6 +1,6 @@
 import { FormatDateParams } from "../../types/types";
 
-export function formatDateHelper({ date, year, month, dow, dom, cluster }: FormatDateParams = {}): string {
+export function formatDateHelper({ date, year, month, dow, dom, cluster, years }: FormatDateParams = {}): string {
     const monthNames = [
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
@@ -42,6 +42,14 @@ export function formatDateHelper({ date, year, month, dow, dom, cluster }: Forma
     }
     if( cluster !== undefined){
         return `Rides for Cluster ${cluster?.cluster} ${cluster?.name}`;
+    }
+
+    if (Array.isArray(years)) {
+        if (years.length === 0) {
+            return `Select one or more years`;
+        } else {
+            return `${years.join(", ")}`;
+        }
     }
 
     return ""; // Fallback for invalid combinations

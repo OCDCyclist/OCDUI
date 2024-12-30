@@ -15,7 +15,7 @@ const DayOfWeekFilter: React.FC<FilterComponentProps<number[]>> = ({ value, onCh
   return (
     <Box display="flex" alignItems="center" flexWrap="wrap">
       {/* Title */}
-      <Typography variant="subtitle1" style={{ marginRight: '20px' }}>
+      <Typography variant="subtitle1" style={{ marginRight: '20px' }} component={"span"}>
         DOW
       </Typography>
 

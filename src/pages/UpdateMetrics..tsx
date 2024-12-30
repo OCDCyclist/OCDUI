@@ -49,7 +49,7 @@ const UpdateMetrics: React.FC = () => {
     return (
       <Container maxWidth="sm" sx={{ marginY: 5, textAlign: 'center' }}>
         <CircularProgress />
-        <Typography variant="body1" sx={{ marginTop: 2 }}>
+        <Typography variant="body1" sx={{ marginTop: 2 }} component={"span"}>
           Updating your rider metrics...
         </Typography>
       </Container>
@@ -72,18 +72,18 @@ const UpdateMetrics: React.FC = () => {
     return (
       <Container maxWidth="sm" sx={{ marginY: 5 }}>
         <Paper elevation={3} sx={{ padding: 4 }}>
-          <Typography variant="h5" align="center" gutterBottom>
+          <Typography variant="h5" align="center" component={"span"} gutterBottom>
             Rider Metrics Update Complete!
           </Typography>
 
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <Typography variant="body1">
+              <Typography variant="body1" component={"span"}>
                 <strong>Success:</strong> {updateResult.status ? 'Yes' : 'No'}
               </Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="body1">
+              <Typography variant="body1" component={"span"}>
                 <strong>Message:</strong> {updateResult.message}
               </Typography>
             </Grid>

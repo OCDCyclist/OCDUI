@@ -58,11 +58,11 @@ const ElapsedTimeEditor: React.FC<ElapsedTimeEditorProps> = ({ initialSeconds, o
           <Select value={hours} onChange={handleHoursChange}>
             {generateOptions(23)}
           </Select>
-          <Typography>:</Typography>
+          <Typography component={"span"}>:</Typography>
           <Select value={minutes} onChange={handleMinutesChange}>
             {generateOptions(59)}
           </Select>
-          <Typography>:</Typography>
+          <Typography component={"span"}>:</Typography>
           <Select value={seconds} onChange={handleSecondsChange}>
             {generateOptions(59)}
           </Select>
@@ -74,7 +74,7 @@ const ElapsedTimeEditor: React.FC<ElapsedTimeEditorProps> = ({ initialSeconds, o
           </Button>
         </Stack>
       ) : (
-        <Typography onClick={handleEdit} sx={{ cursor: 'pointer' }}>
+        <Typography onClick={handleEdit} sx={{ cursor: 'pointer' }} component={"span"}>
           {displayTime}
         </Typography>
       )}

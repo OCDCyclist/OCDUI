@@ -293,7 +293,7 @@ const SegmentEffortListComponent = ({ segmentId }: SegmentEffortListProps) => {
         }}
       >
         <Box display="flex" flexDirection= 'column' alignItems="left">
-          <Typography>
+          <Typography component={"span"}>
             { loading ? "Loading segment efforts" : `${segmentName}`}
           </Typography>
 

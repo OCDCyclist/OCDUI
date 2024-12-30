@@ -77,7 +77,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({ initialTags, locationId, assi
       />
 
       {error &&
-        <Typography>
+        <Typography component={"span"}>
             {`Error: ${error}`}
         </Typography>
        }

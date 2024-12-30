@@ -174,7 +174,7 @@ const renderDelta = (delta: string) => {
     const deltaValue = Number(delta);
     const isPositive = deltaValue >= 0;
     return (
-        <Typography variant="body2" className={isPositive ? 'positive' : 'negative'}>
+        <Typography variant="body2" className={isPositive ? 'positive' : 'negative'} component="span">
             {formatNumber2(delta, 1)}
         </Typography>
     );
@@ -199,51 +199,51 @@ const SummarySection: React.FC<SummarySectionProps> = ({
             width: paperWidth // Control the width of the Paper
         }}
     >
-        <Typography variant="h6">{title}</Typography>
+        <Typography variant="h6" component="span">{title}</Typography>
 
         <Grid container spacing={2} justifyContent="center">
             <Grid item xs={4} sx={{ textAlign: 'left', whiteSpace: 'nowrap' }}>
             </Grid>
             <Grid item xs={3} sx={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1"></Typography>
+                <Typography variant="body1" component="span"></Typography>
             </Grid>
             <Grid item xs={1} sx={{ textAlign: 'left', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1"></Typography>
+                <Typography variant="body1" component="span"></Typography>
             </Grid>
             <Grid item xs={3} sx={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1" style={{ fontSize: '14px' }}>{deltaDistance ? "Per Pace" : ""}</Typography>
+                <Typography variant="body1" style={{ fontSize: '14px' }} component="span">{deltaDistance ? "Per Pace" : ""}</Typography>
             </Grid>
             <Grid item xs={1} sx={{ textAlign: 'left', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1"></Typography>
+                <Typography variant="body1" component="span"></Typography>
             </Grid>
         </Grid>
 
         <Grid container spacing={2} justifyContent="center">
             <Grid item xs={4} sx={{ textAlign: 'left', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1">Distance:</Typography>
+                <Typography variant="body1" component="span">Distance:</Typography>
             </Grid>
             <Grid item xs={3} sx={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1">{formatNumber2(distance, 1)}</Typography>
+                <Typography variant="body1" component="span">{formatNumber2(distance, 1)}</Typography>
             </Grid>
             <Grid item xs={1} sx={{ textAlign: 'left', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1">mi</Typography>
+                <Typography variant="body1" component="span">mi</Typography>
             </Grid>
             <Grid item xs={3} sx={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1">{deltaDistance && renderDelta(deltaDistance)}</Typography>
+                <Typography variant="body1" component="span">{deltaDistance && renderDelta(deltaDistance)}</Typography>
             </Grid>
             <Grid item xs={1} sx={{ textAlign: 'left', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1">{deltaDistance ? "mi" : ""}</Typography>
+                <Typography variant="body1" component="span">{deltaDistance ? "mi" : ""}</Typography>
             </Grid>
         </Grid>
         <Grid container spacing={2} justifyContent="center">
             <Grid item xs={4} sx={{ textAlign: 'left', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1">Elevation Gain:</Typography>
+                <Typography variant="body1" component="span">Elevation Gain:</Typography>
             </Grid>
             <Grid item xs={3} sx={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1">{formatNumber(elevation)}</Typography>
+                <Typography variant="body1" component="span">{formatNumber(elevation)}</Typography>
             </Grid>
             <Grid item xs={1} sx={{ textAlign: 'left', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1">ft</Typography>
+                <Typography variant="body1" component="span">ft</Typography>
             </Grid>
             <Grid item xs={3} sx={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
             </Grid>
@@ -252,19 +252,19 @@ const SummarySection: React.FC<SummarySectionProps> = ({
         </Grid>
         <Grid container spacing={2} justifyContent="center">
             <Grid item xs={4} sx={{ textAlign: 'left', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1">Time:</Typography>
+                <Typography variant="body1" component="span">Time:</Typography>
             </Grid>
             <Grid item xs={3} sx={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1">{formatNumber2(time, 1)}</Typography>
+                <Typography variant="body1" component="span">{formatNumber2(time, 1)}</Typography>
             </Grid>
             <Grid item xs={1} sx={{ textAlign: 'left', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1">hr</Typography>
+                <Typography variant="body1" component="span">hr</Typography>
             </Grid>
             <Grid item xs={3} sx={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1">{deltaTime && renderDelta(deltaTime)}</Typography>
+                <Typography variant="body1" component="span">{deltaTime && renderDelta(deltaTime)}</Typography>
             </Grid>
             <Grid item xs={1} sx={{ textAlign: 'left', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1">{deltaDistance ? "hr" : ""}</Typography>
+                <Typography variant="body1" component="span">{deltaDistance ? "hr" : ""}</Typography>
             </Grid>
         </Grid>
     </Paper>
@@ -295,65 +295,65 @@ const SummarySectionAllTime: React.FC<SummarySectionAllTimeProps> = ({
             <Grid item xs={4} sx={{ textAlign: 'left', whiteSpace: 'nowrap' }}>
             </Grid>
             <Grid item xs={3} sx={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1"></Typography>
+                <Typography variant="body1" component="span"></Typography>
             </Grid>
             <Grid item xs={1} sx={{ textAlign: 'left', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1"></Typography>
+                <Typography variant="body1" component="span"></Typography>
             </Grid>
             <Grid item xs={3} sx={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1" style={{ fontSize: '14px' }}>Per Day</Typography>
+                <Typography variant="body1" component="span" style={{ fontSize: '14px' }}>Per Day</Typography>
             </Grid>
             <Grid item xs={1} sx={{ textAlign: 'left', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1"></Typography>
+                <Typography variant="body1" component="span"></Typography>
             </Grid>
         </Grid>
 
         <Grid container spacing={2} justifyContent="center">
             <Grid item xs={4} sx={{ textAlign: 'left', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1">Distance:</Typography>
+                <Typography variant="body1" component="span">Distance:</Typography>
             </Grid>
             <Grid item xs={3} sx={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1">{formatNumber2(distance, 1)}</Typography>
+                <Typography variant="body1" component="span">{formatNumber2(distance, 1)}</Typography>
             </Grid>
             <Grid item xs={1} sx={{ textAlign: 'left', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1">mi</Typography>
+                <Typography variant="body1" component="span">mi</Typography>
             </Grid>
             <Grid item xs={3} sx={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1">{formatNumber2(distancePerDay,2)}</Typography>
+                <Typography variant="body1" component="span">{formatNumber2(distancePerDay,2)}</Typography>
             </Grid>
             <Grid item xs={1} sx={{ textAlign: 'left', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1">mi</Typography>
+                <Typography variant="body1" component="span">mi</Typography>
             </Grid>
         </Grid>
         <Grid container spacing={2} justifyContent="center">
             <Grid item xs={4} sx={{ textAlign: 'left', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1">Elevation Gain:</Typography>
+                <Typography variant="body1" component="span">Elevation Gain:</Typography>
             </Grid>
             <Grid item xs={3} sx={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1">{formatNumber(elevation)}</Typography>
+                <Typography variant="body1" component="span">{formatNumber(elevation)}</Typography>
             </Grid>
             <Grid item xs={1} sx={{ textAlign: 'left', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1">ft</Typography>
+                <Typography variant="body1" component="span">ft</Typography>
             </Grid>
             <Grid item xs={3} sx={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-            <Typography variant="body1">{formatNumber(elevationePerDay)}</Typography>
+            <Typography variant="body1" component="span">{formatNumber(elevationePerDay)}</Typography>
             </Grid>
             <Grid item xs={1} sx={{ textAlign: 'left', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1">{elevationePerDay ? "ft" : ""}</Typography>
+                <Typography variant="body1" component="span">{elevationePerDay ? "ft" : ""}</Typography>
             </Grid>
         </Grid>
         <Grid container spacing={2} justifyContent="center">
             <Grid item xs={4} sx={{ textAlign: 'left', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1">Time:</Typography>
+                <Typography variant="body1" component="span">Time:</Typography>
             </Grid>
             <Grid item xs={3} sx={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1">{formatNumber2(time, 1)}</Typography>
+                <Typography variant="body1" component="span">{formatNumber2(time, 1)}</Typography>
             </Grid>
             <Grid item xs={1} sx={{ textAlign: 'left', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1">hr</Typography>
+                <Typography variant="body1" component="span">hr</Typography>
             </Grid>
             <Grid item xs={3} sx={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                <Typography variant="body1">{timePerDay && formatNumber2(timePerDay,1)}</Typography>
+                <Typography variant="body1" component="span">{timePerDay && formatNumber2(timePerDay,1)}</Typography>
             </Grid>
             <Grid item xs={1} sx={{ textAlign: 'left', whiteSpace: 'nowrap' }}>
                 <Typography variant="body1">{timePerDay ? "hr" : ""}</Typography>

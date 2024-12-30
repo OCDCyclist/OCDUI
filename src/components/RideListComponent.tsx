@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogContent, Container, Button, TableCellProps } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogContent, Container, TableCellProps } from '@mui/material';
 import axios from 'axios';
 import RideDetail from './RideDetail';
 import { formatDateHelper } from '../components/formatters/formatDateHelper';
@@ -8,7 +8,6 @@ import { formatRideDataWithTags } from  './formatters/formatRideDataWithTags';
 import TagSelector from './TagSelector';
 import { splitCommaSeparatedString } from '../utilities/stringUtilities';
 import { getUniqueTags } from '../utilities/tagUtilities';
-import TagFilter from './TagFilter';
 import LinearLoader from './loaders/LinearLoader';
 import { rideUrlHelper } from './formatters/rideUrlHelper';
 import RideDataFilter, { FilterObject } from './filters2/RideDataFilter';
@@ -20,9 +19,10 @@ type RideListComponentProps = {
   dow?: number;
   dom?: number;
   cluster?: CentroidDefinition;
+  years?: number[];
 };
 
-const RideListComponent = ( { date, year, month, dow, dom, cluster }: RideListComponentProps) => {
+const RideListComponent = ( { date, year, month, dow, dom, cluster, years }: RideListComponentProps) => {
   const [loadingState, setLoadingState] = React.useState({
     loading: false,
     message: "",
@@ -38,7 +38,6 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster }: RideListCo
   });
   const [tableHeight, setTableHeight] = useState(window.innerHeight - 190);
   const [refreshData, setRefreshData] = useState(false);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [filters, setFilters] = useState<FilterObject>({
     dayOfWeek: [],
     month: [],
@@ -64,8 +63,8 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster }: RideListCo
   useEffect(() => {
     const token = localStorage.getItem('token');
 
-    const theMessage: string = formatDateHelper({ date: date, year: year, month: month, dow: dow, dom: dom, cluster: cluster });
-    const url: string = rideUrlHelper({ date: date, year: year, month: month, dow: dow, dom: dom, cluster: cluster });
+    const theMessage: string = formatDateHelper({ date: date, year: year, month: month, dow: dow, dom: dom, cluster: cluster, years: years });
+    const url: string = rideUrlHelper({ date: date, year: year, month: month, dow: dow, dom: dom, cluster: cluster, years: years });
 
     setLoadingState({ loading: true, message: theMessage });
 
@@ -77,17 +76,18 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster }: RideListCo
       },
     })
       .then((response) =>{
-        const uniqueTags = getUniqueTags(response.data);
+        const theRides = response.data;
+        const uniqueTags = getUniqueTags(theRides);
         const availableTags = uniqueTags;
         setFilters({...filters, availableTags})
-        setData(response.data);
+        setData(theRides);
         setLoadingState({ loading: false, message: '' });
       })
       .catch((error) => {
         console.error('Error fetching last month ride data:', error);
         setLoadingState({ loading: false, message: '' });
       });
-  }, [refreshData]);
+  }, [refreshData, date, year, month, dow, dom, cluster, years]);
 
   const handleSort = (columnKey: keyof RideDataWithTags) => {
     let direction: 'asc' | 'desc' = 'asc';
@@ -213,9 +213,9 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster }: RideListCo
     return (
       <TableContainer sx={{ maxHeight: tableHeight }}>
         <Table stickyHeader>
+          { loadingState.loading ? <LinearLoader message={loadingState.message} /> : undefined }
           <TableHead>
-            { loadingState.loading ? <LinearLoader message={loadingState.message} /> : undefined }
-            <TableRow>
+            <TableRow key={'header'}>
               {columns.map((col) => (
                 <TableCell
                   key={col.key}
@@ -232,7 +232,7 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster }: RideListCo
           <TableBody>
             {sortedData.map((row, index) => (
               <TableRow
-                key={row.date}
+                key={row.rideid}
                 sx={{ backgroundColor: index % 2 === 0 ? '#f9f9f9' : '#fff' }}
               >
                 {columns.map((col) => (

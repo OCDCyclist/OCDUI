@@ -48,7 +48,7 @@ const UpdateStravaStarredSegments: React.FC = () => {
     return (
       <Container maxWidth="sm" sx={{ marginY: 5, textAlign: 'center' }}>
         <CircularProgress />
-        <Typography variant="body1" sx={{ marginTop: 2 }}>
+        <Typography variant="body1" component={"span"} sx={{ marginTop: 2 }}>
           Updating your Strava Starred Segments...
         </Typography>
         <img src={StravaLogo} alt="Powered by Strava" style={{ marginTop: 20, width: '80%' }} />
@@ -72,18 +72,18 @@ const UpdateStravaStarredSegments: React.FC = () => {
     return (
       <Container maxWidth="sm" sx={{ marginY: 5 }}>
         <Paper elevation={3} sx={{ padding: 4 }}>
-          <Typography variant="h5" align="center" gutterBottom>
+          <Typography variant="h5" align="center" component={"span"} gutterBottom>
             Strava Starred Segment Update Complete!
           </Typography>
 
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <Typography variant="body1">
+              <Typography variant="body1" component={"span"}>
                 <strong>Success:</strong> {updateResult ? 'Yes' : 'No'}
               </Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="body1">
+              <Typography variant="body1" component={"span"}>
                 <strong>Segments Updated:</strong> {updateResult.ridesAdded}
               </Typography>
             </Grid>

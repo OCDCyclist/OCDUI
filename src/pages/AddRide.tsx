@@ -159,56 +159,56 @@ const AddRideForm: React.FC = () => {
   const RideSuccess = ({ ride }: { ride: RideData }) => (
     <Container maxWidth="sm" sx={{ marginY: 5 }}>
       <Paper elevation={3} sx={{ padding: 4 }}>
-        <Typography variant="h5" align="center" gutterBottom>
+        <Typography variant="h5" align="center" component={"span"} gutterBottom>
           Ride Added Successfully!
         </Typography>
 
         <Grid container spacing={2}>
           <Grid item xs={6}>
-            <Typography variant="body1"><strong>Ride ID:</strong></Typography>
+            <Typography variant="body1" component={"span"}><strong>Ride ID:</strong></Typography>
           </Grid>
           <Grid item xs={6}>
-            <Typography variant="body1">{ride.rideid}</Typography>
-          </Grid>
-
-          <Grid item xs={6}>
-            <Typography variant="body1"><strong>Date:</strong></Typography>
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant="body1">{ride.date}</Typography>
+            <Typography variant="body1" component={"span"}>{ride.rideid}</Typography>
           </Grid>
 
           <Grid item xs={6}>
-            <Typography variant="body1"><strong>Distance:</strong></Typography>
+            <Typography variant="body1" component={"span"}><strong>Date:</strong></Typography>
           </Grid>
           <Grid item xs={6}>
-            <Typography variant="body1">{ride.distance} mi</Typography>
-          </Grid>
-
-          <Grid item xs={6}>
-            <Typography variant="body1"><strong>Avg Speed:</strong></Typography>
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant="body1">{ride.speedavg} mi/h</Typography>
+            <Typography variant="body1" component={"span"}>{ride.date}</Typography>
           </Grid>
 
           <Grid item xs={6}>
-            <Typography variant="body1"><strong>Max Speed:</strong></Typography>
+            <Typography variant="body1" component={"span"}><strong>Distance:</strong></Typography>
           </Grid>
           <Grid item xs={6}>
-            <Typography variant="body1">{ride.speedmax} mi/h</Typography>
+            <Typography variant="body1" component={"span"}>{ride.distance} mi</Typography>
+          </Grid>
+
+          <Grid item xs={6}>
+            <Typography variant="body1" component={"span"}><strong>Avg Speed:</strong></Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <Typography variant="body1" component={"span"}>{ride.speedavg} mi/h</Typography>
+          </Grid>
+
+          <Grid item xs={6}>
+            <Typography variant="body1" component={"span"}><strong>Max Speed:</strong></Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <Typography variant="body1" component={"span"}>{ride.speedmax} mi/h</Typography>
           </Grid>
 
         </Grid>
 
         <Grid container spacing={2} sx={{ marginTop: 3 }}>
           <Grid item xs={6}>
-            <Button fullWidth variant="contained" onClick={handleAddAnotherRide}>
+            <Button fullWidth variant="contained"  component={"span"} onClick={handleAddAnotherRide}>
               Add Another Ride
             </Button>
           </Grid>
           <Grid item xs={6}>
-            <Button fullWidth variant="outlined" onClick={handleGoToDashboard}>
+            <Button fullWidth variant="outlined"  component={"span"} onClick={handleGoToDashboard}>
               Go to Dashboard
             </Button>
           </Grid>
@@ -257,7 +257,7 @@ const AddRideForm: React.FC = () => {
   return (
     <Container maxWidth="sm" sx={{ marginY: 5 }}>
       <Paper elevation={3} sx={{ padding: 4 }}>
-        <Typography variant="h5" align="center" gutterBottom>
+        <Typography variant="h5" align="center" component={"span"} gutterBottom>
           Add a New Ride
         </Typography>
 

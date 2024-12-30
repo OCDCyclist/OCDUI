@@ -65,12 +65,12 @@ const ClusterColorPicker: React.FC<ClusterColorPickerProps> = ({
 
   return (
     <Box>
-      <Typography variant="h6">Cluster Color Picker</Typography>
+      <Typography variant="h6" component={"span"}>Cluster Color Picker</Typography>
       <Stack spacing={2}>
         {colors.map((color, index) => (
           <Stack key={index} direction="row" spacing={2} alignItems="center">
             {/* Color index */}
-            <Typography variant="body1">Color {index + 1}:</Typography>
+            <Typography variant="body1" component={"span"}>Color {index + 1}:</Typography>
             {/* Color swatch */}
             <Box
               sx={{
