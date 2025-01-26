@@ -6,7 +6,7 @@ export function formatElapsedTime(seconds: number): string {
     const secs = seconds % 60;
 
     return `${pad(hours)}:${pad(minutes)}:${pad(secs)}`;
-  }
+}
 
 export const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -22,7 +22,7 @@ export const formatDate = (dateString: string) => {
     }).format(date);
 
     return `${datePart} ${weekdayPart}`;
-  };
+};
 
 export const formatNumber = (num: number) => {
     return new Intl.NumberFormat('en-US', {

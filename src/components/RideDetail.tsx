@@ -17,24 +17,37 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Tabs,
+  Tab,
+  Box,
 } from '@mui/material';
 import { formatBoolean, formatDate, formatInteger, formatNumber, formatPercent, isTextPresent } from '../utilities/formatUtilities';
 import { useNavigate } from 'react-router-dom';
-import { Bike, RideData } from '../types/types';
+import { Bike, RideData, UserZone, ZoneType } from '../types/types';
 import { isBooleanString, isStringInteger, isStringNumber } from '../utilities/validation';
-import LinearIndeterminate from '../components/loaders/LinearIndeterminate';
+import LinearIndeterminate from './loaders/LinearIndeterminate';
 import { isTokenValid } from '../utilities/jwtUtils';
 import { wattsPerKilo } from '../utilities/metricsUtils';
 import ElapsedTimeEditor from './ElapsedTimeEditor';
 import DisplayPower from './DisplayPower';
 import StravaRideLink from './StravaRideLink';
+import ZoneTable from './ZoneTable';
+
+const TabPanel = ({ children, value, index }: { children: React.ReactNode; value: number; index: number }) => {
+  return (
+    <div role="tabpanel" hidden={value !== index}>
+      {value === index && <Box>{children}</Box>}
+    </div>
+  );
+};
 
 interface RideDetailProps {
   rideData: RideData;
+  userZones: UserZone[];
   onClose: () => void;
 }
 
-const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => {
+const RideDetail = ({ rideData: initialRideData, userZones, onClose }: RideDetailProps) => {
   const [rideData, setRideData] = useState<RideData>(initialRideData); // For success response
   const [bikes, setBikes] = useState<Bike[]>([]); // Bikes data
   const [elapsedTime, setElapsedTime] = useState<number>(0);
@@ -43,6 +56,8 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
   const [inputError, setInputError] = useState<string | null>(null); // Tracks validation errors
   const [loading, setLoading] = useState<boolean>(false); // For loading state when updating
   const [error, setError] = useState<string | null>(null); // For error state when updating
+  const [tabIndex, setTabIndex] = useState(0);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -272,6 +287,10 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
     setError(null); // Clear error state
   };
 
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+    setTabIndex(newValue);
+  };
+
   const ErrorComponent = ({ error }: { error: string }) => (
     <Container maxWidth="sm" sx={{ marginY: 5 }}>
       <Paper elevation={3} sx={{ padding: 4 }}>
@@ -287,455 +306,520 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
     </Container>
   );
 
+  const getZoneValues = (zoneType: ZoneType, userZones: UserZone[]): number[] => {
+    const zone = userZones.find((zone) => zone.zonetype === zoneType);
+
+    if (!zone) {
+      return [];
+    }
+
+    const values = zone.zonevalues.split(',');
+    const numbers = values.map((value) => {
+      const number = parseFloat(value.trim());
+      return isNaN(number) ? null : number;
+    });
+
+    return numbers.includes(null) ? [] : (numbers as number[]);
+  };
+
   if (error) {
     return <ErrorComponent error={error} />;
   }
+
+  const zoneDefinitionsHR =  getZoneValues(ZoneType.HR, userZones);
+  const zoneValuesHR = rideData.hrzones;
+
+  const zoneDefinitionsPower = getZoneValues(ZoneType.Power, userZones);
+  const zoneValuesPower = rideData.powerzones;;
+
+  const zoneDefinitionsCadence = getZoneValues(ZoneType.Cadence, userZones);
+  const zoneValuesCadence = rideData.cadencezones;;
 
   return (
     <Container maxWidth="xl" sx={{ marginY: 5 }}>
       <Paper elevation={3} sx={{ padding: 2, width: '100%', margin: '0 auto' }}>
         { loading ? <LinearIndeterminate /> : null}
 
-        <Typography variant="h5" align="center" paddingBottom={3} component={"span"}>
-          {editingField === 'title' ? (
-            <TextField
-              fullWidth
-              value={editValue ?? rideData.title}
-              onChange={handleInputChange}
-              onBlur={handleCancel}
-              onKeyUp={(e) => e.key === 'Enter' && handleSave('title')}
-              error={!!inputError}
-              helperText={inputError}
-              InputProps={{
-                endAdornment: <InputAdornment position="end">text</InputAdornment>,
-              }}
-              autoFocus
-            />
-          ) : (
-            <span onClick={() => handleFieldClick('title', rideData.title)}>{rideData.title || 'Ride Detail'}</span>
-          )}
-        </Typography>
+        <Tabs value={tabIndex} onChange={handleTabChange}>
+          <Tab label="Summary" />
+          <Tab label="HR" />
+          <Tab label="Power" />
+          <Tab label="Cadence" />
+          <Tab label="Matches" />
+        </Tabs>
 
-        <TableContainer component={Paper}>
-          <Table>
-            <TableBody>
-              {/* Ride Date */}
-              <TableRow>
-                <TableCell>Ride Date</TableCell>
-                <TableCell>
-                  {editingField === 'date' ? (
-                    <TextField
-                      fullWidth
-                      value={editValue ?? rideData.date}
-                      onChange={handleInputChange}
-                      onBlur={handleCancel}
-                      onKeyUp={(e) => e.key === 'Enter' && handleSave('date')}
-                      error={!!inputError}
-                      helperText={inputError}
-                      InputProps={{
-                        endAdornment: <InputAdornment position="end">date</InputAdornment>,
-                      }}
-                      autoFocus
-                    />
-                  ) : (
-                    <Button variant="text" color="primary" onClick={( () => {
-                        handleFieldClick('date', rideData.date)
-                      })}>
-                      {formatDate(rideData.date)}
-                    </Button>
-                  )}
-                </TableCell>
-                <TableCell>Elapsed Time</TableCell>
-                <TableCell>
-                  <ElapsedTimeEditor initialSeconds={rideData.elapsedtime} onSave={ (newSeconds: number) =>{
-                      setElapsedTime(newSeconds);
-                      handleSaveElapsedTime();
-                  }} />
-                </TableCell>
-              </TableRow>
+        <TabPanel value={tabIndex} index={0}>
+          <Typography variant="h5" align="left" sx={{ marginTop: 4 }}>
+            {editingField === 'title' ? (
+              <TextField
+                fullWidth
+                value={editValue ?? rideData.title}
+                onChange={handleInputChange}
+                onBlur={handleCancel}
+                onKeyUp={(e) => e.key === 'Enter' && handleSave('title')}
+                error={!!inputError}
+                helperText={inputError}
+                InputProps={{
+                  endAdornment: <InputAdornment position="end">text</InputAdornment>,
+                }}
+                autoFocus
+              />
+            ) : (
+              <span title={`RideId: ${rideData.rideid}`} onClick={() => handleFieldClick('title', rideData.title)}>{rideData.title || 'Ride Detail'}</span>
+            )}
+          </Typography>
 
-              {/* Distnace */}
-              <TableRow>
-                <TableCell>Distance</TableCell>
-                <TableCell>
-                  {editingField === 'distance' ? (
-                    <TextField
-                      fullWidth
-                      value={editValue ?? rideData.distance}
-                      onChange={handleInputChange}
-                      onBlur={handleCancel}
-                      onKeyUp={(e) => e.key === 'Enter' && handleSave('distance')}
-                      error={!!inputError}
-                      helperText={inputError}
-                      InputProps={{
-                        endAdornment: <InputAdornment position="end">mph</InputAdornment>,
-                      }}
-                      autoFocus
-                    />
-                  ) : (
-                    <span onClick={() => handleFieldClick('distance', rideData.distance)}>
-                      {`${formatNumber(rideData.distance)} miles`}
-                    </span>
-                  )}
-                </TableCell>
-                <TableCell>Bike Name</TableCell>
-                <TableCell>
-                    {editingField === 'bikeid' ? (
-                      <FormControl fullWidth>
-                        <InputLabel id="bike-select-label">Select Bike</InputLabel>
-                        <Select
-                          labelId="bike-select-label"
-                          value={rideData.bikeid}
-                          onChange={(e: { target: { value: unknown; }; }) => {
-                            setEditValue(Number(e.target.value));
-                            handleSave('bikeid');
-                          }}
-                          fullWidth
-                        >
-                          {bikes.map((bike) => (
-                            <MenuItem key={bike.bikeid} value={bike.bikeid}>
-                              {bike.bikename || 'Unknown'}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableBody>
+                {/* Ride Date */}
+                <TableRow>
+                  <TableCell>Ride Date</TableCell>
+                  <TableCell>
+                    {editingField === 'date' ? (
+                      <TextField
+                        fullWidth
+                        value={editValue ?? rideData.date}
+                        onChange={handleInputChange}
+                        onBlur={handleCancel}
+                        onKeyUp={(e) => e.key === 'Enter' && handleSave('date')}
+                        error={!!inputError}
+                        helperText={inputError}
+                        InputProps={{
+                          endAdornment: <InputAdornment position="end">date</InputAdornment>,
+                        }}
+                        autoFocus
+                      />
                     ) : (
-                      <span onClick={() => handleFieldClick('bikeid', rideData.bikeid)}>
-                        <Typography variant='body2' component={"span"}>{`${rideData.bikename}`}</Typography>
+                      <Button variant="text" color="primary" onClick={( () => {
+                          handleFieldClick('date', rideData.date)
+                        })}>
+                        {formatDate(rideData.date)}
+                      </Button>
+                    )}
+                  </TableCell>
+                  <TableCell>Elapsed Time</TableCell>
+                  <TableCell>
+                    <ElapsedTimeEditor initialSeconds={rideData.elapsedtime} onSave={ (newSeconds: number) =>{
+                        setElapsedTime(newSeconds);
+                        handleSaveElapsedTime();
+                    }} />
+                  </TableCell>
+                </TableRow>
+
+                {/* Distance */}
+                <TableRow>
+                  <TableCell>Distance</TableCell>
+                  <TableCell>
+                    {editingField === 'distance' ? (
+                      <TextField
+                        fullWidth
+                        value={editValue ?? rideData.distance}
+                        onChange={handleInputChange}
+                        onBlur={handleCancel}
+                        onKeyUp={(e) => e.key === 'Enter' && handleSave('distance')}
+                        error={!!inputError}
+                        helperText={inputError}
+                        InputProps={{
+                          endAdornment: <InputAdornment position="end">mph</InputAdornment>,
+                        }}
+                        autoFocus
+                      />
+                    ) : (
+                      <span onClick={() => handleFieldClick('distance', rideData.distance)}>
+                        {`${formatNumber(rideData.distance)} miles`}
                       </span>
                     )}
-                </TableCell>
-              </TableRow>
+                  </TableCell>
+                  <TableCell>Bike Name</TableCell>
+                  <TableCell>
+                      {editingField === 'bikeid' ? (
+                        <FormControl fullWidth>
+                          <InputLabel id="bike-select-label">Select Bike</InputLabel>
+                          <Select
+                            labelId="bike-select-label"
+                            value={rideData.bikeid}
+                            onChange={(e: { target: { value: unknown; }; }) => {
+                              setEditValue(Number(e.target.value));
+                              handleSave('bikeid');
+                            }}
+                            fullWidth
+                          >
+                            {bikes.map((bike) => (
+                              <MenuItem key={bike.bikeid} value={bike.bikeid}>
+                                {bike.bikename || 'Unknown'}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      ) : (
+                        <span onClick={() => handleFieldClick('bikeid', rideData.bikeid)}>
+                          <Typography variant='body2' component={"span"}>{`${rideData.bikename}`}</Typography>
+                        </span>
+                      )}
+                  </TableCell>
+                </TableRow>
 
-              {/* Avg and Max Speed */}
-              <TableRow>
-                <TableCell>Avg Speed</TableCell>
-                <TableCell>
-                  {editingField === 'speedavg' ? (
-                    <TextField
-                      fullWidth
-                      value={editValue ?? rideData.speedavg}
-                      onChange={handleInputChange}
-                      onBlur={handleCancel}
-                      onKeyUp={(e) => e.key === 'Enter' && handleSave('speedavg')}
-                      error={!!inputError}
-                      helperText={inputError}
-                      InputProps={{
-                        endAdornment: <InputAdornment position="end">mph</InputAdornment>,
-                      }}
-                      autoFocus
-                    />
-                  ) : (
-                    <span onClick={() => handleFieldClick('speedavg', rideData.speedavg)}>
-                      {`${formatNumber(rideData.speedavg)} mph`}
-                    </span>
-                  )}
-                </TableCell>
-                <TableCell>Max Speed</TableCell>
-                <TableCell>
-                  {editingField === 'speedmax' ? (
-                    <TextField
-                      fullWidth
-                      value={editValue ?? rideData.speedmax}
-                      onChange={handleInputChange}
-                      onBlur={handleCancel}
-                      onKeyUp={(e) => e.key === 'Enter' && handleSave('speedmax')}
-                      error={!!inputError}
-                      helperText={inputError}
-                      InputProps={{
-                        endAdornment: <InputAdornment position="end">mph</InputAdornment>,
-                      }}
-                      autoFocus
-                    />
-                  ) : (
-                    <span onClick={() => handleFieldClick('speedmax', rideData.speedmax)}>
-                      {`${formatNumber(rideData.speedmax)} mph`}
-                    </span>
-                  )}
-                </TableCell>
-              </TableRow>
-
-              {/* Elevation Gain and Elevation Loss */}
-              <TableRow>
-                <TableCell>Elevation Gain</TableCell>
-                <TableCell>
-                  {editingField === 'elevationgain' ? (
-                    <TextField
-                      fullWidth
-                      value={editValue ?? rideData.elevationgain}
-                      onChange={handleInputChange}
-                      onBlur={handleCancel}
-                      onKeyUp={(e) => e.key === 'Enter' && handleSave('elevationgain')}
-                      error={!!inputError}
-                      helperText={inputError}
-                      InputProps={{
-                        endAdornment: <InputAdornment position="end">feet</InputAdornment>,
-                      }}
-                      autoFocus
-                    />
-                  ) : (
-                    <span onClick={() => handleFieldClick('elevationgain', rideData.elevationgain)}>
-                      {`${formatInteger(rideData.elevationgain)} feet`}
-                    </span>
-                  )}
-                </TableCell>
-                <TableCell>Elevation Loss</TableCell>
-                <TableCell>
-                  {editingField === 'elevationloss' ? (
-                    <TextField
-                      fullWidth
-                      value={editValue ?? rideData.elevationloss}
-                      onChange={handleInputChange}
-                      onBlur={handleCancel}
-                      onKeyUp={(e) => e.key === 'Enter' && handleSave('elevationloss')}
-                      error={!!inputError}
-                      helperText={inputError}
-                      InputProps={{
-                        endAdornment: <InputAdornment position="end">feet</InputAdornment>,
-                      }}
-                      autoFocus
-                    />
-                  ) : (
-                    <span onClick={() => handleFieldClick('elevationloss', rideData.elevationloss)}>
-                      {`${formatInteger(rideData.elevationloss)} feet`}
-                    </span>
-                  )}
-                </TableCell>
-              </TableRow>
-
-              {/* Avg HR and Max HR */}
-              <TableRow>
-                <TableCell>Avg HR</TableCell>
-                <TableCell>
-                  {editingField === 'hravg' ? (
-                    <TextField
-                      fullWidth
-                      value={editValue ?? rideData.hravg}
-                      onChange={handleInputChange}
-                      onBlur={handleCancel}
-                      onKeyUp={(e) => e.key === 'Enter' && handleSave('hravg')}
-                      error={!!inputError}
-                      helperText={inputError}
-                      InputProps={{
-                        endAdornment: <InputAdornment position="end">bpm</InputAdornment>,
-                      }}
-                      autoFocus
-                    />
-                  ) : (
-                    <span onClick={() => handleFieldClick('hravg', rideData.hravg)}>
-                      {`${formatInteger(rideData.hravg)} bpm`}
-                    </span>
-                  )}
-                </TableCell>
-                <TableCell>Max HR</TableCell>
-                <TableCell>
-                  {editingField === 'hrmax' ? (
-                    <TextField
-                      fullWidth
-                      value={editValue ?? rideData.hrmax}
-                      onChange={handleInputChange}
-                      onBlur={handleCancel}
-                      onKeyUp={(e) => e.key === 'Enter' && handleSave('hrmax')}
-                      error={!!inputError}
-                      helperText={inputError}
-                      InputProps={{
-                        endAdornment: <InputAdornment position="end">bpm</InputAdornment>,
-                      }}
-                      autoFocus
-                    />
-                  ) : (
-                    <span onClick={() => handleFieldClick('hrmax', rideData.hrmax)}>
-                      {`${formatInteger(rideData.hrmax)} bpm`}
-                    </span>
-                  )}
-                </TableCell>
-              </TableRow>
-
-              {/* Avg Power and Max Power */}
-              <TableRow>
-                <TableCell>Avg Power</TableCell>
-                <TableCell>
-                  {editingField === 'poweravg' ? (
-                    <TextField
-                      fullWidth
-                      value={editValue ?? rideData.poweravg}
-                      onChange={handleInputChange}
-                      onBlur={handleCancel}
-                      onKeyUp={(e) => e.key === 'Enter' && handleSave('poweravg')}
-                      error={!!inputError}
-                      helperText={inputError}
-                      InputProps={{
-                        endAdornment: <InputAdornment position="end">watts</InputAdornment>,
-                      }}
-                      autoFocus
-                    />
-                  ) : (
-                    <DisplayPower
-                      power={rideData.poweravg}
-                      wattsPerKilo={wattsPerKilo(rideData.poweravg, rideData.calculated_weight_kg)}
-                      onClick={() => handleFieldClick('poweravg', rideData.poweravg)}
-                    />
-                  )}
-                </TableCell>
-                <TableCell>Max Power</TableCell>
-                <TableCell>
-                  {editingField === 'powermax' ? (
-                    <TextField
-                      fullWidth
-                      value={editValue ?? rideData.powermax}
-                      onChange={handleInputChange}
-                      onBlur={handleCancel}
-                      onKeyUp={(e) => e.key === 'Enter' && handleSave('powermax')}
-                      error={!!inputError}
-                      helperText={inputError}
-                      InputProps={{
-                        endAdornment: <InputAdornment position="end">watts</InputAdornment>,
-                      }}
-                      autoFocus
-                    />
-                  ) : (
-                    <DisplayPower
-                      power={rideData.powermax}
-                      wattsPerKilo={wattsPerKilo(rideData.powermax, rideData.calculated_weight_kg)}
-                      onClick={() => handleFieldClick('powermax', rideData.powermax)}
-                    />
-              )}
-                </TableCell>
-              </TableRow>
-
-              {/* Normalized Power and Intensity Ractor */}
-              <TableRow>
-                <TableCell>Normalized Power</TableCell>
-                <TableCell>
-                  {editingField === 'powernormalized' ? (
-                    <TextField
-                      fullWidth
-                      value={editValue ?? rideData.powernormalized}
-                      onChange={handleInputChange}
-                      onBlur={handleCancel}
-                      onKeyUp={(e) => e.key === 'Enter' && handleSave('powernormalized')}
-                      error={!!inputError}
-                      helperText={inputError}
-                      InputProps={{
-                        endAdornment: <InputAdornment position="end">watts</InputAdornment>,
-                      }}
-                      autoFocus
-                    />
-                  ) : (
-                      <DisplayPower
-                        power={rideData.powernormalized}
-                        wattsPerKilo={wattsPerKilo(rideData.powernormalized, rideData.calculated_weight_kg)}
-                        onClick={() => handleFieldClick('powernormalized', rideData.powernormalized)}
+                {/* Avg and Max Speed */}
+                <TableRow>
+                  <TableCell>Avg Speed</TableCell>
+                  <TableCell>
+                    {editingField === 'speedavg' ? (
+                      <TextField
+                        fullWidth
+                        value={editValue ?? rideData.speedavg}
+                        onChange={handleInputChange}
+                        onBlur={handleCancel}
+                        onKeyUp={(e) => e.key === 'Enter' && handleSave('speedavg')}
+                        error={!!inputError}
+                        helperText={inputError}
+                        InputProps={{
+                          endAdornment: <InputAdornment position="end">mph</InputAdornment>,
+                        }}
+                        autoFocus
                       />
-                  )}
-                </TableCell>
-                <TableCell>Intensity Factor</TableCell>
-                <TableCell>
-                  {editingField === 'intensityfactor' ? (
-                    <TextField
-                      fullWidth
-                      value={editValue ?? rideData.intensityfactor}
-                      onChange={handleInputChange}
-                      onBlur={handleCancel}
-                      onKeyUp={(e) => e.key === 'Enter' && handleSave('intensityfactor')}
-                      error={!!inputError}
-                      helperText={inputError}
-                      InputProps={{
-                        endAdornment: <InputAdornment position="end">fraction</InputAdornment>,
-                      }}
-                      autoFocus
-                    />
-                  ) : (
-                    <span onClick={() => handleFieldClick('intensityfactor', rideData.intensityfactor)}>
-                      {`${formatPercent(rideData.intensityfactor)} %`}
-                    </span>
-                  )}
-                </TableCell>
-              </TableRow>
+                    ) : (
+                      <span onClick={() => handleFieldClick('speedavg', rideData.speedavg)}>
+                        {`${formatNumber(rideData.speedavg)} mph`}
+                      </span>
+                    )}
+                  </TableCell>
+                  <TableCell>Max Speed</TableCell>
+                  <TableCell>
+                    {editingField === 'speedmax' ? (
+                      <TextField
+                        fullWidth
+                        value={editValue ?? rideData.speedmax}
+                        onChange={handleInputChange}
+                        onBlur={handleCancel}
+                        onKeyUp={(e) => e.key === 'Enter' && handleSave('speedmax')}
+                        error={!!inputError}
+                        helperText={inputError}
+                        InputProps={{
+                          endAdornment: <InputAdornment position="end">mph</InputAdornment>,
+                        }}
+                        autoFocus
+                      />
+                    ) : (
+                      <span onClick={() => handleFieldClick('speedmax', rideData.speedmax)}>
+                        {`${formatNumber(rideData.speedmax)} mph`}
+                      </span>
+                    )}
+                  </TableCell>
+                </TableRow>
 
-              {/* TSS and Trainer */}
-              <TableRow>
-                <TableCell>TSS</TableCell>
-                <TableCell>
-                  {editingField === 'tss' ? (
-                    <TextField
-                      fullWidth
-                      value={editValue ?? rideData.tss}
-                      onChange={handleInputChange}
-                      onBlur={handleCancel}
-                      onKeyUp={(e) => e.key === 'Enter' && handleSave('tss')}
-                      error={!!inputError}
-                      helperText={inputError}
-                      InputProps={{
-                        endAdornment: <InputAdornment position="end"></InputAdornment>,
-                      }}
-                      autoFocus
-                    />
-                  ) : (
-                    <span onClick={() => handleFieldClick('tss', rideData.tss)}>
-                      {`${formatInteger(rideData.tss)}`}
-                    </span>
-                  )}
-                </TableCell>
-                <TableCell>Trainer</TableCell>
-                <TableCell>
-                  {editingField === 'trainer' ? (
-                    <TextField
-                      fullWidth
-                      value={editValue ?? rideData.trainer}
-                      onChange={handleInputChange}
-                      onBlur={handleCancel}
-                      onKeyUp={(e) => e.key === 'Enter' && handleSave('trainer')}
-                      error={!!inputError}
-                      helperText={inputError}
-                      InputProps={{
-                        endAdornment: <InputAdornment position="end"> 1 or 0</InputAdornment>,
-                      }}
-                      autoFocus
-                    />
-                  ) : (
-                    <span onClick={() => handleFieldClick('trainer', rideData.trainer)}>
-                      {`${formatBoolean(rideData.trainer)}`}
-                    </span>
-                  )}
-                </TableCell>
-              </TableRow>
+                {/* Elevation Gain and Elevation Loss */}
+                <TableRow>
+                  <TableCell>Elevation Gain</TableCell>
+                  <TableCell>
+                    {editingField === 'elevationgain' ? (
+                      <TextField
+                        fullWidth
+                        value={editValue ?? rideData.elevationgain}
+                        onChange={handleInputChange}
+                        onBlur={handleCancel}
+                        onKeyUp={(e) => e.key === 'Enter' && handleSave('elevationgain')}
+                        error={!!inputError}
+                        helperText={inputError}
+                        InputProps={{
+                          endAdornment: <InputAdornment position="end">feet</InputAdornment>,
+                        }}
+                        autoFocus
+                      />
+                    ) : (
+                      <span onClick={() => handleFieldClick('elevationgain', rideData.elevationgain)}>
+                        {`${formatInteger(rideData.elevationgain)} feet`}
+                      </span>
+                    )}
+                  </TableCell>
+                  <TableCell>Elevation Loss</TableCell>
+                  <TableCell>
+                    {editingField === 'elevationloss' ? (
+                      <TextField
+                        fullWidth
+                        value={editValue ?? rideData.elevationloss}
+                        onChange={handleInputChange}
+                        onBlur={handleCancel}
+                        onKeyUp={(e) => e.key === 'Enter' && handleSave('elevationloss')}
+                        error={!!inputError}
+                        helperText={inputError}
+                        InputProps={{
+                          endAdornment: <InputAdornment position="end">feet</InputAdornment>,
+                        }}
+                        autoFocus
+                      />
+                    ) : (
+                      <span onClick={() => handleFieldClick('elevationloss', rideData.elevationloss)}>
+                        {`${formatInteger(rideData.elevationloss)} feet`}
+                      </span>
+                    )}
+                  </TableCell>
+                </TableRow>
 
-              {/* Comment */}
-              <TableRow>
-                <TableCell>Comment</TableCell>
-                <TableCell colSpan={3}>
-                  {editingField === 'comment' ? (
-                    <TextField
-                      fullWidth
-                      value={editValue ?? rideData.comment}
-                      onChange={handleInputChange}
-                      onBlur={handleCancel}
-                      onKeyUp={(e) => e.key === 'Enter' && handleSave('comment')}
-                      error={!!inputError}
-                      helperText={inputError}
-                      InputProps={{
-                        endAdornment: <InputAdornment position="end"></InputAdornment>,
-                      }}
-                      placeholder='Enter a comment'
-                      autoFocus
-                    />
-                  ) : (
-                    <span onClick={() => handleFieldClick('comment', rideData.comment)}>
-                      {`${ isTextPresent(rideData.comment) ? rideData.comment  : 'Click to add a comment'}`}
-                    </span>
-                  )}
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell colSpan={4} align="right">
-                  <StravaRideLink stravaRideId={rideData.stravaid} />
-                </TableCell>
-              </TableRow>
+                {/* Avg HR and Max HR */}
+                <TableRow>
+                  <TableCell>Avg HR</TableCell>
+                  <TableCell>
+                    {editingField === 'hravg' ? (
+                      <TextField
+                        fullWidth
+                        value={editValue ?? rideData.hravg}
+                        onChange={handleInputChange}
+                        onBlur={handleCancel}
+                        onKeyUp={(e) => e.key === 'Enter' && handleSave('hravg')}
+                        error={!!inputError}
+                        helperText={inputError}
+                        InputProps={{
+                          endAdornment: <InputAdornment position="end">bpm</InputAdornment>,
+                        }}
+                        autoFocus
+                      />
+                    ) : (
+                      <span onClick={() => handleFieldClick('hravg', rideData.hravg)}>
+                        {`${formatInteger(rideData.hravg)} bpm`}
+                      </span>
+                    )}
+                  </TableCell>
+                  <TableCell>Max HR</TableCell>
+                  <TableCell>
+                    {editingField === 'hrmax' ? (
+                      <TextField
+                        fullWidth
+                        value={editValue ?? rideData.hrmax}
+                        onChange={handleInputChange}
+                        onBlur={handleCancel}
+                        onKeyUp={(e) => e.key === 'Enter' && handleSave('hrmax')}
+                        error={!!inputError}
+                        helperText={inputError}
+                        InputProps={{
+                          endAdornment: <InputAdornment position="end">bpm</InputAdornment>,
+                        }}
+                        autoFocus
+                      />
+                    ) : (
+                      <span onClick={() => handleFieldClick('hrmax', rideData.hrmax)}>
+                        {`${formatInteger(rideData.hrmax)} bpm`}
+                      </span>
+                    )}
+                  </TableCell>
+                </TableRow>
 
-            </TableBody>
-          </Table>
-        </TableContainer>
+                {/* Avg Power and Max Power */}
+                <TableRow>
+                  <TableCell>Avg Power</TableCell>
+                  <TableCell>
+                    {editingField === 'poweravg' ? (
+                      <TextField
+                        fullWidth
+                        value={editValue ?? rideData.poweravg}
+                        onChange={handleInputChange}
+                        onBlur={handleCancel}
+                        onKeyUp={(e) => e.key === 'Enter' && handleSave('poweravg')}
+                        error={!!inputError}
+                        helperText={inputError}
+                        InputProps={{
+                          endAdornment: <InputAdornment position="end">watts</InputAdornment>,
+                        }}
+                        autoFocus
+                      />
+                    ) : (
+                      <DisplayPower
+                        power={rideData.poweravg}
+                        wattsPerKilo={wattsPerKilo(rideData.poweravg, rideData.calculated_weight_kg)}
+                        onClick={() => handleFieldClick('poweravg', rideData.poweravg)}
+                      />
+                    )}
+                  </TableCell>
+                  <TableCell>Max Power</TableCell>
+                  <TableCell>
+                    {editingField === 'powermax' ? (
+                      <TextField
+                        fullWidth
+                        value={editValue ?? rideData.powermax}
+                        onChange={handleInputChange}
+                        onBlur={handleCancel}
+                        onKeyUp={(e) => e.key === 'Enter' && handleSave('powermax')}
+                        error={!!inputError}
+                        helperText={inputError}
+                        InputProps={{
+                          endAdornment: <InputAdornment position="end">watts</InputAdornment>,
+                        }}
+                        autoFocus
+                      />
+                    ) : (
+                      <DisplayPower
+                        power={rideData.powermax}
+                        wattsPerKilo={wattsPerKilo(rideData.powermax, rideData.calculated_weight_kg)}
+                        onClick={() => handleFieldClick('powermax', rideData.powermax)}
+                      />
+                )}
+                  </TableCell>
+                </TableRow>
+
+                {/* Normalized Power and Intensity Ractor */}
+                <TableRow>
+                  <TableCell>Normalized Power</TableCell>
+                  <TableCell>
+                    {editingField === 'powernormalized' ? (
+                      <TextField
+                        fullWidth
+                        value={editValue ?? rideData.powernormalized}
+                        onChange={handleInputChange}
+                        onBlur={handleCancel}
+                        onKeyUp={(e) => e.key === 'Enter' && handleSave('powernormalized')}
+                        error={!!inputError}
+                        helperText={inputError}
+                        InputProps={{
+                          endAdornment: <InputAdornment position="end">watts</InputAdornment>,
+                        }}
+                        autoFocus
+                      />
+                    ) : (
+                        <DisplayPower
+                          power={rideData.powernormalized}
+                          wattsPerKilo={wattsPerKilo(rideData.powernormalized, rideData.calculated_weight_kg)}
+                          onClick={() => handleFieldClick('powernormalized', rideData.powernormalized)}
+                        />
+                    )}
+                  </TableCell>
+                  <TableCell>Intensity Factor</TableCell>
+                  <TableCell>
+                    {editingField === 'intensityfactor' ? (
+                      <TextField
+                        fullWidth
+                        value={editValue ?? rideData.intensityfactor}
+                        onChange={handleInputChange}
+                        onBlur={handleCancel}
+                        onKeyUp={(e) => e.key === 'Enter' && handleSave('intensityfactor')}
+                        error={!!inputError}
+                        helperText={inputError}
+                        InputProps={{
+                          endAdornment: <InputAdornment position="end">fraction</InputAdornment>,
+                        }}
+                        autoFocus
+                      />
+                    ) : (
+                      <span onClick={() => handleFieldClick('intensityfactor', rideData.intensityfactor)}>
+                        {`${formatPercent(rideData.intensityfactor)} %`}
+                      </span>
+                    )}
+                  </TableCell>
+                </TableRow>
+
+                {/* TSS and Trainer */}
+                <TableRow>
+                  <TableCell>TSS</TableCell>
+                  <TableCell>
+                    {editingField === 'tss' ? (
+                      <TextField
+                        fullWidth
+                        value={editValue ?? rideData.tss}
+                        onChange={handleInputChange}
+                        onBlur={handleCancel}
+                        onKeyUp={(e) => e.key === 'Enter' && handleSave('tss')}
+                        error={!!inputError}
+                        helperText={inputError}
+                        InputProps={{
+                          endAdornment: <InputAdornment position="end"></InputAdornment>,
+                        }}
+                        autoFocus
+                      />
+                    ) : (
+                      <span onClick={() => handleFieldClick('tss', rideData.tss)}>
+                        {`${formatInteger(rideData.tss)}`}
+                      </span>
+                    )}
+                  </TableCell>
+                  <TableCell>Trainer</TableCell>
+                  <TableCell>
+                    {editingField === 'trainer' ? (
+                      <TextField
+                        fullWidth
+                        value={editValue ?? rideData.trainer}
+                        onChange={handleInputChange}
+                        onBlur={handleCancel}
+                        onKeyUp={(e) => e.key === 'Enter' && handleSave('trainer')}
+                        error={!!inputError}
+                        helperText={inputError}
+                        InputProps={{
+                          endAdornment: <InputAdornment position="end"> 1 or 0</InputAdornment>,
+                        }}
+                        autoFocus
+                      />
+                    ) : (
+                      <span onClick={() => handleFieldClick('trainer', rideData.trainer)}>
+                        {`${formatBoolean(rideData.trainer)}`}
+                      </span>
+                    )}
+                  </TableCell>
+                </TableRow>
+
+                {/* Comment */}
+                <TableRow>
+                  <TableCell>Comment</TableCell>
+                  <TableCell colSpan={3}>
+                    {editingField === 'comment' ? (
+                      <TextField
+                        fullWidth
+                        value={editValue ?? rideData.comment}
+                        onChange={handleInputChange}
+                        onBlur={handleCancel}
+                        onKeyUp={(e) => e.key === 'Enter' && handleSave('comment')}
+                        error={!!inputError}
+                        helperText={inputError}
+                        InputProps={{
+                          endAdornment: <InputAdornment position="end"></InputAdornment>,
+                        }}
+                        placeholder='Enter a comment'
+                        autoFocus
+                      />
+                    ) : (
+                      <span onClick={() => handleFieldClick('comment', rideData.comment)}>
+                        {`${ isTextPresent(rideData.comment) ? rideData.comment  : 'Click to add a comment'}`}
+                      </span>
+                    )}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell colSpan={4} align="right">
+                    <StravaRideLink stravaRideId={rideData.stravaid} />
+                  </TableCell>
+                </TableRow>
+
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </TabPanel>
+
+        <TabPanel value={tabIndex} index={1}>
+        <div>
+          <ZoneTable
+            zoneType={ZoneType.HR}
+            zoneDefinitions={zoneDefinitionsHR}
+            zoneValues={zoneValuesHR}
+          />
+        </div>
+        </TabPanel>
+
+        <TabPanel value={tabIndex} index={2}>
+          <div>
+            <ZoneTable
+              zoneType={ZoneType.Power}
+              zoneDefinitions={zoneDefinitionsPower}
+              zoneValues={zoneValuesPower}
+            />
+          </div>
+        </TabPanel>
+
+        <TabPanel value={tabIndex} index={3}>
+          <div>
+            <ZoneTable
+              zoneType={ZoneType.Cadence}
+              zoneDefinitions={zoneDefinitionsCadence}
+              zoneValues={zoneValuesCadence}
+            />
+          </div>
+        </TabPanel>
 
         <Button
           variant="contained"

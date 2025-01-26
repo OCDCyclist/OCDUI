@@ -28,6 +28,9 @@ export interface RideData {
     fracdim: number,
     calculated_weight_kg: number | null | undefined;
     cluster: string;
+    hrzones: number[];
+    powerzones: number[];
+    cadencezones: number[];
 }
 
 export interface RideDataStrava{
@@ -502,6 +505,16 @@ export interface FetchClusterDataResult {
     error: string | null;
 }
 
+export interface UserZone{
+    zonetype: string;
+    zonevalues: string;
+}
+
+export interface FetchUserZoneResult {
+    zones: UserZone[];
+    error: string | null;
+}
+
 export enum LocationId {
     Segments = 1,
     Rides = 2,
@@ -563,3 +576,8 @@ export interface CumulativeData {
     run7days200: number;
 }
 
+export enum ZoneType {
+    HR = "HR",
+    Power = "Power",
+    Cadence = "Cadence",
+}

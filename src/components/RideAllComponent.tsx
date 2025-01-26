@@ -5,7 +5,7 @@ import RideYearFilter from './filters/RideYearFilter';
 
 const RideAllComponent = () => {
   const [rideFilterDialogOpen, setRideFilterDialogOpen] = useState(false);
-  const [years, setYears] = useState<number[]>([2024]);
+  const [years, setYears] = useState<number[]>([]);
   const handleCloseRideFilterDialog = () => {
     setRideFilterDialogOpen(false);
   };
@@ -48,7 +48,7 @@ const RideAllComponent = () => {
             open={rideFilterDialogOpen}
             onClose={handleCloseRideFilterDialog}
             fullWidth
-            maxWidth="md"
+            maxWidth="lg"
           >
             <DialogContent
               sx={{

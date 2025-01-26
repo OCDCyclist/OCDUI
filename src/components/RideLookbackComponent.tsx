@@ -29,7 +29,7 @@ const RideLookbackComponent = () => {
 
   const predefinedOrder = [
     "today", "1 year ago", "2 years ago", "5 years ago", "10 years ago", "15 years ago",
-    "20 years ago", "25 years ago", "30 year ago", "35 year ago", "40 year ago"
+    "20 years ago", "25 years ago", "30 years ago", "35 years ago", "40 years ago"
   ];
 
 // Memoize categories and sort them according to predefined order

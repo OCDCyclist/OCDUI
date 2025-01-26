@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogContent, Container, TableCellProps } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogContent, Container, TableCellProps, Typography } from '@mui/material';
 import axios from 'axios';
-import RideDetail from './RideDetail';
+import RideDetail2 from './RideDetail';
 import { formatDateHelper } from '../components/formatters/formatDateHelper';
-import { CentroidDefinition, LocationId, RideDataWithTags } from '../types/types';
+import { CentroidDefinition, LocationId, RideDataWithTags, UserZone } from '../types/types';
 import { formatRideDataWithTags } from  './formatters/formatRideDataWithTags';
 import TagSelector from './TagSelector';
 import { splitCommaSeparatedString } from '../utilities/stringUtilities';
@@ -11,6 +11,7 @@ import { getUniqueTags } from '../utilities/tagUtilities';
 import LinearLoader from './loaders/LinearLoader';
 import { rideUrlHelper } from './formatters/rideUrlHelper';
 import RideDataFilter, { FilterObject } from './filters2/RideDataFilter';
+import { fetchUserZones } from '../api';
 
 type RideListComponentProps = {
   date?: string;
@@ -45,6 +46,28 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster, years }: Rid
     availableTags: [],
     search: '',
   });
+  const [userZones, setUserZones] = useState<UserZone[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if(!token) return;
+    fetchUserZones(token)
+        .then( (result)=>{
+            if( result.error){
+                setError(result.error);
+                setUserZones([]);
+            }
+            else{
+                setError(null);
+                setUserZones(result.zones);
+            }
+        })
+        .catch( (error) =>{
+            setError(error.message);
+            setUserZones([]);
+         });
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -212,8 +235,8 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster, years }: Rid
   const renderTableRecent = (columns: { key: keyof RideDataWithTags; label: string; justify: string, width: string, type: string }[]) => {
     return (
       <TableContainer sx={{ maxHeight: tableHeight }}>
-        <Table stickyHeader>
           { loadingState.loading ? <LinearLoader message={loadingState.message} /> : undefined }
+          <Table stickyHeader>
           <TableHead>
             <TableRow key={'header'}>
               {columns.map((col) => (
@@ -252,6 +275,12 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster, years }: Rid
       </TableContainer>
     );
   };
+
+  if( error){
+    <Typography component={"span"}>
+        {`Error: ${error}`}
+    </Typography>
+  }
 
   return (
     <Container maxWidth='xl' sx={{ marginY: 0 }}>
@@ -305,7 +334,7 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster, years }: Rid
                   onSave={handleOnSaveTags}
               />
               :
-              rideData && <RideDetail rideData={rideData} onClose={() => setDialogOpen(false)} />
+              rideData && <RideDetail2 rideData={rideData} userZones={userZones} onClose={() => setDialogOpen(false)} />
             }
           </DialogContent>
         </Dialog>

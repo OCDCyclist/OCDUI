@@ -76,7 +76,7 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
       icon: <DirectionsBikeIcon />,
       children: [
         { text: 'Rides', icon: <DirectionsBikeIcon />, path: '/rides/recent' },
-        { text: 'All Rides', icon: <DirectionsBikeIcon />, path: '/rides/allrides' },
+        { text: 'Rides by Year', icon: <DirectionsBikeIcon />, path: '/rides/allrides' },
         { text: 'Yesteryear', icon: <TravelExploreIcon />, path: '/rides/lookback' },
         { text: 'Add Ride', icon: <PlusOneIcon />, path: '/rides/add' },
       ]

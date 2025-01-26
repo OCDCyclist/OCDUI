@@ -8,6 +8,10 @@ interface StravaEffortLinkProps {
 }
 
 const StravaEffortLink: React.FC<StravaEffortLinkProps> = ({ stravaRideId, stravaEffortId, text }) => {
+  if( !stravaRideId || stravaRideId === 0 ){
+    return "Not available in Strava"
+  }
+
   return (
     <Link
       target="_blank"

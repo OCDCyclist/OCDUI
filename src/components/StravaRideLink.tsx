@@ -7,6 +7,9 @@ interface StravaRideLinkProps {
 }
 
 const StravaRideLink: React.FC<StravaRideLinkProps> = ({ stravaRideId, text }) => {
+  if( !stravaRideId || stravaRideId === 0 ){
+    return "Not available in Strava"
+  }
   return (
     <Link
       target="_blank"
