@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogContent, Container, TableCellProps, Typography } from '@mui/material';
 import axios from 'axios';
-import RideDetail2 from './RideDetail';
+import RideDetail from './RideDetail';
 import { formatDateHelper } from '../components/formatters/formatDateHelper';
 import { CentroidDefinition, LocationId, RideDataWithTags, UserZone } from '../types/types';
 import { formatRideDataWithTags } from  './formatters/formatRideDataWithTags';
@@ -334,7 +334,7 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster, years }: Rid
                   onSave={handleOnSaveTags}
               />
               :
-              rideData && <RideDetail2 rideData={rideData} userZones={userZones} onClose={() => setDialogOpen(false)} />
+              rideData && <RideDetail rideData={rideData} userZones={userZones} onClose={() => setDialogOpen(false)} />
             }
           </DialogContent>
         </Dialog>
