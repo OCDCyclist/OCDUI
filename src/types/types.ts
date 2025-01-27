@@ -515,6 +515,35 @@ export interface FetchUserZoneResult {
     error: string | null;
 }
 
+export interface FetchRideMetricsResult {
+    rideMetrics: MetricRow[];
+    error: string | null;
+}
+
+export const METRIC_CONFIG = {
+    altitude: { label: "Altitude", unit: "ft" },
+    altitudeHigh: { label: "Altitude High", unit: "ft" },
+    altitudeLow: { label: "Altitude Low", unit: "ft" },
+    cadence: { label: "Cadence", unit: "rpm" },
+    heartrate: { label: "Heart Rate", unit: "bpm" },
+    normalized: { label: "Power Normalized", unit: "W" },
+    tempAvg: { label: "Avg Temp", unit: "F" },
+    tempMin: { label: "Min Temp", unit: "F" },
+    tempMax: { label: "Max Temp", unit: "F" },
+    velocity_smooth: { label: "Speed", unit: "mi/hr" },
+    watts: { label: "Power", unit: "W" },
+} as const;
+
+
+export type MetricKey = keyof typeof METRIC_CONFIG;
+
+export interface MetricRow {
+    metric: MetricKey;
+    period: number;
+    metric_value: number;
+    starttime: string;
+}
+
 export enum LocationId {
     Segments = 1,
     Rides = 2,

@@ -24,6 +24,25 @@ export const formatDate = (dateString: string) => {
     return `${datePart} ${weekdayPart}`;
 };
 
+export const formatDateTime = (dateString: string) => {
+    const date = new Date(dateString);
+
+    const datePart = new Intl.DateTimeFormat('en-US', {
+      month: '2-digit',
+      day: '2-digit',
+      year: 'numeric',
+    }).format(date);
+
+     // Format the time part
+    const timePart = date.toLocaleTimeString('en-US', {
+        hour12: false, // Ensures 24-hour format
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+    });
+    return `${datePart} ${timePart}`;
+};
+
 export const formatNumber = (num: number) => {
     return new Intl.NumberFormat('en-US', {
         minimumFractionDigits: 1,

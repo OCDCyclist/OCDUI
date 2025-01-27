@@ -23,7 +23,7 @@ import {
 } from '@mui/material';
 import { formatBoolean, formatDate, formatInteger, formatNumber, formatPercent, isTextPresent } from '../utilities/formatUtilities';
 import { useNavigate } from 'react-router-dom';
-import { Bike, RideData, UserZone, ZoneType } from '../types/types';
+import { Bike, MetricRow, RideData, UserZone, ZoneType } from '../types/types';
 import { isBooleanString, isStringInteger, isStringNumber } from '../utilities/validation';
 import LinearIndeterminate from './loaders/LinearIndeterminate';
 import { isTokenValid } from '../utilities/jwtUtils';
@@ -32,6 +32,8 @@ import ElapsedTimeEditor from './ElapsedTimeEditor';
 import DisplayPower from './DisplayPower';
 import StravaRideLink from './StravaRideLink';
 import ZoneTable from './ZoneTable';
+import MetricTable from './MetricTable';
+import { fetchRideMetrics } from '../api/rides/fetchRideMetrics';
 
 const TabPanel = ({ children, value, index }: { children: React.ReactNode; value: number; index: number }) => {
   return (
@@ -49,6 +51,7 @@ interface RideDetailProps {
 
 const RideDetail = ({ rideData: initialRideData, userZones, onClose }: RideDetailProps) => {
   const [rideData, setRideData] = useState<RideData>(initialRideData); // For success response
+  const [rideMetricData, setRideMetricData] = useState<MetricRow[]>([]); // For metric data
   const [bikes, setBikes] = useState<Bike[]>([]); // Bikes data
   const [elapsedTime, setElapsedTime] = useState<number>(0);
   const [editingField, setEditingField] = useState<string | null>(null);
@@ -93,6 +96,26 @@ const RideDetail = ({ rideData: initialRideData, userZones, onClose }: RideDetai
 
     fetchBikes();
   }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if(!token) return;
+    fetchRideMetrics(token, rideData.rideid)
+        .then( (result)=>{
+            if( result.error){
+                setError(result.error);
+                setRideMetricData([]);
+            }
+            else{
+                setError(null);
+                setRideMetricData(result.rideMetrics);
+            }
+        })
+        .catch( (error) =>{
+            setError(error.message);
+            setRideMetricData([]);
+         });
+  }, [rideData]);
 
   if (!rideData) {
     return <Typography variant="h6" component={"span"}>No ride data available.</Typography>;
@@ -330,10 +353,10 @@ const RideDetail = ({ rideData: initialRideData, userZones, onClose }: RideDetai
   const zoneValuesHR = rideData.hrzones;
 
   const zoneDefinitionsPower = getZoneValues(ZoneType.Power, userZones);
-  const zoneValuesPower = rideData.powerzones;;
+  const zoneValuesPower = rideData.powerzones;
 
   const zoneDefinitionsCadence = getZoneValues(ZoneType.Cadence, userZones);
-  const zoneValuesCadence = rideData.cadencezones;;
+  const zoneValuesCadence = rideData.cadencezones;
 
   return (
     <Container maxWidth="xl" sx={{ marginY: 5 }}>
@@ -346,6 +369,7 @@ const RideDetail = ({ rideData: initialRideData, userZones, onClose }: RideDetai
           <Tab label="Power" />
           <Tab label="Cadence" />
           <Tab label="Matches" />
+          <Tab label="Metrics" />
         </Tabs>
 
         <TabPanel value={tabIndex} index={0}>
@@ -819,6 +843,16 @@ const RideDetail = ({ rideData: initialRideData, userZones, onClose }: RideDetai
               zoneValues={zoneValuesCadence}
             />
           </div>
+        </TabPanel>
+
+        <TabPanel value={tabIndex} index={4}>
+          <div>
+            Matches will go here
+          </div>
+        </TabPanel>
+
+        <TabPanel value={tabIndex} index={5}>
+          <MetricTable metricData={rideMetricData} />
         </TabPanel>
 
         <Button
