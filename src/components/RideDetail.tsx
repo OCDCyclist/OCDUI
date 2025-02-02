@@ -23,7 +23,7 @@ import {
 } from '@mui/material';
 import { formatBoolean, formatDate, formatInteger, formatNumber, formatPercent, isTextPresent } from '../utilities/formatUtilities';
 import { useNavigate } from 'react-router-dom';
-import { Bike, MetricRow, RideData, UserZone, ZoneType } from '../types/types';
+import { Bike, MatchRow, MetricRow, RideData, UserZone, ZoneType } from '../types/types';
 import { isBooleanString, isStringInteger, isStringNumber } from '../utilities/validation';
 import LinearIndeterminate from './loaders/LinearIndeterminate';
 import { isTokenValid } from '../utilities/jwtUtils';
@@ -34,6 +34,8 @@ import StravaRideLink from './StravaRideLink';
 import ZoneTable from './ZoneTable';
 import MetricTable from './MetricTable';
 import { fetchRideMetrics } from '../api/rides/fetchRideMetrics';
+import { fetchRideMatches } from '../api/rides/fetchRideMatches';
+import MatchTable from './MatchTable';
 
 const TabPanel = ({ children, value, index }: { children: React.ReactNode; value: number; index: number }) => {
   return (
@@ -52,6 +54,7 @@ interface RideDetailProps {
 const RideDetail = ({ rideData: initialRideData, userZones, onClose }: RideDetailProps) => {
   const [rideData, setRideData] = useState<RideData>(initialRideData); // For success response
   const [rideMetricData, setRideMetricData] = useState<MetricRow[]>([]); // For metric data
+  const [rideMatches, setRideMatches] = useState<MatchRow[]>([]); // For match data
   const [bikes, setBikes] = useState<Bike[]>([]); // Bikes data
   const [elapsedTime, setElapsedTime] = useState<number>(0);
   const [editingField, setEditingField] = useState<string | null>(null);
@@ -114,6 +117,26 @@ const RideDetail = ({ rideData: initialRideData, userZones, onClose }: RideDetai
         .catch( (error) =>{
             setError(error.message);
             setRideMetricData([]);
+         });
+  }, [rideData]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if(!token) return;
+    fetchRideMatches(token, rideData.rideid)
+        .then( (result)=>{
+            if( result.error){
+                setError(result.error);
+                setRideMatches([]);
+            }
+            else{
+                setError(null);
+                setRideMatches(result.rideMatches);
+            }
+        })
+        .catch( (error) =>{
+            setError(error.message);
+            setRideMatches([]);
          });
   }, [rideData]);
 
@@ -846,9 +869,7 @@ const RideDetail = ({ rideData: initialRideData, userZones, onClose }: RideDetai
         </TabPanel>
 
         <TabPanel value={tabIndex} index={4}>
-          <div>
-            Matches will go here
-          </div>
+          <MatchTable matches={rideMatches} />
         </TabPanel>
 
         <TabPanel value={tabIndex} index={5}>

@@ -520,6 +520,11 @@ export interface FetchRideMetricsResult {
     error: string | null;
 }
 
+export interface FetchRideMatchesResult {
+    rideMatches: MatchRow[];
+    error: string | null;
+}
+
 export const METRIC_CONFIG = {
     altitude: { label: "Altitude", unit: "ft" },
     altitudeHigh: { label: "Altitude High", unit: "ft" },
@@ -541,6 +546,18 @@ export interface MetricRow {
     metric: MetricKey;
     period: number;
     metric_value: number;
+    starttime: string;
+}
+
+export interface MatchRow {
+    type: string;
+    period: number;
+    targetpower: number;
+    actualperiod: number;
+    maxaveragepower: number;
+    averagepower: number;
+    peakpower: number;
+    averageheartrate: number;
     starttime: string;
 }
 

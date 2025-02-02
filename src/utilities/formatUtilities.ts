@@ -1,3 +1,5 @@
+const pad = (num: number) => num.toString().padStart(2, '0');
+
 export function formatElapsedTime(seconds: number): string {
     const pad = (num: number) => num.toString().padStart(2, '0');
 
@@ -6,6 +8,13 @@ export function formatElapsedTime(seconds: number): string {
     const secs = seconds % 60;
 
     return `${pad(hours)}:${pad(minutes)}:${pad(secs)}`;
+}
+
+export function formatElapsedTimeShort(seconds: number): string {
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
+    return `${pad(minutes)}:${pad(secs)}`;
 }
 
 export const formatDate = (dateString: string) => {
