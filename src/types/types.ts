@@ -584,6 +584,8 @@ export type FormatDateParams = {
     dom?: number; // 1-31
     cluster?: CentroidDefinition;
     years?: number[];
+    start_date?: string;
+    end_date?: string;
 };
 
 export interface CumulativeData {
@@ -626,4 +628,16 @@ export enum ZoneType {
     HR = "HR",
     Power = "Power",
     Cadence = "Cadence",
+}
+
+export interface Streak_1_Day {
+    start_date: string,
+    end_date: string,
+    streak_length: number,
+}
+
+export interface Streak_7_Day {
+    start_date: string,
+    end_date: string,
+    streak_length: number,
 }

@@ -36,6 +36,7 @@ import MetricTable from './MetricTable';
 import { fetchRideMetrics } from '../api/rides/fetchRideMetrics';
 import { fetchRideMatches } from '../api/rides/fetchRideMatches';
 import MatchTable from './MatchTable';
+import { fetchUserZones } from '../api';
 
 const TabPanel = ({ children, value, index }: { children: React.ReactNode; value: number; index: number }) => {
   return (
@@ -47,12 +48,12 @@ const TabPanel = ({ children, value, index }: { children: React.ReactNode; value
 
 interface RideDetailProps {
   rideData: RideData;
-  userZones: UserZone[];
   onClose: () => void;
 }
 
-const RideDetail = ({ rideData: initialRideData, userZones, onClose }: RideDetailProps) => {
+const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => {
   const [rideData, setRideData] = useState<RideData>(initialRideData); // For success response
+  const [userZones, setUserZones] = useState<UserZone[]>([]);
   const [rideMetricData, setRideMetricData] = useState<MetricRow[]>([]); // For metric data
   const [rideMatches, setRideMatches] = useState<MatchRow[]>([]); // For match data
   const [bikes, setBikes] = useState<Bike[]>([]); // Bikes data
@@ -65,6 +66,26 @@ const RideDetail = ({ rideData: initialRideData, userZones, onClose }: RideDetai
   const [tabIndex, setTabIndex] = useState(0);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if(!token) return;
+    fetchUserZones(token)
+        .then( (result)=>{
+            if( result.error){
+                setError(result.error);
+                setUserZones([]);
+            }
+            else{
+                setError(null);
+                setUserZones(result.zones);
+            }
+        })
+        .catch( (error) =>{
+            setError(error.message);
+            setUserZones([]);
+         });
+  }, []);
 
   useEffect(() => {
     // Fetch bikes from the API

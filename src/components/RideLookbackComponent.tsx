@@ -3,7 +3,7 @@ import { Box, Tab, Tabs, Table, TableBody, TableCell, TableContainer, TableHead,
 import axios from 'axios';
 import RideDetail from './RideDetail';
 import { formatDate, formatElapsedTime, formatInteger, formatNumber } from '../utilities/formatUtilities';
-import { RideData } from '../types/types';
+import { RideData, RideDataWithTags } from '../types/types';
 
 interface RideDataCategory extends RideData {
   category: string;
@@ -21,7 +21,7 @@ const RideLookbackComponent = () => {
   const [data, setData] = useState<RideDataCategory[]>([]);
   const [tabIndex, setTabIndex] = useState(0);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [rideData, setRideData] = useState<RideDataCategory | null >(null);
+  const [rideData, setRideData] = useState<RideDataWithTags | null >(null);
   const [sortConfig, setSortConfig] = useState<{ key: keyof RideDataCategory | null, direction: 'asc' | 'desc' }>({
     key: null,
     direction: 'asc',
@@ -231,7 +231,7 @@ const categories = useMemo(() => {
                 width: '100%',
               }}
             >
-              <RideDetail rideData={rideData} onClose={() => setDialogOpen(false)} />
+              {rideData &&  <RideDetail rideData={rideData} onClose={() => setDialogOpen(false)} />}
             </DialogContent>
           </Dialog>
         </Box>

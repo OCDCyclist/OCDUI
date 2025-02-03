@@ -17,18 +17,17 @@ interface MatchTableProps {
   matches: MatchRow[];
 }
 
-// Helper function to format time from seconds to HH:MM:SS.
-const formatTime = (seconds: number): string => {
-  const hrs = Math.floor(seconds / 3600);
-  const mins = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
-  return `${hrs.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}:${secs
-    .toString()
-    .padStart(2, "0")}`;
-};
-
 const MatchTable: React.FC<MatchTableProps> = ({ matches }) => {
-  const title = `Matches burned on this rides (${matches.length})`;
+
+  const title = matches.length > 0 ? `Matches burned on this ride (${matches.length})` : "No matches burned on this ride";
+
+  if (matches.length === 0)
+    return (
+      <Typography variant="h6" align="center" gutterBottom>
+      {title}
+      </Typography>
+  )
+
   return (
     <TableContainer component={Paper} sx={{ mt: 3 }}>
       <Typography variant="h6" align="center" gutterBottom>
@@ -37,29 +36,29 @@ const MatchTable: React.FC<MatchTableProps> = ({ matches }) => {
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>Start Time</TableCell>
-            <TableCell>Match Type</TableCell>
-            <TableCell>Match Period (s)</TableCell>
-            <TableCell>Match Power (w)</TableCell>
-            <TableCell>Actual Period (s)</TableCell>
-            <TableCell>Actual Power (s)</TableCell>
-            <TableCell>Max Sustained Power (w)</TableCell>
-            <TableCell>Peak Power (w)</TableCell>
-            <TableCell>Average HR</TableCell>
+            <TableCell align="center">Start</TableCell>
+            <TableCell align="center">Type</TableCell>
+            <TableCell align="center">Period (s)</TableCell>
+            <TableCell align="center">Power (w)</TableCell>
+            <TableCell align="center">Actual Period (s)</TableCell>
+            <TableCell align="center">Actual Power (w)</TableCell>
+            <TableCell align="center">Max Sustained Power (w)</TableCell>
+            <TableCell align="center">Peak Power (w)</TableCell>
+            <TableCell align="center">HR</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {matches.map((match, index) => (
             <TableRow key={index}>
-              <TableCell>{formatDateTime(match.starttime)}</TableCell>
-              <TableCell>{match.type}</TableCell>
-              <TableCell>{`${formatElapsedTimeShort(match.period)}`}</TableCell>
-              <TableCell>{match.targetpower}</TableCell>
-              <TableCell>{`${formatElapsedTimeShort(match.actualperiod)}`}</TableCell>
-              <TableCell>{match.averagepower}</TableCell>
-              <TableCell>{match.maxaveragepower}</TableCell>
-              <TableCell>{match.peakpower}</TableCell>
-              <TableCell>{match.averageheartrate}</TableCell>
+              <TableCell align="left">{formatDateTime(match.starttime)}</TableCell>
+              <TableCell align="left">{match.type}</TableCell>
+              <TableCell align="center">{`${formatElapsedTimeShort(match.period)}`}</TableCell>
+              <TableCell align="center">{match.targetpower}</TableCell>
+              <TableCell align="center">{`${formatElapsedTimeShort(match.actualperiod)}`}</TableCell>
+              <TableCell align="center">{match.averagepower}</TableCell>
+              <TableCell align="center">{match.maxaveragepower}</TableCell>
+              <TableCell align="center">{match.peakpower}</TableCell>
+              <TableCell align="center">{match.averageheartrate}</TableCell>
             </TableRow>
           ))}
         </TableBody>

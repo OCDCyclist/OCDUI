@@ -3,7 +3,7 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import axios from 'axios';
 import RideDetail from './RideDetail';
 import { formatDateHelper } from '../components/formatters/formatDateHelper';
-import { CentroidDefinition, LocationId, RideDataWithTags, UserZone } from '../types/types';
+import { CentroidDefinition, LocationId, RideDataWithTags } from '../types/types';
 import { formatRideDataWithTags } from  './formatters/formatRideDataWithTags';
 import TagSelector from './TagSelector';
 import { splitCommaSeparatedString } from '../utilities/stringUtilities';
@@ -11,7 +11,6 @@ import { getUniqueTags } from '../utilities/tagUtilities';
 import LinearLoader from './loaders/LinearLoader';
 import { rideUrlHelper } from './formatters/rideUrlHelper';
 import RideDataFilter, { FilterObject } from './filters2/RideDataFilter';
-import { fetchUserZones } from '../api';
 
 type RideListComponentProps = {
   date?: string;
@@ -21,9 +20,11 @@ type RideListComponentProps = {
   dom?: number;
   cluster?: CentroidDefinition;
   years?: number[];
+  start_date?: string;
+  end_date?: string;
 };
 
-const RideListComponent = ( { date, year, month, dow, dom, cluster, years }: RideListComponentProps) => {
+const RideListComponent = ( { date, year, month, dow, dom, cluster, years, start_date, end_date }: RideListComponentProps) => {
   const [loadingState, setLoadingState] = React.useState({
     loading: false,
     message: "",
@@ -46,28 +47,7 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster, years }: Rid
     availableTags: [],
     search: '',
   });
-  const [userZones, setUserZones] = useState<UserZone[]>([]);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if(!token) return;
-    fetchUserZones(token)
-        .then( (result)=>{
-            if( result.error){
-                setError(result.error);
-                setUserZones([]);
-            }
-            else{
-                setError(null);
-                setUserZones(result.zones);
-            }
-        })
-        .catch( (error) =>{
-            setError(error.message);
-            setUserZones([]);
-         });
-  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -86,8 +66,8 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster, years }: Rid
   useEffect(() => {
     const token = localStorage.getItem('token');
 
-    const theMessage: string = formatDateHelper({ date: date, year: year, month: month, dow: dow, dom: dom, cluster: cluster, years: years });
-    const url: string = rideUrlHelper({ date: date, year: year, month: month, dow: dow, dom: dom, cluster: cluster, years: years });
+    const theMessage: string = formatDateHelper({ date: date, year: year, month: month, dow: dow, dom: dom, cluster: cluster, years: years, start_date: start_date, end_date: end_date });
+    const url: string = rideUrlHelper({ date: date, year: year, month: month, dow: dow, dom: dom, cluster: cluster, years: years, start_date: start_date, end_date: end_date });
 
     setLoadingState({ loading: true, message: theMessage });
 
@@ -104,10 +84,12 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster, years }: Rid
         const availableTags = uniqueTags;
         setFilters({...filters, availableTags})
         setData(theRides);
+        setError(null);
         setLoadingState({ loading: false, message: '' });
       })
       .catch((error) => {
         console.error('Error fetching last month ride data:', error);
+        setError(error.message);
         setLoadingState({ loading: false, message: '' });
       });
   }, [refreshData, date, year, month, dow, dom, cluster, years]);
@@ -334,7 +316,7 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster, years }: Rid
                   onSave={handleOnSaveTags}
               />
               :
-              rideData && <RideDetail rideData={rideData} userZones={userZones} onClose={() => setDialogOpen(false)} />
+              rideData && <RideDetail rideData={rideData} onClose={() => setDialogOpen(false)} />
             }
           </DialogContent>
         </Dialog>

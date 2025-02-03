@@ -1,6 +1,7 @@
 import { FormatDateParams } from "../../types/types";
+import { formatDate } from "../../utilities/formatUtilities";
 
-export function formatDateHelper({ date, year, month, dow, dom, cluster, years }: FormatDateParams = {}): string {
+export function formatDateHelper({ date, year, month, dow, dom, cluster, years, start_date, end_date }: FormatDateParams = {}): string {
     const monthNames = [
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
@@ -50,6 +51,10 @@ export function formatDateHelper({ date, year, month, dow, dom, cluster, years }
         } else {
             return `${years.join(", ")}`;
         }
+    }
+
+    if(start_date !== undefined && end_date !== undefined){
+        return `Rides between ${formatDate(start_date)} ${formatDate(end_date)}`;
     }
 
     return ""; // Fallback for invalid combinations

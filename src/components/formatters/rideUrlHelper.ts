@@ -1,6 +1,6 @@
 import { FormatDateParams } from "../../types/types";
 
-export function rideUrlHelper({ date, year, month, dow, dom, cluster, years }: FormatDateParams = {}): string {
+export function rideUrlHelper({ date, year, month, dow, dom, cluster, years, start_date, end_date }: FormatDateParams = {}): string {
   let url = 'http://localhost:3000/ride/rides/lastmonth';
 
   if(typeof date !== 'undefined'){
@@ -21,5 +21,9 @@ export function rideUrlHelper({ date, year, month, dow, dom, cluster, years }: F
   else if(Array.isArray(years)){
     url = 'http://localhost:3000/ride/rides/years?years=' + years.join(',');
   }
+  else if(typeof start_date !== 'undefined' && typeof end_date !== 'undefined'){
+    url = `http://localhost:3000/ride/getRidesByDateRange?startDate=${start_date}&endDate=${end_date}`;
+  }
+
   return url;
 };

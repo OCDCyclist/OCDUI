@@ -16,7 +16,7 @@ const ClusterCentroidSelector: React.FC<ClusterCentroidSelectorProps> = ({
 
   const centroidToDisplay = (centroid: CentroidSelectorData | null) =>
     centroid
-      ? `${centroid.startyear} to ${centroid.endyear} (${centroid.active ? 'Active' : 'Not Active)'}`
+      ? `${centroid.startyear} to ${centroid.endyear} (${centroid.active ? 'Active' : 'Not Active)'})`
       : 'Select a centroid';
 
   return (

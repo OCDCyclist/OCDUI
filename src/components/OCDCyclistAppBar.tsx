@@ -26,6 +26,7 @@ import LoginStatus from './authentication/LoginStatus';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import TuneIcon from '@mui/icons-material/Tune';
 import PivotTableChartIcon from '@mui/icons-material/PivotTableChart';
+import AutoModeIcon from '@mui/icons-material/AutoMode';
 
 const drawerWidth = 240;
 
@@ -89,7 +90,8 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
         { text: 'Cummulatives', icon: <QueryStatsIcon />, path: '/ocds/cummulatives' },
         { text: 'Year and Month', icon: <DatasetIcon />, path: '/ocds/yearandmonth' },
         { text: 'Year and DOW', icon: <DayOfMonthIcon />, path: '/ocds/yearanddow' },
-        { text: 'Day of Month', icon: <CalendarMonthIcon />, path: '/ocds/monthanddom' }
+        { text: 'Day of Month', icon: <CalendarMonthIcon />, path: '/ocds/monthanddom' },
+        { text: 'Streaks', icon: <AutoModeIcon />, path: '/ocds/streaks' }
       ]
     },
 
