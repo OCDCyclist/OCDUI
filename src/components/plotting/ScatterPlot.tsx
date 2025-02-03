@@ -19,11 +19,11 @@ interface ScatterPlotProps {
   xKey: keyof RideDataWithTagsClusters;
   yKey: keyof RideDataWithTagsClusters;
   fieldLabels: Record<string, string>;
-  colors: string[]; // New prop for cluster colors
+  colors: string[];
+  highlightedRide?: RideDataWithTagsClusters | null;
 }
 
-const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, xKey, yKey, fieldLabels, colors }) => {
-
+const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, xKey, yKey, fieldLabels, colors, highlightedRide }) => {
   const chartData: ChartData<"scatter"> = {
     datasets: Array.from(new Set(data.map((point) => point.cluster))).map((cluster) => {
       const clusterIndex = data.find((point) => point.cluster === cluster)?.clusterindex ?? 0;
@@ -41,7 +41,19 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, xKey, yKey, fieldLabels
             title: point.title,
             date: point.date,
           })),
-        backgroundColor: colors[clusterIndex % colors.length], // Use color from the palette
+        backgroundColor: colors[clusterIndex % colors.length],
+        pointRadius: (context) => {
+          const ride = context.raw;
+          return highlightedRide && ride.rideid === highlightedRide.rideid ? 8 : 4;
+        },
+        pointBorderColor: (context) => {
+          const ride = context.raw;
+          return highlightedRide && ride.rideid === highlightedRide.rideid ? "black" : "rgba(0,0,0,0)";
+        },
+        pointBorderWidth: (context) => {
+          const ride = context.raw;
+          return highlightedRide && ride.rideid === highlightedRide.rideid ? 2 : 0;
+        },
       };
     }),
   };
