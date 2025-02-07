@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Grid, Alert, Stack, Drawer, List, ListItem, ListItemText, Button, Typography, Box } from "@mui/material";
+import { Grid, Alert, Stack, List, ListItem, ListItemText, Button, Typography, Box } from "@mui/material";
 import ScatterPlot from "./plotting/ScatterPlot";
 import { useFetchClusterData } from "../api/clusters/useFetchClusterData";
 import { CentroidSelectorData, RideDataWithTagsClusters } from "../types/types";
