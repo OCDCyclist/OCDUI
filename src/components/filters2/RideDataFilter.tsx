@@ -13,25 +13,21 @@ export interface FilterObject {
   search?: string;
 }
 
-interface ParentFilterProps {
+interface RideDataFilterProps {
   filters: FilterObject;
   onFilterChange: (updatedFilters: FilterObject) => void;
+  hideTagFilter: boolean;
 }
 
-const ParentFilter: React.FC<ParentFilterProps> = ({ filters, onFilterChange }) => {
+const RideDataFilter: React.FC<RideDataFilterProps> = ({ filters, onFilterChange, hideTagFilter }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleFilterChange = (key: keyof FilterObject, value: any) => {
+  const handleFilterChange = (key: keyof FilterObject, value: unknown) => {
     onFilterChange({ ...filters, [key]: value });
   };
 
   return (
-    <Box 
-      sx={{
-        marginBottom: '1em',
-      }}
-    >
+    <Box sx={{ marginBottom: '1em' }}>
       <Button onClick={() => setIsOpen(!isOpen)}>
         {isOpen ? 'Hide Filters' : 'Show Filters'}
       </Button>
@@ -45,11 +41,13 @@ const ParentFilter: React.FC<ParentFilterProps> = ({ filters, onFilterChange }) 
             value={filters.month || []}
             onChange={(value) => handleFilterChange('month', value)}
           />
-          <TagFilter
-            value={filters.tags || []}
-            optional={filters.availableTags || []}
-            onChange={(value) => handleFilterChange('tags', value)}
-          />
+          {hideTagFilter !== true && (
+            <TagFilter
+              value={filters.tags || []}
+              optional={filters.availableTags || []}
+              onChange={(value) => handleFilterChange('tags', value)}
+            />
+          )}
           <TextFilter
             value={filters.search || ''}
             onChange={(value) => handleFilterChange('search', value)}
@@ -60,4 +58,4 @@ const ParentFilter: React.FC<ParentFilterProps> = ({ filters, onFilterChange }) 
   );
 };
 
-export default ParentFilter;
+export default RideDataFilter;

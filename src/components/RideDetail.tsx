@@ -894,7 +894,7 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
         </TabPanel>
 
         <TabPanel value={tabIndex} index={5}>
-          <MetricTable metricData={rideMetricData} />
+          <MetricTable metricData={rideMetricData} weight={rideData.calculated_weight_kg} />
         </TabPanel>
 
         <Button

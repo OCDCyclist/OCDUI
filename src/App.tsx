@@ -7,7 +7,7 @@ import UpdateMetrics from './pages/UpdateMetrics.';
 import RiderSummary from './pages/RiderSummary';
 import AddWeight from './pages/AddWeight';
 import WeightTracker from './pages/WeightTracker';
-import CumulativeDataComponent from './components/CumulativeDataComponent';
+import CumulativeDataComponent from './components/CummulativeDataComponent';
 import YearAndMonthComponent from './components/YearAndMonthComponent';
 import YearAndDOWComponent from './components/YearAndDOWComponent';
 import MonthAndDOMComponent from './components/MonthAndDOMComponent';
@@ -21,6 +21,7 @@ import UpdateStravaStarredSegments from './pages/UpdateStravaStarredSegments';
 import ClusterSetup from './components/ClusterSetup';
 import ClusterCentroidTable from './components/ClusterCentroidTable';
 import ClusterVisualization from './components/ClusterVisualization';
+import CummulativeAllComponent from './components/CummulativeAllComponent';
 
 const App: React.FC = () => {
   return (
@@ -30,6 +31,7 @@ const App: React.FC = () => {
           <Route index element={<RiderSummary />} />
           <Route path="login" element={<Login />} />
           <Route path="ocds/cummulatives" element={<CumulativeDataComponent />} />
+          <Route path="ocds/allcummulatives" element={<CummulativeAllComponent />} />
           <Route path="ocds/yearandmonth" element={<YearAndMonthComponent />} />
           <Route path="ocds/yearanddow" element={<YearAndDOWComponent />} />
           <Route path="ocds/monthanddom" element={<MonthAndDOMComponent />} />

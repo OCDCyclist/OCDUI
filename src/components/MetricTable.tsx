@@ -12,11 +12,12 @@ import {
   Box,
 } from "@mui/material";
 import { METRIC_CONFIG, MetricRow } from "../types/types";
-import { formatDateTime, formatElapsedTime, formatElapsedTimeShort } from "../utilities/formatUtilities";
+import { formatDateTime, formatElapsedTimeShort } from "../utilities/formatUtilities";
 
 // Define the props interface.
 interface MetricTableProps {
   metricData: MetricRow[];
+  weight: number | null | undefined;
 }
 
 // Configuration for grouping related metrics
@@ -47,7 +48,7 @@ const METRIC_GROUP_CONFIG: Record<string, { label: string; metrics: string[] }> 
   },
 };
 
-const MetricTable: React.FC<MetricTableProps> = ({ metricData }) => {
+const MetricTable: React.FC<MetricTableProps> = ({ metricData, weight }) => {
   // Map each metric to its group
   const metricToGroupMap: Record<string, string> = {};
   Object.entries(METRIC_GROUP_CONFIG).forEach(([groupKey, groupConfig]) => {
@@ -79,6 +80,8 @@ const MetricTable: React.FC<MetricTableProps> = ({ metricData }) => {
   // Filter data for the selected group
   const filteredData = groupedMetrics.filter((row) => row.group === selectedGroup);
 
+  const isPowerGroup = selectedGroup === "power";
+
   return (
     <Box>
       {/* Tabs for each unique group */}
@@ -106,6 +109,7 @@ const MetricTable: React.FC<MetricTableProps> = ({ metricData }) => {
               <TableCell><strong>Metric</strong></TableCell>
               <TableCell><strong>Period (MM:SS)</strong></TableCell>
               <TableCell><strong>Value</strong></TableCell>
+              {isPowerGroup && <TableCell><strong>Watts/kg</strong></TableCell>}
               <TableCell><strong>Date and Time</strong></TableCell>
             </TableRow>
           </TableHead>
@@ -119,6 +123,13 @@ const MetricTable: React.FC<MetricTableProps> = ({ metricData }) => {
                 <TableCell>
                   {row.metric_value} {METRIC_CONFIG[row.metric]?.unit ?? ""}
                 </TableCell>
+                {isPowerGroup && (
+                  <TableCell>
+                    {weight && typeof weight === "number"
+                      ? (row.metric_value / weight).toFixed(1)
+                      : ""}
+                  </TableCell>
+                )}
                 <TableCell>{formatDateTime(row.starttime)}</TableCell>
               </TableRow>
             ))}

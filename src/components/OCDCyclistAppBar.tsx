@@ -88,6 +88,7 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
       icon: <CalendarViewMonthIcon />,
       children: [
         { text: 'Cummulatives', icon: <QueryStatsIcon />, path: '/ocds/cummulatives' },
+        { text: 'All Cummulatives', icon: <DirectionsBikeIcon />, path: '/ocds/allcummulatives' },
         { text: 'Year and Month', icon: <DatasetIcon />, path: '/ocds/yearandmonth' },
         { text: 'Year and DOW', icon: <DayOfMonthIcon />, path: '/ocds/yearanddow' },
         { text: 'Day of Month', icon: <CalendarMonthIcon />, path: '/ocds/monthanddom' },

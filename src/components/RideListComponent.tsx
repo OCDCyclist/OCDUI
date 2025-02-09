@@ -157,7 +157,7 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster, years, start
         const rideDay = new Date(ride.date).getDay(); // Get the day of the week (Sunday = 0, Monday = 1, etc.)
         return dayOfWeek.includes(rideDay); // Check if the ride's day matches any in the dayOfWeek array
     });
-};
+  };
 
   const handleOnSaveTags = (locationId : number | string | null, assignmentId : number | string | null, tags: string[]) =>{
     const token = localStorage.getItem('token');
@@ -277,7 +277,7 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster, years, start
         }}
       >
 
-        <RideDataFilter filters={filters} onFilterChange={handleFilterChange}  />
+        <RideDataFilter filters={filters} onFilterChange={handleFilterChange} hideTagFilter={false} />
 
         {renderTableRecent([
           { key: 'date', label: 'Ride Date', justify: 'center', width: '80', type: 'number' },

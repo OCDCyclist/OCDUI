@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Tab, Tabs, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, Container } from '@mui/material';
+import { Box, Tab, Tabs, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, Container, Typography } from '@mui/material';
 import axios from 'axios';
 import RideListComponent from './RideListComponent';
 import { CumulativeData } from '../types/types';
-
+import RideDataFilter, { FilterObject } from './filters2/RideDataFilter';
+import { cummulativeUrlHelper } from './formatters/cummulativeUrlHelper';
+import { formatCummulativeHelper } from './formatters/formatCummulativeHelper';
+import LinearLoader from './loaders/LinearLoader';
 
 const TabPanel = ({ children, value, index }: { children: React.ReactNode; value: number; index: number }) => {
   return (
@@ -13,7 +16,15 @@ const TabPanel = ({ children, value, index }: { children: React.ReactNode; value
   );
 };
 
-const CumulativeDataComponent = () => {
+type CummulativeDataComponentProps = {
+  years?: number[];
+};
+
+const CummulativeDataComponent = ({ years }: CummulativeDataComponentProps) => {
+  const [loadingState, setLoadingState] = React.useState({
+    loading: false,
+    message: "",
+  });
   const [data, setData] = useState<CumulativeData[]>([]);
   const [tabIndex, setTabIndex] = useState(0);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -22,20 +33,40 @@ const CumulativeDataComponent = () => {
     key: null,
     direction: 'asc',
   });
+  const [filters, setFilters] = useState<FilterObject>({
+    dayOfWeek: [],
+    month: [],
+    tags: [],
+    availableTags: [],
+    search: '',
+  });
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
 
-    axios.get('http://localhost:3000/ocds/cummulatives', {
+    const theMessage: string = formatCummulativeHelper({ years: years });
+    const url: string = cummulativeUrlHelper({ years: years });
+
+    setLoadingState({ loading: true, message: theMessage });
+
+    axios.get(url, {
       method: 'GET',
       headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`, // Include the token in the Authorization header
       },
     })
-      .then((response) => setData(response.data))
-      .catch((error) => console.error('Error fetching data:', error));
-  }, []);
+      .then((response) => {
+        setData(response.data);
+        setLoadingState({ loading: false, message: '' });
+      })
+      .catch((error) =>{
+        console.error('Error fetching data:', error);
+        setError(error.message);
+        setLoadingState({ loading: false, message: '' });
+      });
+  }, [years]);
 
   const handleSort = (columnKey: keyof CumulativeData) => {
     let direction: 'asc' | 'desc' = 'asc';
@@ -123,15 +154,66 @@ const CumulativeDataComponent = () => {
     }
   }
 
+  const filterByText = (cummulativeData: CumulativeData[], query: string): CumulativeData[] => {
+    if (!query) return cummulativeData;
+
+    const lowerQuery = query.toLowerCase();
+
+    return cummulativeData.filter((ride) =>
+        Object.values(ride).some((value) =>
+            value != null &&
+            value.toString().toLowerCase().includes(lowerQuery)
+        )
+    );
+  };
+
+  const filterByMonth = (rideDataWithTags: CumulativeData[], months: number[]): CumulativeData[] => {
+    if (!Array.isArray(months) || months.length === 0) return rideDataWithTags;
+
+    return rideDataWithTags.filter((ride) => {
+        const rideMonth = new Date(ride.ride_date).getMonth() + 1; // Months are 0-indexed, so add 1
+        return months.includes(0) || months.includes(rideMonth);
+    });
+  };
+
+  const filterByDayOfWeek = (rideDataWithTags: CumulativeData[], dayOfWeek: number[]): CumulativeData[] => {
+    if (!Array.isArray(dayOfWeek) || dayOfWeek.length === 0) return rideDataWithTags;
+
+    return rideDataWithTags.filter((ride) => {
+        const rideDay = new Date(ride.ride_date).getDay(); // Get the day of the week (Sunday = 0, Monday = 1, etc.)
+        return dayOfWeek.includes(rideDay); // Check if the ride's day matches any in the dayOfWeek array
+    });
+  };
+
+  // Combine the filters using useMemo
+  const filteredData = React.useMemo(() => {
+    let result = data;
+    if(filters.search && filters.search.length > 0){
+      result = filterByText(result, filters.search);
+    }
+    if(filters.month && filters.month.length > 0){
+      result = filterByMonth(result, filters.month);
+    }
+    if(filters.dayOfWeek && filters.dayOfWeek.length > 0){
+      result = filterByDayOfWeek(result, filters.dayOfWeek);
+    }
+
+    return result;
+  }, [data, filters]);
+
   const sortedData = React.useMemo(() => {
-    if (!sortConfig.key) return data;
-    const sorted = [...data].sort((a, b) => {
+    if (!sortConfig.key) return filteredData;
+    const sorted = [...filteredData].sort((a, b) => {
       if (a[sortConfig.key!] < b[sortConfig.key!]) return sortConfig.direction === 'asc' ? -1 : 1;
       if (a[sortConfig.key!] > b[sortConfig.key!]) return sortConfig.direction === 'asc' ? 1 : -1;
       return 0;
     });
     return sorted;
-  }, [data, sortConfig]);
+  }, [filteredData, sortConfig]);
+
+  const handleFilterChange = (updatedFilters: typeof filters) => {
+    setFilters(updatedFilters);
+  };
 
   const renderTable = (columns: { key: keyof CumulativeData; label: string }[]) => {
     const today = new Date();
@@ -142,7 +224,8 @@ const CumulativeDataComponent = () => {
 
     return (
       <TableContainer>
-        <Table>
+          { loadingState.loading ? <LinearLoader message={loadingState.message} /> : undefined }
+          <Table>
           <TableHead>
             <TableRow>
               {columns.map((col) => (
@@ -182,6 +265,12 @@ const CumulativeDataComponent = () => {
     );
   };
 
+  if( error){
+    <Typography component={"span"}>
+        {`Error: ${error}`}
+    </Typography>
+  }
+
   return (
     <Container maxWidth='xl' sx={{ marginY: 0 }}>
       <Paper
@@ -195,6 +284,9 @@ const CumulativeDataComponent = () => {
           }}
       >
         <Box>
+          <RideDataFilter filters={filters} onFilterChange={handleFilterChange}  hideTagFilter={true} />
+
+
           <Tabs value={tabIndex} onChange={handleTabChange}>
             <Tab label="Distance" />
             <Tab label="Elevation" />
@@ -294,4 +386,4 @@ const CumulativeDataComponent = () => {
   );
 };
 
-export default CumulativeDataComponent;
+export default CummulativeDataComponent;
