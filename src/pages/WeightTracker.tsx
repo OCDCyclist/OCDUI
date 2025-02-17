@@ -7,6 +7,7 @@ import {
     Grid,
     Typography,
 } from '@mui/material';
+import WeightChart from '../components/plotting/WeightChart';
 
 interface WeightTrackerData {
     date: string;
@@ -121,6 +122,8 @@ const WeightTracker: React.FC = () => {
             <Grid item xs={2}><Typography component={"span"} sx={{ textAlign: 'right' }}>{formatPercent(weightData.bodyh2ofraction30)}</Typography></Grid>
             <Grid item xs={2}><Typography component={"span"} sx={{ textAlign: 'right' }}>{formatPercent(weightData.bodyh2ofraction365)}</Typography></Grid>
           </Grid>
+
+          <WeightChart />
         </Paper>
       </Container>
 

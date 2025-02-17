@@ -525,6 +525,17 @@ export interface FetchRideMatchesResult {
     error: string | null;
 }
 
+export interface FetchRiderReferenceLevelResult {
+    referenceLevels: ReferenceLevel[];
+    error: string | null;
+}
+
+export interface FetchWeightDataResult {
+    weightData: WeightData[];
+    error: string | null;
+    loading: boolean;
+}
+
 export const METRIC_CONFIG = {
     altitude: { label: "Altitude", unit: "ft" },
     altitudeHigh: { label: "Altitude High", unit: "ft" },
@@ -559,6 +570,31 @@ export interface MatchRow {
     peakpower: number;
     averageheartrate: number;
     starttime: string;
+}
+
+export interface WeightData{
+    date: string;
+    weight: number;
+    weight7: number;
+    weight30: number;
+    weight365: number;
+    bodyfatfraction: number;
+    bodyfatfraction7: number;
+    bodyfatfraction30: number;
+    bodyfatfraction365: number;
+    bodyh2ofraction: number;
+    bodyh2ofraction7: number;
+    bodyh2ofraction30: number;
+    bodyh2ofraction365: number;
+}
+
+export interface ReferenceLevel {
+	level: string,
+	rank: number,
+	sec0005: number,
+	sec0060: number,
+	sec0300: number,
+	sec1200: number
 }
 
 export enum LocationId {

@@ -11,12 +11,14 @@ import {
   Tab,
   Box,
 } from "@mui/material";
-import { METRIC_CONFIG, MetricRow } from "../types/types";
+import { METRIC_CONFIG, MetricRow, ReferenceLevel } from "../types/types";
 import { formatDateTime, formatElapsedTimeShort } from "../utilities/formatUtilities";
+import { getLevelForPower } from "../utilities/metricsUtils";
 
 // Define the props interface.
 interface MetricTableProps {
   metricData: MetricRow[];
+  referenceLevels: ReferenceLevel[];
   weight: number | null | undefined;
 }
 
@@ -48,7 +50,7 @@ const METRIC_GROUP_CONFIG: Record<string, { label: string; metrics: string[] }> 
   },
 };
 
-const MetricTable: React.FC<MetricTableProps> = ({ metricData, weight }) => {
+const MetricTable: React.FC<MetricTableProps> = ({ metricData, referenceLevels, weight }) => {
   // Map each metric to its group
   const metricToGroupMap: Record<string, string> = {};
   Object.entries(METRIC_GROUP_CONFIG).forEach(([groupKey, groupConfig]) => {
@@ -109,7 +111,8 @@ const MetricTable: React.FC<MetricTableProps> = ({ metricData, weight }) => {
               <TableCell><strong>Metric</strong></TableCell>
               <TableCell><strong>Period (MM:SS)</strong></TableCell>
               <TableCell><strong>Value</strong></TableCell>
-              {isPowerGroup && <TableCell><strong>Watts/kg</strong></TableCell>}
+              {isPowerGroup && <TableCell><strong>w/kg</strong></TableCell>}
+              {isPowerGroup && <TableCell><strong>Level</strong></TableCell>}
               <TableCell><strong>Date and Time</strong></TableCell>
             </TableRow>
           </TableHead>
@@ -125,8 +128,15 @@ const MetricTable: React.FC<MetricTableProps> = ({ metricData, weight }) => {
                 </TableCell>
                 {isPowerGroup && (
                   <TableCell>
+                    {weight && typeof weight === "number"//
+                      ? `${(row.metric_value / weight).toFixed(1)}  w/kg`
+                      : ""}
+                  </TableCell>
+                )}
+                {isPowerGroup && (
+                  <TableCell>
                     {weight && typeof weight === "number"
-                      ? (row.metric_value / weight).toFixed(1)
+                      ? getLevelForPower(referenceLevels, row.metric_value / weight, row.period) || ""
                       : ""}
                   </TableCell>
                 )}

@@ -9,15 +9,18 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
-import { MatchRow } from "../types/types";
+import { MatchRow, ReferenceLevel } from "../types/types";
 import { formatDateTime, formatElapsedTimeShort } from "../utilities/formatUtilities";
+import { getLevelForPower } from "../utilities/metricsUtils";
 
 // Define the props interface.
 interface MatchTableProps {
   matches: MatchRow[];
+  referenceLevels: ReferenceLevel[];
+  weight: number | null | undefined;
 }
 
-const MatchTable: React.FC<MatchTableProps> = ({ matches }) => {
+const MatchTable: React.FC<MatchTableProps> = ({ matches, referenceLevels, weight }) => {
 
   const title = matches.length > 0 ? `Matches burned on this ride (${matches.length})` : "No matches burned on this ride";
 
@@ -42,9 +45,11 @@ const MatchTable: React.FC<MatchTableProps> = ({ matches }) => {
             <TableCell align="center">Power (w)</TableCell>
             <TableCell align="center">Actual Period (s)</TableCell>
             <TableCell align="center">Actual Power (w)</TableCell>
-            <TableCell align="center">Max Sustained Power (w)</TableCell>
+            <TableCell align="center">Max Sustained (w)</TableCell>
+            <TableCell align="center">Max Sustained (w/kg)</TableCell>
             <TableCell align="center">Peak Power (w)</TableCell>
             <TableCell align="center">HR</TableCell>
+            <TableCell align="center">Level</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -57,8 +62,22 @@ const MatchTable: React.FC<MatchTableProps> = ({ matches }) => {
               <TableCell align="center">{`${formatElapsedTimeShort(match.actualperiod)}`}</TableCell>
               <TableCell align="center">{match.averagepower}</TableCell>
               <TableCell align="center">{match.maxaveragepower}</TableCell>
+              <TableCell align="center">
+                {
+                  weight && typeof weight === "number"//
+                  ? `${(match.maxaveragepower / weight).toFixed(1)} wkg`
+                  : ""
+                }
+              </TableCell>
               <TableCell align="center">{match.peakpower}</TableCell>
               <TableCell align="center">{match.averageheartrate}</TableCell>
+              <TableCell align="center">
+                {
+                  weight && typeof weight === "number"
+                  ? getLevelForPower(referenceLevels, match.maxaveragepower / weight, match.period) || ""
+                  : ""
+                }
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
