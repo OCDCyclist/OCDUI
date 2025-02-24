@@ -23,7 +23,7 @@ import {
 } from '@mui/material';
 import { formatBoolean, formatDate, formatInteger, formatNumber, formatPercent, isTextPresent } from '../utilities/formatUtilities';
 import { useNavigate } from 'react-router-dom';
-import { Bike, MatchRow, MetricRow, ReferenceLevel, RideData, UserZone, ZoneType } from '../types/types';
+import { Bike, MatchRow, MetricRow, ReferenceLevel, RideData, SegmentEffort, UserZone, ZoneType } from '../types/types';
 import { isBooleanString, isStringInteger, isStringNumber } from '../utilities/validation';
 import LinearIndeterminate from './loaders/LinearIndeterminate';
 import { isTokenValid } from '../utilities/jwtUtils';
@@ -38,6 +38,8 @@ import { fetchRideMatches } from '../api/rides/fetchRideMatches';
 import MatchTable from './MatchTable';
 import { fetchUserZones } from '../api';
 import { fetchRiderReferenceLevels } from '../api/rides/fetchRiderReferenceLevels';
+import SegmentTable from './SegmentTable';
+import { fetchRideSegmentEfforts } from '../api/rides/fetchRideSegmentEfforts';
 
 const TabPanel = ({ children, value, index }: { children: React.ReactNode; value: number; index: number }) => {
   return (
@@ -56,6 +58,7 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
   const [rideData, setRideData] = useState<RideData>(initialRideData); // For success response
   const [userZones, setUserZones] = useState<UserZone[]>([]);
   const [rideMetricData, setRideMetricData] = useState<MetricRow[]>([]); // For metric data
+  const [segmentEffortData, setSegmentEffortData] = useState<SegmentEffort[]>([]); // For segment effort data
   const [referenceLevels, setReferenceLevels] = useState<ReferenceLevel[]>([]); // For reference level data
   const [rideMatches, setRideMatches] = useState<MatchRow[]>([]); // For match data
   const [bikes, setBikes] = useState<Bike[]>([]); // Bikes data
@@ -162,6 +165,27 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
             setRideMatches([]);
          });
   }, [rideData]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if(!token) return;
+    fetchRideSegmentEfforts(token, rideData.rideid)
+        .then( (result)=>{
+            if( result.error){
+                setError(result.error);
+                setSegmentEffortData([]);
+            }
+            else{
+                setError(null);
+                setSegmentEffortData(result.segmentEfforts);
+            }
+        })
+        .catch( (error) =>{
+            setError(error.message);
+            setSegmentEffortData([]);
+         });
+  }, [rideData]);
+
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -436,6 +460,7 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
           <Tab label="Cadence" />
           <Tab label="Matches" />
           <Tab label="Metrics" />
+          <Tab label="Segments" />
         </Tabs>
 
         <TabPanel value={tabIndex} index={0}>
@@ -917,6 +942,10 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
 
         <TabPanel value={tabIndex} index={5}>
           <MetricTable metricData={rideMetricData} referenceLevels={referenceLevels} weight={rideData.calculated_weight_kg} />
+        </TabPanel>
+
+        <TabPanel value={tabIndex} index={6}>
+          <SegmentTable segmentEfforts={segmentEffortData} />
         </TabPanel>
 
         <Button

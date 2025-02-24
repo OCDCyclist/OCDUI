@@ -525,6 +525,11 @@ export interface FetchRideMatchesResult {
     error: string | null;
 }
 
+export interface FetchRideSegmentEffortResult {
+    segmentEfforts: SegmentEffort[];
+    error: string | null;
+}
+
 export interface FetchRiderReferenceLevelResult {
     referenceLevels: ReferenceLevel[];
     error: string | null;
@@ -676,4 +681,17 @@ export interface Streak_7_Day {
     start_date: string,
     end_date: string,
     streak_length: number,
+}
+
+export interface SegmentEffort {
+    name: string;
+    elapsed_time: number;
+    moving_time: number;
+    starttime: string;
+    endtime: string;
+    average_watts: number;
+    average_heartrate: number;
+    max_heartrate: number;
+    effort_count: number;
+    rank: number;
 }
