@@ -38,7 +38,8 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
   const isAuthenticated = useAuth();
   const navigate = useNavigate();
-  const [openItems, setOpenItems] = useState<{ [key: string]: boolean }>({}); // New state for collapsible items
+  const [openItems, setOpenItems] = useState<{ [key: string]: boolean }>({});
+  const [selectedItem, setSelectedItem] = useState<string>('');
 
   useEffect(() => {
     const savedDrawerState = localStorage.getItem('drawerOpen');
@@ -137,6 +138,7 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
 
   const handleNavigation = (path: string) => {
     navigate(path);
+    setSelectedItem(path);
   };
 
   return (
@@ -184,7 +186,10 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
             {menuItems.map((item) => (
               <React.Fragment key={item.text}>
                 {!item.children ? (
-                  <ListItem onClick={() => handleNavigation(item.path)} component="div">
+                  <ListItem
+                    sx={{ backgroundColor: selectedItem === item.path ? '#fbeacd' : 'transparent' }}
+                    onClick={() => handleNavigation(item.path)} component="div"
+                  >
                     <ListItemIcon>{item.icon}</ListItemIcon>
                     <ListItemText primary={item.text} />
                   </ListItem>
@@ -201,8 +206,11 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
                           <ListItem
                             component="div"
                             key={subItem.text}
-                            sx={{ pl: 4 }}
-                            onClick={() => handleNavigation(subItem.path)}
+                            sx={{ pl: 4, backgroundColor: selectedItem === subItem.path ? '#fbeacd' : 'transparent' }}
+                            onClick={() => {
+                              handleNavigation(subItem.path);
+                            }
+                          }
                           >
                             <ListItemIcon>{subItem.icon}</ListItemIcon>
                             <ListItemText primary={subItem.text} />

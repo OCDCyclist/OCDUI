@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Box, Paper, Dialog, DialogContent, Container, Button } from '@mui/material';
-import RideListComponent from './RideListComponent';
 import RideYearFilter from './filters/RideYearFilter';
 import CummulativeDataComponent from './CummulativeDataComponent';
 

@@ -526,7 +526,7 @@ export interface FetchRideMatchesResult {
 }
 
 export interface FetchRideSegmentEffortResult {
-    segmentEfforts: SegmentEffort[];
+    segmentEfforts: SegmentEffortMini[];
     error: string | null;
 }
 
@@ -683,7 +683,7 @@ export interface Streak_7_Day {
     streak_length: number,
 }
 
-export interface SegmentEffort {
+export interface SegmentEffortMini {
     name: string;
     elapsed_time: number;
     moving_time: number;

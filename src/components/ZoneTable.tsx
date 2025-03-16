@@ -45,7 +45,7 @@ const ZoneTable: React.FC<ZoneTableProps> = ({ zoneType, zoneDefinitions, zoneVa
   };
 
   // Calculate total time spent across all zones.
-  const totalTime = zoneValues.reduce((sum, time) => sum + time, 0);
+  const totalTime = zoneValues ? zoneValues.reduce((sum, time) => sum + time, 0) : 0;
 
   // Helper function to calculate the percentage of time in a zone.
   const calculatePercentage = (time: number): string => {
