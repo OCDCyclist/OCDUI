@@ -31,6 +31,7 @@ import { wattsPerKilo } from '../utilities/metricsUtils';
 import ElapsedTimeEditor from './ElapsedTimeEditor';
 import DisplayPower from './DisplayPower';
 import StravaRideLink from './StravaRideLink';
+import DownloadRideDataLink from './DownloadRideDataLink';
 import ZoneTable from './ZoneTable';
 import MetricTable from './MetricTable';
 import { fetchRideMetrics } from '../api/rides/fetchRideMetrics';
@@ -896,7 +897,10 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
                   </TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell colSpan={4} align="right">
+                  <TableCell colSpan={2} align="left">
+                    <DownloadRideDataLink rideid={rideData.rideid} />
+                  </TableCell>
+                  <TableCell colSpan={2} align="right">
                     <StravaRideLink stravaRideId={rideData.stravaid} />
                   </TableCell>
                 </TableRow>
