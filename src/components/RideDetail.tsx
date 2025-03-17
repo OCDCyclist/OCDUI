@@ -23,7 +23,7 @@ import {
 } from '@mui/material';
 import { formatBoolean, formatDate, formatInteger, formatNumber, formatPercent, isTextPresent } from '../utilities/formatUtilities';
 import { useNavigate } from 'react-router-dom';
-import { Bike, MatchRow, MetricRow, ReferenceLevel, RideData, SegmentEffort, UserZone, ZoneType } from '../types/types';
+import { Bike, MatchRow, MetricRow, ReferenceLevel, RideData, SegmentEffortMini, UserZone, ZoneType } from '../types/types';
 import { isBooleanString, isStringInteger, isStringNumber } from '../utilities/validation';
 import LinearIndeterminate from './loaders/LinearIndeterminate';
 import { isTokenValid } from '../utilities/jwtUtils';
@@ -59,7 +59,7 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
   const [rideData, setRideData] = useState<RideData>(initialRideData); // For success response
   const [userZones, setUserZones] = useState<UserZone[]>([]);
   const [rideMetricData, setRideMetricData] = useState<MetricRow[]>([]); // For metric data
-  const [segmentEffortData, setSegmentEffortData] = useState<SegmentEffort[]>([]); // For segment effort data
+  const [segmentEffortData, setSegmentEffortData] = useState<SegmentEffortMini[]>([]); // For segment effort data
   const [referenceLevels, setReferenceLevels] = useState<ReferenceLevel[]>([]); // For reference level data
   const [rideMatches, setRideMatches] = useState<MatchRow[]>([]); // For match data
   const [bikes, setBikes] = useState<Bike[]>([]); // Bikes data
@@ -186,7 +186,6 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
             setSegmentEffortData([]);
          });
   }, [rideData]);
-
 
   useEffect(() => {
     const token = localStorage.getItem('token');

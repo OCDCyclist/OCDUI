@@ -454,6 +454,19 @@ export interface SegmentEffort {
     end_index: number,
 }
 
+export interface SegmentEffortMini {
+    name: string;
+    elapsed_time: number;
+    moving_time: number;
+    starttime: string;
+    endtime: string;
+    average_watts: number;
+    average_heartrate: number;
+    max_heartrate: number;
+    effort_count: number;
+    rank: number;
+}
+
 export interface ClusterDefinition {
     clusterid: number,
     startyear: number,
@@ -541,6 +554,11 @@ export interface FetchWeightDataResult {
     loading: boolean;
 }
 
+export interface FetchPowerCurveResult {
+    powerCurve: PowerCurveData[];
+    error: string | null;
+}
+
 export const METRIC_CONFIG = {
     altitude: { label: "Altitude", unit: "ft" },
     altitudeHigh: { label: "Altitude High", unit: "ft" },
@@ -563,6 +581,17 @@ export interface MetricRow {
     period: number;
     metric_value: number;
     starttime: string;
+}
+
+export interface PowerCurveData {
+    duration_seconds: number;
+    max_power_watts: number;
+    max_power_wkg: number;
+    period: string;
+    rideid: number;
+    date: string;
+    stravaid: number;
+    title: string;
 }
 
 export interface MatchRow {
@@ -683,15 +712,3 @@ export interface Streak_7_Day {
     streak_length: number,
 }
 
-export interface SegmentEffortMini {
-    name: string;
-    elapsed_time: number;
-    moving_time: number;
-    starttime: string;
-    endtime: string;
-    average_watts: number;
-    average_heartrate: number;
-    max_heartrate: number;
-    effort_count: number;
-    rank: number;
-}

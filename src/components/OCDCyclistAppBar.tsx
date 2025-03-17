@@ -27,6 +27,8 @@ import AnalyticsIcon from '@mui/icons-material/Analytics';
 import TuneIcon from '@mui/icons-material/Tune';
 import PivotTableChartIcon from '@mui/icons-material/PivotTableChart';
 import AutoModeIcon from '@mui/icons-material/AutoMode';
+import ElectricMeterIcon from '@mui/icons-material/ElectricMeter';
+import BoltIcon from '@mui/icons-material/Bolt';
 
 const drawerWidth = 240;
 
@@ -103,6 +105,14 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
       children: [
         { text: 'Starred', icon: <AutoAwesomeIcon />, path: '/segments/starred' },
         { text: 'Update Starred', icon: <AutoAwesomeIcon />, path: '/segments/updatestarred' },
+      ]
+    },
+
+    {
+      text: 'Power',
+      icon: <ElectricMeterIcon />,
+      children: [
+        { text: 'Power Curve', icon: <BoltIcon />, path: '/power/powercurve' },
       ]
     },
 

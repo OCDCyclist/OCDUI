@@ -22,6 +22,7 @@ import ClusterSetup from './components/ClusterSetup';
 import ClusterCentroidTable from './components/ClusterCentroidTable';
 import ClusterVisualization from './components/ClusterVisualization';
 import CummulativeAllComponent from './components/CummulativeAllComponent';
+import PowerCurverVisualization from './components/PowerCurverVisualization';
 
 const App: React.FC = () => {
   return (
@@ -49,6 +50,7 @@ const App: React.FC = () => {
           <Route path="/analysis/clustersetup" element={<ClusterSetup />} />
           <Route path="/analysis/clustercentroids" element={<ClusterCentroidTable />} />
           <Route path="/analysis/clustervisuals" element={<ClusterVisualization />} />
+          <Route path="/power/powercurve" element={<PowerCurverVisualization />} />
         </Route>
       </Routes>
     </Router>
