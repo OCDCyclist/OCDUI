@@ -14,19 +14,19 @@ const PowerCurveChart: React.FC<PowerCurveChartProps> = ({ data }) => {
   const [selectedMetric, setSelectedMetric] = useState<"max_power_watts" | "max_power_wkg">("max_power_watts");
   const [selectedPeriods, setSelectedPeriods] = useState<Record<string, boolean>>({});
 
-  // Extract available periods dynamically
   const periods = useMemo(() => {
     const uniquePeriods = Array.from(new Set(data.map((d) => d.period)));
-    return uniquePeriods;
+    return uniquePeriods.includes("overall")
+      ? ["overall", ...uniquePeriods.filter((p) => p !== "overall").sort((a, b) => b.localeCompare(a))]
+      : uniquePeriods.sort((a, b) => b.localeCompare(a));
   }, [data]);
 
-  // Initialize selected periods when data changes
   useEffect(() => {
     if (periods.length > 0) {
-      const defaultPeriod = periods.includes("overall") ? "overall" : periods[0];
-      setSelectedPeriods({ [defaultPeriod]: true });
+      setSelectedPeriods({ overall: true });
     }
   }, [periods]);
+
 
   // Filter data based on selected periods
   const filteredData = useMemo(() => {
@@ -54,14 +54,41 @@ const PowerCurveChart: React.FC<PowerCurveChartProps> = ({ data }) => {
     return { datasets };
   }, [filteredData, selectedMetric]);
 
+
+  function formatDuration(seconds: number): string {
+    const units = [
+        { label: 'day', seconds: 86400 },
+        { label: 'hour', seconds: 3600 },
+        { label: 'minute', seconds: 60 }
+    ];
+
+    function helper(seconds: number, index: number = 0): string[] {
+        if (seconds < 60) {
+            return seconds > 0 ? [`${seconds} second${seconds === 1 ? '' : 's'}`] : [];
+        }
+
+        if (index >= units.length) return []; // Safety check for out-of-bounds index
+
+        const unit = units[index];
+        const count = Math.floor(seconds / unit.seconds);
+        const remainder = seconds % unit.seconds;
+
+        return count > 0
+            ? [`${count} ${unit.label}${count === 1 ? '' : 's'}`, ...helper(remainder, index + 1)]
+            : helper(remainder, index + 1);
+    }
+
+    return helper(seconds).join(' ');
+  }
+
   const options: ChartOptions<"line"> = {
     responsive: true,
     scales: {
       x: {
         type: "logarithmic",
-        title: { display: true, text: "Time (seconds)" },
+        title: { display: true, text: "Time" },
         ticks: {
-          callback: (value) => `${value}`,
+          callback: (value) => formatDuration(value as number),
         },
       },
       y: {
@@ -72,8 +99,8 @@ const PowerCurveChart: React.FC<PowerCurveChartProps> = ({ data }) => {
       tooltip: {
         callbacks: {
           label: (context) => {
-            const ride = context.raw as any;
-            return `${ride.ride.title} (${new Date(ride.ride.date).toLocaleDateString()})`;
+            const {ride} = context.raw as unknown as {ride: PowerCurveData};
+            return ride ? `${formatDuration(ride.duration_seconds)}  pwr: ${ride.max_power_watts} wkg: ${ride.max_power_wkg} ${ride.title.slice(0, 20)} (${new Date(ride.date).toLocaleDateString()})` : "unknown";
           },
         },
       },
