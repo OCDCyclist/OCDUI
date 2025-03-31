@@ -498,6 +498,10 @@ export interface CentroidSelectorData {
     active: boolean,
 }
 
+export interface SimilarRidesSelectorData {
+    rideid: number
+}
+
 export interface TagResult{
     name: string;
 }
@@ -514,6 +518,11 @@ export interface FetchTagsResult {
 }
 
 export interface FetchClusterDataResult {
+    data: RideDataWithTagsClusters[];
+    error: string | null;
+}
+
+export interface FetchSimilarRidesResult {
     data: RideDataWithTagsClusters[];
     error: string | null;
 }
@@ -656,6 +665,8 @@ export type FormatDateParams = {
     years?: number[];
     start_date?: string;
     end_date?: string;
+    similar_to_rideid?: number;
+    similareffort_to_rideid?: number;
 };
 
 export interface CumulativeData {

@@ -41,6 +41,8 @@ import { fetchUserZones } from '../api';
 import { fetchRiderReferenceLevels } from '../api/rides/fetchRiderReferenceLevels';
 import SegmentTable from './SegmentTable';
 import { fetchRideSegmentEfforts } from '../api/rides/fetchRideSegmentEfforts';
+import RideListComponent from './RideListComponent';
+import SimilarRides from './SimilarRides';
 
 const TabPanel = ({ children, value, index }: { children: React.ReactNode; value: number; index: number }) => {
   return (
@@ -461,6 +463,7 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
           <Tab label="Matches" />
           <Tab label="Metrics" />
           <Tab label="Segments" />
+          <Tab label="Similar Rides" />
         </Tabs>
 
         <TabPanel value={tabIndex} index={0}>
@@ -951,6 +954,9 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
           <SegmentTable segmentEfforts={segmentEffortData} />
         </TabPanel>
 
+        <TabPanel value={tabIndex} index={7}>
+          <SimilarRides rideid={rideData.rideid} />
+        </TabPanel>
         <Button
           variant="contained"
           color="primary"
