@@ -23,6 +23,8 @@ import ClusterCentroidTable from './components/ClusterCentroidTable';
 import ClusterVisualization from './components/ClusterVisualization';
 import CummulativeAllComponent from './components/CummulativeAllComponent';
 import PowerCurverVisualization from './components/PowerCurverVisualization';
+import MilestonesComponent from './components/MilestonesComponent';
+import YearAndIndoorOutdoorData from './components/YearAndInOrOutsideComponent';
 
 const App: React.FC = () => {
   return (
@@ -37,6 +39,8 @@ const App: React.FC = () => {
           <Route path="ocds/yearanddow" element={<YearAndDOWComponent />} />
           <Route path="ocds/monthanddom" element={<MonthAndDOMComponent />} />
           <Route path="/ocds/streaks" element={<StreaksComponent />} />
+          <Route path="/ocds/milestones" element={<MilestonesComponent />} />
+          <Route path="/ocds/inoroutside" element={<YearAndIndoorOutdoorData />} />
           <Route path="updateStrava" element={<UpdateStrava />} />
           <Route path="UpdateMetrics" element={<UpdateMetrics />} />
           <Route path="rider/weighttracker" element={<WeightTracker />} />

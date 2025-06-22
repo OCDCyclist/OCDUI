@@ -1,6 +1,6 @@
 import { FormatDateParams } from "../../types/types";
 
-export function rideUrlHelper({ date, year, month, dow, dom, cluster, years, start_date, end_date, similar_to_rideid, similareffort_to_rideid }: FormatDateParams = {}): string {
+export function rideUrlHelper({ date, year, month, dow, dom, cluster, years, start_date, end_date, similar_to_rideid, similareffort_to_rideid, trainer }: FormatDateParams = {}): string {
   let url = 'http://localhost:3000/ride/rides/lastmonth';
 
   if(typeof date !== 'undefined'){
@@ -29,6 +29,9 @@ export function rideUrlHelper({ date, year, month, dow, dom, cluster, years, sta
   }
   else if(typeof similareffort_to_rideid !== 'undefined'){
     url = `http://localhost:3000/ride/getSimilarRides/effort/${similareffort_to_rideid}`;
+  }
+  else if(typeof trainer !== 'undefined'){
+    url = `http://localhost:3000/ride/ridesByYearTrainer?year=${year}&trainer=${trainer}`;
   }
 
   return url;

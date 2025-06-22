@@ -1,7 +1,7 @@
 import { FormatDateParams } from "../../types/types";
 import { formatDate } from "../../utilities/formatUtilities";
 
-export function formatDateHelper({ date, year, month, dow, dom, cluster, years, start_date, end_date }: FormatDateParams = {}): string {
+export function formatDateHelper({ date, year, month, dow, dom, cluster, years, start_date, end_date, trainer }: FormatDateParams = {}): string {
     const monthNames = [
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
@@ -41,8 +41,13 @@ export function formatDateHelper({ date, year, month, dow, dom, cluster, years, 
             return `All ${monthNames[month - 1]} ${dom}`;
         }
     }
+
     if( cluster !== undefined){
         return `Rides for Cluster ${cluster?.cluster} ${cluster?.name}`;
+    }
+
+    if( trainer !== undefined){
+        return trainer === true ? `Indoor in ${year}` : `Outdoor in ${year}`;
     }
 
     if (Array.isArray(years)) {

@@ -455,6 +455,7 @@ export interface SegmentEffort {
 }
 
 export interface SegmentEffortMini {
+    id: number;
     name: string;
     elapsed_time: number;
     moving_time: number;
@@ -667,6 +668,7 @@ export type FormatDateParams = {
     end_date?: string;
     similar_to_rideid?: number;
     similareffort_to_rideid?: number;
+    trainer?: boolean; // true for trainer rides, false for outdoor rides
 };
 
 export interface CumulativeData {
@@ -723,3 +725,7 @@ export interface Streak_7_Day {
     streak_length: number,
 }
 
+export interface Milestone_10K {
+    ride_date: string,
+    distance_miles: number,
+}

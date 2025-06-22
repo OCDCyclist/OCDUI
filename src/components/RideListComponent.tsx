@@ -24,9 +24,10 @@ type RideListComponentProps = {
   end_date?: string;
   similar_to_rideid?: number;
   similareffort_to_rideid?: number;
+  trainer?: boolean;
 };
 
-const RideListComponent = ( { date, year, month, dow, dom, cluster, years, start_date, end_date, similar_to_rideid, similareffort_to_rideid }: RideListComponentProps) => {
+const RideListComponent = ( { date, year, month, dow, dom, cluster, years, start_date, end_date, similar_to_rideid, similareffort_to_rideid, trainer }: RideListComponentProps) => {
   const [loadingState, setLoadingState] = React.useState({
     loading: false,
     message: "",
@@ -68,8 +69,8 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster, years, start
   useEffect(() => {
     const token = localStorage.getItem('token');
 
-    const theMessage: string = formatDateHelper({ date: date, year: year, month: month, dow: dow, dom: dom, cluster: cluster, years: years, start_date: start_date, end_date: end_date });
-    const url: string = rideUrlHelper({ date: date, year: year, month: month, dow: dow, dom: dom, cluster: cluster, years: years, start_date: start_date, end_date: end_date, similar_to_rideid, similareffort_to_rideid });
+    const theMessage: string = formatDateHelper({ date: date, year: year, month: month, dow: dow, dom: dom, cluster: cluster, years: years, start_date: start_date, end_date: end_date, trainer: trainer });
+    const url: string = rideUrlHelper({ date: date, year: year, month: month, dow: dow, dom: dom, cluster: cluster, years: years, start_date: start_date, end_date: end_date, similar_to_rideid, similareffort_to_rideid, trainer: trainer });
 
     setLoadingState({ loading: true, message: theMessage });
 

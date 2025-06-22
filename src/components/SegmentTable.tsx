@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent } from "@mui/material";
 import { SegmentEffortMini } from "../types/types";
 import { formatElapsedTimeShort } from "../utilities/formatUtilities";
+import SegmentEffortListComponent from "./SegmentEffortListComponent";
 
 interface SegmentTableProps {
   segmentEfforts: SegmentEffortMini[];
@@ -13,12 +14,20 @@ const SegmentTable: React.FC<SegmentTableProps> = ({ segmentEfforts }) => {
     direction: 'asc',
   });
 
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedSegment, setSelectedSegment] = useState<SegmentEffortMini | null>(null);
+
   const handleSort = (columnKey: keyof SegmentEffortMini) => {
     let direction: 'asc' | 'desc' = 'asc';
     if (sortConfig.key === columnKey && sortConfig.direction === 'asc') {
       direction = 'desc';
     }
     setSortConfig({ key: columnKey, direction });
+  };
+
+  const handleRowClick = (segment: SegmentEffortMini) => {
+    setSelectedSegment(segment);
+    setDialogOpen(true);
   };
 
   const sortedSegmentEfforts = React.useMemo(() => {
@@ -32,89 +41,110 @@ const SegmentTable: React.FC<SegmentTableProps> = ({ segmentEfforts }) => {
   }, [segmentEfforts, sortConfig]);
 
   return (
-    <TableContainer component={Paper}>
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell
-              align="center"
-              onClick={() => handleSort('name')}
-              sx={{ cursor: 'pointer' }}>
-              Name
-            </TableCell>
-            <TableCell
-              align="center"
-              onClick={() => handleSort('elapsed_time')}
-              sx={{ cursor: 'pointer' }}>
-              Elapsed
-            </TableCell>
-            <TableCell
-              align="center"
-              onClick={() => handleSort('moving_time')}
-              sx={{ cursor: 'pointer' }}>
-              Moving
-            </TableCell>
-            <TableCell
-              align="center"
-              onClick={() => handleSort('starttime')}
-              sx={{ cursor: 'pointer' }}>
-              Start
-            </TableCell>
-            <TableCell
-              align="center"
-              onClick={() => handleSort('endtime')}
-              sx={{ cursor: 'pointer' }}>
-              End
-            </TableCell>
-            <TableCell
-              align="center"
-              onClick={() => handleSort('average_watts')}
-              sx={{ cursor: 'pointer' }}
-            >
-              Watts
-            </TableCell>
-            <TableCell
-              align="center"
-              onClick={() => handleSort('average_heartrate')}
-              sx={{ cursor: 'pointer' }}
-              >
-                HR
+    <>
+      <TableContainer component={Paper}>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell
+                align="center"
+                onClick={() => handleSort('name')}
+                sx={{ cursor: 'pointer' }}>
+                Name
               </TableCell>
-            <TableCell
-              align="center"
-              onClick={() => handleSort('max_heartrate')}
-              sx={{ cursor: 'pointer' }}
-              >Max HR</TableCell>
-            <TableCell
-              align="center"
-              onClick={() => handleSort('effort_count')}
-              sx={{ cursor: 'pointer' }}
-              >Efforts</TableCell>
-            <TableCell
-              align="center"
-              onClick={() => handleSort('rank')}
-              sx={{ cursor: 'pointer' }}
-            >Rank</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {sortedSegmentEfforts.map((effort, index) => (
-            <TableRow key={index}>
-              <TableCell align="left">{effort.name}</TableCell>
-              <TableCell align="center">{formatElapsedTimeShort(effort.elapsed_time)}</TableCell>
-              <TableCell align="center">{formatElapsedTimeShort(effort.moving_time)}</TableCell>
-              <TableCell align="right">{new Date(effort.starttime).toLocaleTimeString()}</TableCell>
-              <TableCell align="right">{new Date(effort.endtime).toLocaleTimeString()}</TableCell>
-              <TableCell align="right">{effort.average_watts}</TableCell>
-              <TableCell align="right">{effort.average_heartrate}</TableCell>
-              <TableCell align="right">{effort.max_heartrate}</TableCell>
-              <TableCell align="right">{effort.effort_count}</TableCell>
-              <TableCell align="right">{effort.rank}</TableCell>
+              <TableCell
+                align="center"
+                onClick={() => handleSort('elapsed_time')}
+                sx={{ cursor: 'pointer' }}>
+                Elapsed
+              </TableCell>
+              <TableCell
+                align="center"
+                onClick={() => handleSort('moving_time')}
+                sx={{ cursor: 'pointer' }}>
+                Moving
+              </TableCell>
+              <TableCell
+                align="center"
+                onClick={() => handleSort('starttime')}
+                sx={{ cursor: 'pointer' }}>
+                Start
+              </TableCell>
+              <TableCell
+                align="center"
+                onClick={() => handleSort('endtime')}
+                sx={{ cursor: 'pointer' }}>
+                End
+              </TableCell>
+              <TableCell
+                align="center"
+                onClick={() => handleSort('average_watts')}
+                sx={{ cursor: 'pointer' }}
+              >
+                Watts
+              </TableCell>
+              <TableCell
+                align="center"
+                onClick={() => handleSort('average_heartrate')}
+                sx={{ cursor: 'pointer' }}
+                >
+                  HR
+                </TableCell>
+              <TableCell
+                align="center"
+                onClick={() => handleSort('max_heartrate')}
+                sx={{ cursor: 'pointer' }}
+                >Max HR</TableCell>
+              <TableCell
+                align="center"
+                onClick={() => handleSort('effort_count')}
+                sx={{ cursor: 'pointer' }}
+                >Efforts</TableCell>
+              <TableCell
+                align="center"
+                onClick={() => handleSort('rank')}
+                sx={{ cursor: 'pointer' }}
+              >Rank</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {sortedSegmentEfforts.map((effort, index) => (
+              <TableRow
+                key={index}
+                hover
+                sx={{ cursor: 'pointer' }}
+                onClick={() => handleRowClick(effort)}
+              >
+                <TableCell align="left">{effort.name}</TableCell>
+                <TableCell align="center">{formatElapsedTimeShort(effort.elapsed_time)}</TableCell>
+                <TableCell align="center">{formatElapsedTimeShort(effort.moving_time)}</TableCell>
+                <TableCell align="right">{new Date(effort.starttime).toLocaleTimeString()}</TableCell>
+                <TableCell align="right">{new Date(effort.endtime).toLocaleTimeString()}</TableCell>
+                <TableCell align="right">{effort.average_watts}</TableCell>
+                <TableCell align="right">{effort.average_heartrate}</TableCell>
+                <TableCell align="right">{effort.max_heartrate}</TableCell>
+                <TableCell align="right">{effort.effort_count}</TableCell>
+                <TableCell align="right">{effort.rank}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      <Dialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        fullWidth
+        maxWidth="lg"
+      >
+        <DialogTitle>{selectedSegment?.name}</DialogTitle>
+        <DialogContent>
+          {selectedSegment && (
+            <SegmentEffortListComponent segmentId={selectedSegment.id} />
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -10,19 +10,21 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { MenuItem, FormControl, Select, Checkbox, FormControlLabel, Alert, Box } from "@mui/material";
+import {
+  MenuItem,
+  FormControl,
+  Select,
+  Checkbox,
+  FormControlLabel,
+  Alert,
+  Box,
+  Grid,
+  Typography,
+} from "@mui/material";
 import { useFetchWeightData } from "../../api/user/useFetchWeightData";
 import LinearLoader from "../loaders/LinearLoader";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const PERIOD_MAP: Record<string, string> = {
   week: "Week",
@@ -33,32 +35,35 @@ const PERIOD_MAP: Record<string, string> = {
   all: "All Years",
 };
 
-const AVAILABLE_METRICS_MAP: Record<string, string> = {
-  weight: "Weight",
-  weight7: "Weight Week Avg",
-  weight30: "Weight Month Avg",
-  bodyfatfraction: "Body Fat Pct",
-  bodyfatfraction30: "Body Fat Pct Month",
-  bodyh2ofraction: "H2O Fraction",
-  bodyh2ofraction7: "H2O Fraction Week",
-  bodyh2ofraction30: "H2O Fraction Month",
+const METRIC_CONFIG: {
+  [key: string]: { label: string; color: string };
+} = {
+  weight: { label: "Weight", color: "#b71c1c" }, // dark red
+  weight7: { label: "Weight Week Avg", color: "#e53935" }, // medium red
+  weight30: { label: "Weight Month Avg", color: "#ef9a9a" }, // light red
+
+  bodyfatfraction: { label: "Body Fat Pct", color: "#1b5e20" }, // dark green
+  bodyfatfraction7: { label: "Body Fat Pct Week", color: "#43a047" }, // medium green
+  bodyfatfraction30: { label: "Body Fat Pct Month", color: "#a5d6a7" }, // light green
+
+  bodyh2ofraction: { label: "H2O Fraction", color: "#0d47a1" }, // dark blue
+  bodyh2ofraction7: { label: "H2O Fraction Week", color: "#1e88e5" }, // medium blue
+  bodyh2ofraction30: { label: "H2O Fraction Month", color: "#90caf9" }, // light blue
 };
 
-const YEARLY_METRICS_MAP: Record<string, string> = {
-  weight365: "Weight Year Avg",
-  bodyfatfraction365: "Body Fat Pct Year",
-  bodyh2ofraction365: "H2O Fraction Year",
-};
+const METRIC_ROWS = [
+  ["weight", "weight7", "weight30"],
+  ["bodyfatfraction", "bodyfatfraction7", "bodyfatfraction30"],
+  ["bodyh2ofraction", "bodyh2ofraction7", "bodyh2ofraction30"],
+];
 
 const PERIODS = Object.keys(PERIOD_MAP);
-const AVAILABLE_METRICS = Object.keys(AVAILABLE_METRICS_MAP);
-const YEARLY_METRICS = Object.keys(YEARLY_METRICS_MAP);
 
 const WeightChart: React.FC = () => {
   const [period, setPeriod] = useState("month");
-  const [selectedMetrics, setSelectedMetrics] = useState(["weight"]);
-  const token = localStorage.getItem('token');
-  const { weightData, error, loading } = useFetchWeightData(token ?? '', period);
+  const [selectedMetrics, setSelectedMetrics] = useState<string[]>(["weight"]);
+  const token = localStorage.getItem("token");
+  const { weightData, error, loading } = useFetchWeightData(token ?? "", period);
 
   const handleMetricChange = (metric: string) => {
     setSelectedMetrics((prev) =>
@@ -66,7 +71,7 @@ const WeightChart: React.FC = () => {
     );
   };
 
-  const chartData = React.useMemo(() => {
+  const chartData = useMemo(() => {
     if (!weightData || weightData.length === 0) {
       return { labels: [], datasets: [] };
     }
@@ -83,18 +88,20 @@ const WeightChart: React.FC = () => {
 
     const datasets = selectedMetrics
       .map((metric) => {
+        const config = METRIC_CONFIG[metric];
         const filteredEntries = weightData.filter((entry) => entry[metric] != null);
 
         return filteredEntries.length > 0
           ? {
-              label: AVAILABLE_METRICS_MAP[metric] || YEARLY_METRICS_MAP[metric],
+              label: config.label,
               data: filteredEntries.map((entry) => entry[metric]),
-              borderColor: `hsl(${Math.random() * 360}, 70%, 50%)`,
+              borderColor: config.color,
               fill: false,
+              tension: 0.3,
             }
           : null;
       })
-      .filter(Boolean);
+      .filter(Boolean) as any[];
 
     return { labels, datasets };
   }, [weightData, selectedMetrics]);
@@ -113,35 +120,35 @@ const WeightChart: React.FC = () => {
           ))}
         </Select>
       </FormControl>
-      <Box>
-        {AVAILABLE_METRICS.map((metric) => (
-          <FormControlLabel
-            key={metric}
-            control={
-              <Checkbox
-                checked={selectedMetrics.includes(metric)}
-                onChange={() => handleMetricChange(metric)}
-              />
-            }
-            label={AVAILABLE_METRICS_MAP[metric]}
-          />
-        ))}
-      </Box>
+
       <Box mt={2}>
-        {YEARLY_METRICS.map((metric) => (
-          <FormControlLabel
-            key={metric}
-            control={
-              <Checkbox
-                checked={selectedMetrics.includes(metric)}
-                onChange={() => handleMetricChange(metric)}
-              />
-            }
-            label={YEARLY_METRICS_MAP[metric]}
-          />
-        ))}
+        <Typography variant="subtitle1" gutterBottom>
+          Select Metrics:
+        </Typography>
+        <Grid container spacing={1}>
+          {METRIC_ROWS.map((row, rowIndex) => (
+            <Grid container item spacing={1} key={rowIndex}>
+              {row.map((metric) => (
+                <Grid item xs={4} key={metric}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={selectedMetrics.includes(metric)}
+                        onChange={() => handleMetricChange(metric)}
+                      />
+                    }
+                    label={METRIC_CONFIG[metric].label}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          ))}
+        </Grid>
       </Box>
-      <Line data={chartData} />
+
+      <Box mt={3}>
+        <Line data={chartData} />
+      </Box>
     </div>
   );
 };

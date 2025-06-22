@@ -120,18 +120,18 @@ const YearAndMonthComponent = () => {
     <Container
       maxWidth='xl'
       sx={{
-        marginY: 2, // Adds some vertical margin
-        maxWidth: '1800px', // Increase max width
-        width: '100%', // Set width to 100% for full-page width
+        marginY: 2, 
+        maxWidth: '1800px',
+        width: '100%',
       }}
     >
       <Paper
         elevation={3}
         sx={{
           backgroundColor: '#f9f1d1', //'#fbeacd',
-          padding: 2, // Increase padding
-          margin: 'auto', // Center the component
-          width: '100%', // Occupy the full width of the container
+          padding: 2,
+          margin: 'auto',
+          width: '100%',
         }}
       >
         <Box>
