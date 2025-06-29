@@ -13,7 +13,6 @@ import DayOfMonthIcon from '@mui/icons-material/CalendarViewDay';
 import DatasetIcon from '@mui/icons-material/Dataset';
 import PlusOneIcon from '@mui/icons-material/PlusOne';
 import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
-import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
 import ScaleIcon from '@mui/icons-material/Scale';
 import CalendarViewMonthIcon from '@mui/icons-material/CalendarViewMonth';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
@@ -31,6 +30,7 @@ import ElectricMeterIcon from '@mui/icons-material/ElectricMeter';
 import BoltIcon from '@mui/icons-material/Bolt';
 import AirlineStopsIcon from '@mui/icons-material/AirlineStops';
 import NaturePeopleIcon from '@mui/icons-material/NaturePeople';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 const drawerWidth = 240;
 
@@ -136,7 +136,7 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
       children: [
         { text: 'Weight Tracker', icon: <MonitorHeartIcon />, path: '/rider/weighttracker' },
         { text: 'Record Weight', icon: <ScaleIcon />, path: '/rider/addweight' },
-        { text: 'Settings', icon: <SettingsApplicationsIcon />, path: '/rider/settings' },
+        { text: 'Settings', icon: <SettingsIcon />, path: '/rider/settings' },
       ]
     },
 

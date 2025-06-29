@@ -9,6 +9,8 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TableFooter,
+  Typography,
   Paper,
   Container,
   Dialog,
@@ -92,8 +94,37 @@ const YearAndInOrOutsideComponent = () => {
     });
   }, [data, sortConfig]);
 
+  // Helper to calculate totals
+  const getDistanceTotals = () => {
+    return data.reduce(
+      (acc, row) => {
+        acc.distance_outdoor += row.distance_outdoor;
+        acc.distance_indoor += row.distance_indoor;
+        acc.total_distance += row.total_distance;
+        return acc;
+      },
+      { distance_outdoor: 0, distance_indoor: 0, total_distance: 0 }
+    );
+  };
+
+  const getPercentTotals = () => {
+    const length = data.length;
+    const sumPctOutdoor = data.reduce((sum, row) => sum + row.pct_outdoor, 0);
+    const sumPctIndoor = data.reduce((sum, row) => sum + row.pct_indoor, 0);
+    return {
+      pct_outdoor: sumPctOutdoor / length,
+      pct_indoor: sumPctIndoor / length,
+    };
+  };
+
   const renderTable = (columns: { key: keyof YearAndIndoorOutdoorData; label: string }[]) => {
     const currentYear = new Date().getFullYear();
+    const isDistanceTab = columns.some((col) => col.key === 'distance_outdoor');
+    const isPercentTab = columns.some((col) => col.key === 'pct_outdoor');
+
+    const totals = isDistanceTab ? getDistanceTotals() : null;
+    const pctTotals = isPercentTab ? getPercentTotals() : null;
+
     return (
       <TableContainer>
         <Table>
@@ -117,14 +148,17 @@ const YearAndInOrOutsideComponent = () => {
               <TableRow key={row.year} sx={{ backgroundColor: index % 2 === 0 ? '#f9f9f9' : '#fff' }}>
                 {columns.map((col) => (
                   <TableCell
-                  key={col.key}
-                  align="right"
-                  sx={{ paddingRight: '1em',  backgroundColor: row.year === currentYear ? '#e3f1c4' : 'inherit', }}
-                  onClick={() => handleRowClick(row.year, col.key)}
-              >
+                    key={col.key}
+                    align="right"
+                    sx={{
+                      paddingRight: '1em',
+                      backgroundColor: row.year === currentYear ? '#e3f1c4' : 'inherit',
+                    }}
+                    onClick={() => handleRowClick(row.year, col.key)}
+                  >
                     {typeof row[col.key] === 'number'
                       ? (col.key === 'year'
-                          ? row[col.key]  // no formatting for year
+                          ? row[col.key]
                           : (row[col.key] as number).toLocaleString(undefined, {
                               minimumFractionDigits: ['pct_outdoor', 'pct_indoor'].includes(col.key) ? 1 : 0,
                               maximumFractionDigits: ['pct_outdoor', 'pct_indoor'].includes(col.key) ? 1 : 0,
@@ -135,6 +169,31 @@ const YearAndInOrOutsideComponent = () => {
               </TableRow>
             ))}
           </TableBody>
+
+          <TableFooter>
+            <TableRow sx={{ backgroundColor: '#dfefff', fontWeight: 'bold' }}>
+              {columns.map((col) => {
+                let value: string | number = '';
+
+                if (col.key === 'year') {
+                  value = 'Total';
+                } else if (isDistanceTab && totals) {
+                  value = (totals[col.key as keyof typeof totals] as number).toLocaleString(undefined, {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0,
+                  });
+                } else if (isPercentTab && pctTotals) {
+                  value = (pctTotals[col.key as keyof typeof pctTotals] as number).toFixed(1);
+                }
+
+                return (
+                  <TableCell key={col.key} align="right" sx={{ fontWeight: 'bold', paddingRight: '1em' }}>
+                    {value}
+                  </TableCell>
+                );
+              })}
+            </TableRow>
+          </TableFooter>
         </Table>
       </TableContainer>
     );

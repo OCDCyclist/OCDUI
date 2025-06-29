@@ -569,6 +569,11 @@ export interface FetchPowerCurveResult {
     error: string | null;
 }
 
+export interface FetchUserSettingResult {
+    settings: Setting[];
+    error: string | null;
+}
+
 export const METRIC_CONFIG = {
     altitude: { label: "Altitude", unit: "ft" },
     altitudeHigh: { label: "Altitude High", unit: "ft" },
@@ -728,4 +733,19 @@ export interface Streak_7_Day {
 export interface Milestone_10K {
     ride_date: string,
     distance_miles: number,
+}
+
+export interface Setting {
+  riderid: number;
+  property: string;
+  date: string;
+  propertyvaluestring: string | null;
+  propertyvalue: number;
+}
+
+export interface GroupedSetting {
+  property: string;
+  date: string;
+  value: string;
+  all: Setting[];
 }

@@ -25,6 +25,7 @@ import CummulativeAllComponent from './components/CummulativeAllComponent';
 import PowerCurverVisualization from './components/PowerCurverVisualization';
 import MilestonesComponent from './components/MilestonesComponent';
 import YearAndIndoorOutdoorData from './components/YearAndInOrOutsideComponent';
+import UserSettingsTable from './components/UserSettings';
 
 const App: React.FC = () => {
   return (
@@ -45,6 +46,7 @@ const App: React.FC = () => {
           <Route path="UpdateMetrics" element={<UpdateMetrics />} />
           <Route path="rider/weighttracker" element={<WeightTracker />} />
           <Route path="rider/addweight" element={<AddWeight />} />
+          <Route path="rider/settings" element={<UserSettingsTable />} />
           <Route path="rides/recent" element={<RideListComponent />} />
           <Route path="rides/lookback" element={<RideLookbackComponent />} />
           <Route path="rides/allrides" element={<RideAllComponent />} />
