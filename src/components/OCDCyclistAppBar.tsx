@@ -31,6 +31,7 @@ import BoltIcon from '@mui/icons-material/Bolt';
 import AirlineStopsIcon from '@mui/icons-material/AirlineStops';
 import NaturePeopleIcon from '@mui/icons-material/NaturePeople';
 import SettingsIcon from '@mui/icons-material/Settings';
+import FunctionsIcon from '@mui/icons-material/Functions';
 
 const drawerWidth = 240;
 
@@ -137,6 +138,14 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
         { text: 'Weight Tracker', icon: <MonitorHeartIcon />, path: '/rider/weighttracker' },
         { text: 'Record Weight', icon: <ScaleIcon />, path: '/rider/addweight' },
         { text: 'Settings', icon: <SettingsIcon />, path: '/rider/settings' },
+      ]
+    },
+
+      {
+      text: 'Gear',
+      icon: <FunctionsIcon />,
+      children: [
+        { text: 'Bikes', icon: <DirectionsBikeIcon />, path: '/gear/bikes' },
       ]
     },
 

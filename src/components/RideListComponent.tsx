@@ -319,7 +319,11 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster, years, start
                   onSave={handleOnSaveTags}
               />
               :
-              rideData && <RideDetail rideData={rideData} onClose={() => setDialogOpen(false)} />
+              rideData && <RideDetail
+                rideData={rideData}
+                onRideUpdated={() => setRefreshData(prev => !prev)} // ← Trigger full refresh
+                onClose={() => setDialogOpen(false)}
+              />
             }
           </DialogContent>
         </Dialog>

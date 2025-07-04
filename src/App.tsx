@@ -26,6 +26,7 @@ import PowerCurverVisualization from './components/PowerCurverVisualization';
 import MilestonesComponent from './components/MilestonesComponent';
 import YearAndIndoorOutdoorData from './components/YearAndInOrOutsideComponent';
 import UserSettingsTable from './components/UserSettings';
+import BikesComponent from './components/BikesComponent';
 
 const App: React.FC = () => {
   return (
@@ -47,6 +48,7 @@ const App: React.FC = () => {
           <Route path="rider/weighttracker" element={<WeightTracker />} />
           <Route path="rider/addweight" element={<AddWeight />} />
           <Route path="rider/settings" element={<UserSettingsTable />} />
+          <Route path="gear/bikes" element={<BikesComponent />} />
           <Route path="rides/recent" element={<RideListComponent />} />
           <Route path="rides/lookback" element={<RideLookbackComponent />} />
           <Route path="rides/allrides" element={<RideAllComponent />} />

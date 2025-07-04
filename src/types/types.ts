@@ -287,14 +287,6 @@ export interface MonthAndDOMData {
     poweraverage: number
 }
 
-// Bike Interface
-export interface Bike {
-    bikeid: number;
-    bikename: string;
-    stravaname: string;
-    isdefault: number;
-}
-
 export interface YearAndMonthData {
     rideyear: number;
     total_distance_miles: number;
@@ -574,6 +566,11 @@ export interface FetchUserSettingResult {
     error: string | null;
 }
 
+export interface FetchBikesResult {
+    bikes: Bike[];
+    error: string | null;
+}
+
 export const METRIC_CONFIG = {
     altitude: { label: "Altitude", unit: "ft" },
     altitudeHigh: { label: "Altitude High", unit: "ft" },
@@ -749,3 +746,19 @@ export interface GroupedSetting {
   value: string;
   all: Setting[];
 }
+
+export type Bike = {
+  bikeid: number;
+  bikename: string;
+  brand: string;
+  make: string;
+  isdefault: boolean;
+  retired: boolean;
+  stravaname: string;
+  stravaid: string;
+  rides: number;
+  distance: number;
+  hours: number;
+  earliest: string;
+  latest: string;
+};

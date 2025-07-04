@@ -41,8 +41,8 @@ import { fetchUserZones } from '../api';
 import { fetchRiderReferenceLevels } from '../api/rides/fetchRiderReferenceLevels';
 import SegmentTable from './SegmentTable';
 import { fetchRideSegmentEfforts } from '../api/rides/fetchRideSegmentEfforts';
-import RideListComponent from './RideListComponent';
 import SimilarRides from './SimilarRides';
+import { useRideFieldUpdate } from '../api/rides/useRideFieldUpdate';
 
 const TabPanel = ({ children, value, index }: { children: React.ReactNode; value: number; index: number }) => {
   return (
@@ -55,9 +55,10 @@ const TabPanel = ({ children, value, index }: { children: React.ReactNode; value
 interface RideDetailProps {
   rideData: RideData;
   onClose: () => void;
+  onRideUpdated: () => void;
 }
 
-const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => {
+const RideDetail = ({ rideData: initialRideData, onRideUpdated, onClose }: RideDetailProps) => {
   const [rideData, setRideData] = useState<RideData>(initialRideData); // For success response
   const [userZones, setUserZones] = useState<UserZone[]>([]);
   const [rideMetricData, setRideMetricData] = useState<MetricRow[]>([]); // For metric data
@@ -74,6 +75,14 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
   const [tabIndex, setTabIndex] = useState(0);
 
   const navigate = useNavigate();
+
+  const { rideData: updatedRideData, loading: updateLoading, error: updateError, updateRideField } = useRideFieldUpdate(rideData.rideid);
+
+  useEffect(() => {
+    if (updatedRideData) {
+      setRideData(updatedRideData);
+    }
+  }, [updatedRideData]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -248,6 +257,7 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
       if (response.ok) {
         const data = await response.json();
         setRideData(data);
+        onRideUpdated();
         setLoading(false);
       } else {
         setError('Failed to update ride');
@@ -437,8 +447,8 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
     return numbers.includes(null) ? [] : (numbers as number[]);
   };
 
-  if (error) {
-    return <ErrorComponent error={error} />;
+  if (error || updateError) {
+    return error ? <ErrorComponent error={error} /> : <ErrorComponent error={updateError || "Unknown update d"} />;
   }
 
   const zoneDefinitionsHR =  getZoneValues(ZoneType.HR, userZones);
@@ -453,7 +463,7 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
   return (
     <Container maxWidth="xl" sx={{ marginY: 5 }}>
       <Paper elevation={3} sx={{ padding: 2, width: '100%', margin: '0 auto' }}>
-        { loading ? <LinearIndeterminate /> : null}
+        { loading || updateLoading ? <LinearIndeterminate /> : null}
 
         <Tabs value={tabIndex} onChange={handleTabChange}>
           <Tab label="Summary" />
@@ -557,9 +567,10 @@ const RideDetail = ({ rideData: initialRideData, onClose }: RideDetailProps) => 
                           <Select
                             labelId="bike-select-label"
                             value={rideData.bikeid}
-                            onChange={(e: { target: { value: unknown; }; }) => {
-                              setEditValue(Number(e.target.value));
-                              handleSave('bikeid');
+                            onChange={async (e: { target: { value: unknown; }; }) => {
+                              const selected = Number(e.target.value);
+                              await updateRideField('bikeid', selected);
+                              onRideUpdated()
                             }}
                             fullWidth
                           >
