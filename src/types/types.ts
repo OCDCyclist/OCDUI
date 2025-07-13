@@ -762,3 +762,12 @@ export type Bike = {
   earliest: string;
   latest: string;
 };
+
+export type Goal = {
+  ridergoalid: number;
+  goalid: number;
+  type: string;
+  week: number;
+  month: number;
+  year: number;
+};

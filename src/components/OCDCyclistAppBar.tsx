@@ -25,13 +25,15 @@ import LoginStatus from './authentication/LoginStatus';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import TuneIcon from '@mui/icons-material/Tune';
 import PivotTableChartIcon from '@mui/icons-material/PivotTableChart';
-import AutoModeIcon from '@mui/icons-material/AutoMode';
 import ElectricMeterIcon from '@mui/icons-material/ElectricMeter';
 import BoltIcon from '@mui/icons-material/Bolt';
 import AirlineStopsIcon from '@mui/icons-material/AirlineStops';
 import NaturePeopleIcon from '@mui/icons-material/NaturePeople';
 import SettingsIcon from '@mui/icons-material/Settings';
 import FunctionsIcon from '@mui/icons-material/Functions';
+import FlagCircleIcon from '@mui/icons-material/FlagCircle';
+import StackedLineChartIcon from '@mui/icons-material/StackedLineChart';
+import SettingsEthernetIcon from '@mui/icons-material/SettingsEthernet';
 
 const drawerWidth = 240;
 
@@ -98,9 +100,11 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
         { text: 'Year and Month', icon: <DatasetIcon />, path: '/ocds/yearandmonth' },
         { text: 'Year and DOW', icon: <DayOfMonthIcon />, path: '/ocds/yearanddow' },
         { text: 'Day of Month', icon: <CalendarMonthIcon />, path: '/ocds/monthanddom' },
-        { text: 'Streaks', icon: <AutoModeIcon />, path: '/ocds/streaks' },
+        { text: 'Month and Day', icon: <CalendarMonthIcon />, path: '/ocds/monthanddomvertical' },
         { text: 'Milestones', icon: <AirlineStopsIcon />, path: '/ocds/milestones' },
-        { text: 'In or Outside', icon: <NaturePeopleIcon />, path: '/ocds/inoroutside' }
+        { text: 'In or Outside', icon: <NaturePeopleIcon />, path: '/ocds/inoroutside' },
+        { text: 'Days With Rides', icon: <StackedLineChartIcon />, path: '/ocds/ridedayfractions' },
+        { text: 'Streaks', icon: <SettingsEthernetIcon />, path: '/ocds/streaks' },
       ]
     },
 
@@ -137,6 +141,7 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
       children: [
         { text: 'Weight Tracker', icon: <MonitorHeartIcon />, path: '/rider/weighttracker' },
         { text: 'Record Weight', icon: <ScaleIcon />, path: '/rider/addweight' },
+        { text: 'Goals', icon: <FlagCircleIcon />, path: '/rider/goals' },
         { text: 'Settings', icon: <SettingsIcon />, path: '/rider/settings' },
       ]
     },

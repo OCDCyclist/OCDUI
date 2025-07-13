@@ -27,6 +27,9 @@ import MilestonesComponent from './components/MilestonesComponent';
 import YearAndIndoorOutdoorData from './components/YearAndInOrOutsideComponent';
 import UserSettingsTable from './components/UserSettings';
 import BikesComponent from './components/BikesComponent';
+import GoalsComponent from './components/GoalsComponent';
+import MonthDayMetricTableComponent from './components/MonthDayMetricTableComponent';
+import RideDayFractionsComponent from './components/RideDayFractionsComponent';
 
 const App: React.FC = () => {
   return (
@@ -40,13 +43,16 @@ const App: React.FC = () => {
           <Route path="ocds/yearandmonth" element={<YearAndMonthComponent />} />
           <Route path="ocds/yearanddow" element={<YearAndDOWComponent />} />
           <Route path="ocds/monthanddom" element={<MonthAndDOMComponent />} />
+          <Route path="ocds/monthanddomvertical" element={<MonthDayMetricTableComponent />} />
           <Route path="/ocds/streaks" element={<StreaksComponent />} />
           <Route path="/ocds/milestones" element={<MilestonesComponent />} />
           <Route path="/ocds/inoroutside" element={<YearAndIndoorOutdoorData />} />
+          <Route path="/ocds/ridedayfractions" element={<RideDayFractionsComponent />} />
           <Route path="updateStrava" element={<UpdateStrava />} />
           <Route path="UpdateMetrics" element={<UpdateMetrics />} />
           <Route path="rider/weighttracker" element={<WeightTracker />} />
           <Route path="rider/addweight" element={<AddWeight />} />
+          <Route path="rider/goals" element={<GoalsComponent />} />
           <Route path="rider/settings" element={<UserSettingsTable />} />
           <Route path="gear/bikes" element={<BikesComponent />} />
           <Route path="rides/recent" element={<RideListComponent />} />
