@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "@mui/material/Link";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 interface DownloadRideDataLinkProps {
   rideid: number;
@@ -18,7 +19,7 @@ const DownloadRideDataLink: React.FC<DownloadRideDataLinkProps> = ({
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch(`http://localhost:3000/ride/download/${rideid}`, {
+      const response = await fetch(`${API_BASE_URL}/ride/download/${rideid}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,

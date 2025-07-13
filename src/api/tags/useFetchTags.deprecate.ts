@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { FetchTagsResult } from "../../types/types";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const useFetchTagAssignments = (token: string) => {
   const [data, setData] = useState<FetchTagsResult | null>((null));
@@ -12,7 +13,7 @@ export const useFetchTagAssignments = (token: string) => {
       setError(null);
 
       try {
-        const response = await fetch('http://localhost:3000/user/tags', {
+        const response = await fetch(`${API_BASE_URL}/user/tags`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

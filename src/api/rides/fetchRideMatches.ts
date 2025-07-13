@@ -1,8 +1,9 @@
 import { FetchRideMatchesResult } from "../../types/types";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const fetchRideMatches = async (token: string, rideid: number): Promise<FetchRideMatchesResult> => {
   try {
-    const response = await fetch(`http://localhost:3000/ride/matches/${rideid}`, {
+    const response = await fetch(`${API_BASE_URL}/ride/matches/${rideid}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

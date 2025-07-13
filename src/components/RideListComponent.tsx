@@ -11,6 +11,7 @@ import { getUniqueTags } from '../utilities/tagUtilities';
 import LinearLoader from './loaders/LinearLoader';
 import { rideUrlHelper } from './formatters/rideUrlHelper';
 import RideDataFilter, { FilterObject } from './filters2/RideDataFilter';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 type RideListComponentProps = {
   date?: string;
@@ -165,7 +166,7 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster, years, start
   const handleOnSaveTags = (locationId : number | string | null, assignmentId : number | string | null, tags: string[]) =>{
     const token = localStorage.getItem('token');
     axios.post(
-      'http://localhost:3000/user/saveTagAssignments',
+      `${API_BASE_URL}/user/saveTagAssignments`,
       {
         locationId,
         assignmentId,

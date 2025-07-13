@@ -5,6 +5,7 @@ import { YearAndMonthData } from '../types/types';
 import { formatDateHelper } from '../components/formatters/formatDateHelper';
 import RideListComponent from './RideListComponent';
 import { formatYearAndMonthData } from './formatters/formatYearAndMonthData';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const TabPanel = ({ children, value, index }: { children: React.ReactNode; value: number; index: number }) => {
   return (
@@ -27,7 +28,7 @@ const YearAndMonthComponent = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
 
-    axios.get('http://localhost:3000/ocds/yearandmonth', {
+    axios.get(`${API_BASE_URL}/ocds/yearandmonth`, {
       method: 'GET',
       headers: {
           'Content-Type': 'application/json',

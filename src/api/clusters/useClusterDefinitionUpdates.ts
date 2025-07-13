@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ClusterDefinition } from '../../types/types';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const useClusterDefinitionUpdates = (token: string) => {
   const [loading, setLoading] = useState(false);
@@ -10,7 +11,7 @@ export const useClusterDefinitionUpdates = (token: string) => {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`http://localhost:3000/cluster/update`, {
+      const response = await fetch(`${API_BASE_URL}/cluster/update`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

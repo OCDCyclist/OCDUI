@@ -1,5 +1,6 @@
 // src/hooks/useAddUserSettingValue.ts
 import { useState } from "react";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export function useAddUserSettingValue() {
   const [loading, setLoading] = useState(false);
@@ -11,7 +12,7 @@ export function useAddUserSettingValue() {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:3000/user/addUserSettingValue", {
+      const res = await fetch(`${API_BASE_URL}/user/addUserSettingValue`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

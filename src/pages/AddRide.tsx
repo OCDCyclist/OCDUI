@@ -14,11 +14,11 @@ import {
   CircularProgress,
   Alert,
 } from '@mui/material';
-
 import { useNavigate } from 'react-router-dom';
 import { isTokenValid } from '../utilities/jwtUtils';
 import { Bike, RideData } from '../types/types';
-// Component to add a new ride
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 const AddRideForm: React.FC = () => {
   const [date, setDate] = useState<string>('');  // Date string in 'YYYY-MM-DD'
   const [time, setTime] = useState<string>('');  // Time string in 'HH:mm:ss'
@@ -59,7 +59,7 @@ const AddRideForm: React.FC = () => {
           navigate('/login'); // Redirect to login
         }
 
-        const response = await fetch('http://localhost:3000/bikes', {
+        const response = await fetch(`${API_BASE_URL}/bikes`, {
           method: 'GET',
           headers: {
               'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ const AddRideForm: React.FC = () => {
           setBikes(data);
 
           // Find and set the default bike
-          const defaultBike = data.find((bike: Bike) => bike.isdefault === 1);
+          const defaultBike = data.find((bike: Bike) => bike.isdefault === true);
           if (defaultBike) {
             setBikeID(defaultBike.bikeid);
           }
@@ -122,18 +122,18 @@ const AddRideForm: React.FC = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:3000/ride/addRide', {
+      const response = await fetch(`${API_BASE_URL}/ride/addRide`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // Include token in Authorization header
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
       });
 
       if (response.ok) {
         const data = await response.json();
-        setRideData(data); // Store the returned ride data
+        setRideData(data);
         setLoading(false);
       } else {
         setError('Failed to add ride');

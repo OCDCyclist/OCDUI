@@ -1,8 +1,9 @@
 import { FetchUserZoneResult } from "../../types/types";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const fetchUserZones = async (token: string): Promise<FetchUserZoneResult> => {
   try {
-    const response = await fetch('http://localhost:3000/user/zones', {
+    const response = await fetch(`${API_BASE_URL}/user/zones`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

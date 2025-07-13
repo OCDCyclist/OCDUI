@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { RideData } from '../../types/types';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 interface UseRideFieldUpdateResult {
   rideData: RideData | null;
@@ -21,7 +22,7 @@ export function useRideFieldUpdate(rideid: number): UseRideFieldUpdateResult {
     const payload = { [field]: value.toString() };
 
     try {
-      const response = await fetch(`http://localhost:3000/ride/${rideid}/update`, {
+      const response = await fetch(`${API_BASE_URL}/ride/${rideid}/update`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

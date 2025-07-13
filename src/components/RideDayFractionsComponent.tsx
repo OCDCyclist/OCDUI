@@ -13,6 +13,7 @@ import {
   Container,
 } from '@mui/material';
 import axios from 'axios';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 interface RideDayFractionsData {
   year_month: string;
@@ -40,7 +41,7 @@ const RideDayFractionsComponent = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     axios
-      .get('http://localhost:3000/ocds/ridedayfractions', {
+      .get(`${API_BASE_URL}/ocds/ridedayfractions`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,

@@ -8,6 +8,7 @@ import TagSelector from './TagSelector';
 import { splitCommaSeparatedString } from '../utilities/stringUtilities';
 import TagFilter from './TagFilter';
 import SegmentEffortListComponent from './SegmentEffortListComponent';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const getUniqueTags = (segments: SegmentDataWithTags[]): string[] => {
   const tagSet = new Set<string>();
@@ -53,7 +54,7 @@ const StarredSegmentsComponent = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
 
-    axios.get('http://localhost:3000/segment/starred', {
+    axios.get(`${API_BASE_URL}/segment/starred`, {
       method: 'GET',
       headers: {
           'Content-Type': 'application/json',
@@ -139,7 +140,7 @@ const StarredSegmentsComponent = () => {
   const handleOnSaveTags = (locationId : number | string | null, assignmentId : number | string | null, tags: string[]) =>{
     const token = localStorage.getItem('token');
     axios.post(
-      'http://localhost:3000/user/saveTagAssignments',
+      `${API_BASE_URL}/user/saveTagAssignments`,
       {
         locationId,
         assignmentId,

@@ -10,6 +10,7 @@ import { splitCommaSeparatedString } from '../utilities/stringUtilities';
 import { getUniqueTags } from '../utilities/tagUtilities';
 import TagFilter from './TagFilter';
 import StravaEffortLink from './StravaEffortLink';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 interface SegmentEffortListProps {
   segmentId: number;
@@ -86,7 +87,7 @@ const SegmentEffortListComponent = ({ segmentId }: SegmentEffortListProps) => {
     setLoading(true);
     const token = localStorage.getItem('token');
 
-    axios.get(`http://localhost:3000/segment/efforts/${segmentId}`, {
+    axios.get(`${API_BASE_URL}/segment/efforts/${segmentId}`, {
       method: 'GET',
       headers: {
           'Content-Type': 'application/json',
@@ -197,7 +198,7 @@ const SegmentEffortListComponent = ({ segmentId }: SegmentEffortListProps) => {
   const handleOnSaveTags = (locationId : number | string | null, assignmentId : number | string | null, tags: string[]) =>{
     const token = localStorage.getItem('token');
     axios.post(
-      'http://localhost:3000/user/saveTagAssignments',
+      `${API_BASE_URL}/user/saveTagAssignments`,
       {
         locationId,
         assignmentId,

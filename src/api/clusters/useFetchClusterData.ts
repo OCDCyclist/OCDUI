@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { CentroidSelectorData, RideDataWithTagsClusters } from "../../types/types";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const useFetchClusterData = () => {
   const [data, setData] = useState<RideDataWithTagsClusters[]>([]);
@@ -13,7 +14,7 @@ export const useFetchClusterData = () => {
     setError(null);
     try {
       const response = await fetch(
-        `http://localhost:3000/cluster/getRidesByCentroid?clusterId=${centroid.clusterid}`,
+        `${API_BASE_URL}/cluster/getRidesByCentroid?clusterId=${centroid.clusterid}`,
         {
           method: "GET",
           headers: {

@@ -43,6 +43,7 @@ import SegmentTable from './SegmentTable';
 import { fetchRideSegmentEfforts } from '../api/rides/fetchRideSegmentEfforts';
 import SimilarRides from './SimilarRides';
 import { useRideFieldUpdate } from '../api/rides/useRideFieldUpdate';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const TabPanel = ({ children, value, index }: { children: React.ReactNode; value: number; index: number }) => {
   return (
@@ -116,7 +117,7 @@ const RideDetail = ({ rideData: initialRideData, onRideUpdated, onClose }: RideD
           navigate('/login'); // Redirect to login
         }
 
-        const response = await fetch('http://localhost:3000/bikes', {
+        const response = await fetch(`${API_BASE_URL}/bikes`, {
           method: 'GET',
           headers: {
               'Content-Type': 'application/json',
@@ -240,7 +241,7 @@ const RideDetail = ({ rideData: initialRideData, onRideUpdated, onClose }: RideD
     const token = localStorage.getItem('token'); // Retrieve token from localStorage
 
     try {
-      const url = `http://localhost:3000/ride/${rideData.rideid}/update`;
+      const url = `${API_BASE_URL}/ride/${rideData.rideid}/update`;
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -292,7 +293,7 @@ const RideDetail = ({ rideData: initialRideData, onRideUpdated, onClose }: RideD
     const token = localStorage.getItem('token'); // Retrieve token from localStorage
 
     try {
-      const url = `http://localhost:3000/ride/${rideData.rideid}/update`;
+      const url = `${API_BASE_URL}/ride/${rideData.rideid}/update`;
       const response = await fetch(url, {
         method: 'POST',
         headers: {

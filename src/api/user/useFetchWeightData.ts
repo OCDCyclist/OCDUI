@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { FetchWeightDataResult } from "../../types/types";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const useFetchWeightData = (token: string, period: string): FetchWeightDataResult => {
   const [weightData, setWeightData] = useState([]);
@@ -12,7 +13,7 @@ export const useFetchWeightData = (token: string, period: string): FetchWeightDa
       setError(null);
 
       try {
-        const response = await fetch(`http://localhost:3000/weight/${period}`, {
+        const response = await fetch(`${API_BASE_URL}/weight/${period}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

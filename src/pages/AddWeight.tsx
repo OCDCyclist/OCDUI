@@ -12,6 +12,7 @@ import {
   Alert,
 } from '@mui/material';
 import ConfirmWeight from '../components/user/ConfirmWeight';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const getTodayDate = () => {
   const today = new Date();
@@ -67,7 +68,7 @@ const AddWeightForm: React.FC = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:3000/addWeight', {
+      const response = await fetch(`${API_BASE_URL}/addWeight`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

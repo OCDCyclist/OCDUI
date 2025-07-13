@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useFetchAllClusterDefinitions } from './useFetchAllClusterDefinitions';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const useClusterActions = (token: string) => {
   const { refetch } = useFetchAllClusterDefinitions(token);
@@ -11,7 +12,7 @@ export const useClusterActions = (token: string) => {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`http://localhost:3000/cluster/${endpoint}/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/cluster/${endpoint}/${id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

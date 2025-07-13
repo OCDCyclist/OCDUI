@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ClusterDefinition } from "../../types/types";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const useFetchClusterDefinition = (token: string, clusterId: number) => {
   const [data, setData] = useState<ClusterDefinition>();
@@ -25,7 +26,7 @@ export const useFetchClusterDefinition = (token: string, clusterId: number) => {
           setLoading(false);
           return;
         }
-        const response = await fetch(`http://localhost:3000/cluster/getClusterDefinition?clusterId=${clusterId}`, {
+        const response = await fetch(`${API_BASE_URL}/cluster/getClusterDefinition?clusterId=${clusterId}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

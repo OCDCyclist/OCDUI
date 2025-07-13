@@ -10,7 +10,6 @@ import {
   TableHead,
   TableRow,
   TableFooter,
-  Typography,
   Paper,
   Container,
   Dialog,
@@ -20,6 +19,7 @@ import {
 import axios from 'axios';
 import RideListComponent from './RideListComponent';
 import { formatDateHelper } from './formatters/formatDateHelper';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 interface YearAndIndoorOutdoorData {
   year: number;
@@ -51,7 +51,7 @@ const YearAndInOrOutsideComponent = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     axios
-      .get('http://localhost:3000/ocds/outdoorindoor', {
+      .get(`${API_BASE_URL}/ocds/outdoorindoor`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,

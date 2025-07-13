@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { SimilarRidesSelectorData, FetchSimilarRidesResult } from "../../types/types";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const useFetchSimilarRides = () => {
   const [data, setData] = useState<FetchSimilarRidesResult[]>([]);
@@ -13,7 +14,7 @@ export const useFetchSimilarRides = () => {
     setError(null);
     try {
       const response = await fetch(
-        `http://localhost:3000/cluster/getRidesByCentroid?clusterId=${rideid.rideid}`,
+        `${API_BASE_URL}/cluster/getRidesByCentroid?clusterId=${rideid.rideid}`,
         {
           method: "GET",
           headers: {

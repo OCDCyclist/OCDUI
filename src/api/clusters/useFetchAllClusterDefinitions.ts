@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { ClusterDefinition } from "../../types/types";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const useFetchAllClusterDefinitions = (token: string) => {
   const [data, setData] = useState<ClusterDefinition[]>([]);
@@ -12,7 +13,7 @@ export const useFetchAllClusterDefinitions = (token: string) => {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:3000/cluster/getAllClusterDefinitions', {
+      const response = await fetch(`${API_BASE_URL}/cluster/getAllClusterDefinitions`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

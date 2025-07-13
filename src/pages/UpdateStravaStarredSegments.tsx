@@ -10,6 +10,7 @@ import {
   Alert,
 } from '@mui/material';
 import StravaLogo from '../assets/powered by Strava/pwrdBy_strava_light/api_logo_pwrdBy_strava_horiz_light.svg';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const UpdateStravaStarredSegments: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false); // Loading state
@@ -24,7 +25,7 @@ const UpdateStravaStarredSegments: React.FC = () => {
     const token = localStorage.getItem('token');
 
     try {
-      const response = await axios.get('http://localhost:3000/rider/updateStarredSegments', {
+      const response = await axios.get(`${API_BASE_URL}/rider/updateStarredSegments`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

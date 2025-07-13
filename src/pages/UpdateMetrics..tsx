@@ -9,6 +9,7 @@ import {
   Alert,
 } from '@mui/material';
 import axios from 'axios';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const UpdateMetrics: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false); // Loading state
@@ -23,7 +24,7 @@ const UpdateMetrics: React.FC = () => {
     const token = localStorage.getItem('token'); // Retrieve the JWT token from localStorage
 
     try {
-      const response = await axios.get('http://localhost:3000/ride/updateMetrics', {
+      const response = await axios.get(`${API_BASE_URL}/ride/updateMetrics`, {
         headers: {
           Authorization: `Bearer ${token}`, // Add the token in the Authorization header
         },

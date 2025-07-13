@@ -1,8 +1,9 @@
 import { FetchUserSettingResult } from "../../types/types";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const fetchUserSettings = async (token: string): Promise<FetchUserSettingResult> => {
   try {
-    const response = await fetch('http://localhost:3000/user/settings', {
+    const response = await fetch(`${API_BASE_URL}/user/settings`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

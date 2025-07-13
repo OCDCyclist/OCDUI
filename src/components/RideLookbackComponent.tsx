@@ -4,6 +4,7 @@ import axios from 'axios';
 import RideDetail from './RideDetail';
 import { formatDate, formatElapsedTime, formatInteger, formatNumber } from '../utilities/formatUtilities';
 import { RideData, RideDataWithTags } from '../types/types';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 interface RideDataCategory extends RideData {
   category: string;
@@ -56,7 +57,7 @@ const categories = useMemo(() => {
   useEffect(() => {
     const token = localStorage.getItem('token');
 
-    axios.get('http://localhost:3000/ride/lookback', {
+    axios.get(`${API_BASE_URL}/ride/lookback`, {
       method: 'GET',
       headers: {
           'Content-Type': 'application/json',

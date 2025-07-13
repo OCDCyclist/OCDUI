@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { CentroidSelectorData } from "../../types/types";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const useFetchTagAssignments = (token: string, locationId: number) => {
   const [data, setData] = useState<CentroidSelectorData[]>([]);
@@ -12,7 +13,7 @@ export const useFetchTagAssignments = (token: string, locationId: number) => {
       setError(null);
 
       try {
-        const response = await fetch(`http://localhost:3000/user/tagAssignments/${locationId}`, {
+        const response = await fetch(`${API_BASE_URL}/user/tagAssignments/${locationId}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

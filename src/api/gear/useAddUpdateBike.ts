@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Bike } from "../../types/types";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export function useAddUpdateBike() {
   const [loading, setLoading] = useState(false);
@@ -11,7 +12,7 @@ export function useAddUpdateBike() {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:3000/gear/addUpdateBike", {
+      const res = await fetch(`${API_BASE_URL}/gear/addUpdateBike`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

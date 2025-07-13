@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { CentroidDefinition } from "../../types/types";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const useFetchAllClusterCentroids = (token: string) => {
   const [data, setData] = useState<CentroidDefinition[]>([]);
@@ -11,7 +12,7 @@ export const useFetchAllClusterCentroids = (token: string) => {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:3000/cluster/allClusterCentroids', {
+      const response = await fetch(`${API_BASE_URL}/cluster/allClusterCentroids`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

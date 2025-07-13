@@ -7,6 +7,7 @@ import { useFetchAllClusterDefinitions } from '../api/clusters/useFetchAllCluste
 import RowActions from './utility/RowActions';
 import ClusterEdit from './ClusterEdit';
 import { useClusterDefinitionUpdates } from '../api/clusters/useClusterDefinitionUpdates';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const ClusterSetup = () => {
   const token = localStorage.getItem('token');
@@ -71,7 +72,7 @@ const ClusterSetup = () => {
 
   const handleRecalculate = async (clusterDefinition: ClusterDefinition) => {
     try {
-      const response = await fetch(`http://localhost:3000/cluster/cluster?clusterid=${clusterDefinition.clusterid}`, {
+      const response = await fetch(`${API_BASE_URL}/cluster/cluster?clusterid=${clusterDefinition.clusterid}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -89,7 +90,7 @@ const ClusterSetup = () => {
 
   const handleSetActive = async (clusterDefinition: ClusterDefinition) => {
     try {
-      const response = await fetch(`http://localhost:3000/cluster/setActive?clusterid=${clusterDefinition.clusterid}`, {
+      const response = await fetch(`${API_BASE_URL}/cluster/setActive?clusterid=${clusterDefinition.clusterid}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -114,7 +115,7 @@ const ClusterSetup = () => {
 
   const handleDelete = async (clusterDefinition: ClusterDefinition) => {
     try {
-      const response = await fetch(`http://localhost:3000/cluster/delete?clusterid=${clusterDefinition.clusterid}`, {
+      const response = await fetch(`${API_BASE_URL}/cluster/delete?clusterid=${clusterDefinition.clusterid}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

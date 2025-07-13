@@ -4,6 +4,7 @@ import { Paper, TextField, Button, Typography, Box } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -34,7 +35,7 @@ const Login: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3000/riders/login', { username, password });
+      const response = await axios.post(`${API_BASE_URL}/riders/login`, { username, password });
       const { token } = response.data;
       localStorage.setItem('token', token);  // Save token for future requests
       navigate('/');

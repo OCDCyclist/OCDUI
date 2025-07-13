@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Goal } from "../../types/types";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export function useAddUpdateGoal() {
   const [loading, setLoading] = useState(false);
@@ -11,7 +12,7 @@ export function useAddUpdateGoal() {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:3000/user/addUpdateGoal", {
+      const res = await fetch(`${API_BASE_URL}/user/addUpdateGoal`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

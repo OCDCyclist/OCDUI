@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { Goal } from "../../types/types";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export function useFetchGoals(token: string) {
   const [goals, setGoals] = useState<Goal[]>([]);
@@ -10,7 +11,7 @@ export function useFetchGoals(token: string) {
     if (!token) return;
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3000/user/goals', {
+      const response = await fetch(`${API_BASE_URL}/user/goals`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

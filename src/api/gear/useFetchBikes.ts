@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { Bike } from "../../types/types";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export function useFetchBikes(token: string) {
   const [bikes, setBikes] = useState<Bike[]>([]);
@@ -10,7 +11,7 @@ export function useFetchBikes(token: string) {
     if (!token) return;
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3000/gear/bikes', {
+      const response = await fetch(`${API_BASE_URL}/gear/bikes`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

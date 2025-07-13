@@ -8,6 +8,7 @@ import {
     Typography,
 } from '@mui/material';
 import WeightChart from '../components/plotting/WeightChart';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 interface WeightTrackerData {
     date: string;
@@ -39,7 +40,7 @@ const WeightTracker: React.FC = () => {
                 return;
             }
 
-            const response = await fetch('http://localhost:3000/weighttracker', {
+            const response = await fetch(`${API_BASE_URL}/weighttracker`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

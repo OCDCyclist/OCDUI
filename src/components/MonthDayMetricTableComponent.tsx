@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  Box,
   Container,
   Paper,
   Table,
@@ -20,6 +19,7 @@ import { MonthAndDOMData } from '../types/types';
 import { formatNumber, formatInteger } from '../utilities/formatUtilities';
 import { formatDateHelper } from '../components/formatters/formatDateHelper';
 import RideListComponent from './RideListComponent';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 interface MetricEntry {
   day: number;
@@ -54,7 +54,7 @@ const MonthDayMetricTableComponent = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     axios
-      .get('http://localhost:3000/ocds/monthanddom', {
+      .get(`${API_BASE_URL}/ocds/monthanddom`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,

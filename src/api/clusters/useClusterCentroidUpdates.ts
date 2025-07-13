@@ -1,4 +1,5 @@
 import { useState } from 'react';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const useClusterCentroidUpdates = (token: string) => {
   const [loading, setLoading] = useState(false);
@@ -9,7 +10,7 @@ export const useClusterCentroidUpdates = (token: string) => {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`http://localhost:3000/cluster/centroid/${endpoint}`, {
+      const response = await fetch(`${API_BASE_URL}/cluster/centroid/${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

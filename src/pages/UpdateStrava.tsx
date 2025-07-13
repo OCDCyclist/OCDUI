@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import StravaLogo from '../assets/powered by Strava/pwrdBy_strava_light/api_logo_pwrdBy_strava_horiz_light.svg';
 import { RideDataStrava } from '../types/types';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const UpdateStrava: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false); // Loading state
@@ -24,7 +25,7 @@ const UpdateStrava: React.FC = () => {
     const token = localStorage.getItem('token'); // Retrieve the JWT token from localStorage
 
     try {
-      const response = await axios.get('http://localhost:3000/rider/updateStrava', {
+      const response = await axios.get(`${API_BASE_URL}/rider/updateStrava`, {
         headers: {
           Authorization: `Bearer ${token}`, // Add the token in the Authorization header
         },

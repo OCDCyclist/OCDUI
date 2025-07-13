@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Milestone_10K } from '../types/types';
 import { formatDate, formatInteger } from '../utilities/formatUtilities';
 import RideListComponent from './RideListComponent';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const TabPanel = ({ children, value, index }: { children: React.ReactNode; value: number; index: number }) => {
   return (
@@ -26,7 +27,7 @@ const MilestonesComponent = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
 
-    axios.get('http://localhost:3000/ocds/milestones/TenK', {
+    axios.get(`${API_BASE_URL}/ocds/milestones/TenK`, {
       method: 'GET',
       headers: {
           'Content-Type': 'application/json',

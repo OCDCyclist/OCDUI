@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Streak_1_Day, Streak_7_Day } from '../types/types';
 import { formatDate, formatInteger } from '../utilities/formatUtilities';
 import RideListComponent from './RideListComponent';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const TabPanel = ({ children, value, index }: { children: React.ReactNode; value: number; index: number }) => {
   return (
@@ -31,7 +32,7 @@ const StreaksComponent = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
 
-    axios.get('http://localhost:3000/ocds/streaks/1', {
+    axios.get(`${API_BASE_URL}/ocds/streaks/1`, {
       method: 'GET',
       headers: {
           'Content-Type': 'application/json',
@@ -45,7 +46,7 @@ const StreaksComponent = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
 
-    axios.get('http://localhost:3000/ocds/streaks/7days200', {
+    axios.get(`${API_BASE_URL}/ocds/streaks/7days200`, {
       method: 'GET',
       headers: {
           'Content-Type': 'application/json',

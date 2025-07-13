@@ -8,6 +8,7 @@ import {
     Typography,
 } from '@mui/material';
 import './RiderSummary.css'; // Importing CSS for additional styling
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 interface RiderSummaryData {
     date: string;
@@ -67,7 +68,7 @@ const RiderSummary: React.FC<RiderSummaryProps> = ({ paperWidth = 600 }) => {
                 navigate('/login'); // Redirect to login
             }
 
-            const response = await fetch('http://localhost:3000/dashboard/riderSummary', {
+            const response = await fetch(`${API_BASE_URL}/dashboard/riderSummary`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
