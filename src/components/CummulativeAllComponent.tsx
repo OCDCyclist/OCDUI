@@ -1,3 +1,4 @@
+// @ts-expect-error: React must be in scope for JSX
 import React, { useState } from 'react';
 import { Box, Paper, Dialog, DialogContent, Container, Button } from '@mui/material';
 import RideYearFilter from './filters/RideYearFilter';

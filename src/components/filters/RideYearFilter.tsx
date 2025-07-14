@@ -1,3 +1,4 @@
+// @ts-expect-error: React must be in scope for JSX
 import React, { useEffect, useState } from 'react';
 import {
   Container,

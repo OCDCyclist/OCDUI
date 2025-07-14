@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Box, Select, MenuItem, Button, Stack, Typography } from '@mui/material';
+import { Box, Select, MenuItem, Button, Stack, Typography, SelectChangeEvent } from '@mui/material';
 
 type ElapsedTimeEditorProps = {
   initialSeconds: number;
@@ -31,15 +31,15 @@ const ElapsedTimeEditor: React.FC<ElapsedTimeEditorProps> = ({ initialSeconds, o
     setIsEditing(false);
   };
 
-  const handleHoursChange = (e: React.ChangeEvent<{ value: unknown }>) => {
+  const handleHoursChange = (e: SelectChangeEvent<number>) => {
     setHours(Number(e.target.value));
   };
 
-  const handleMinutesChange = (e: React.ChangeEvent<{ value: unknown }>) => {
+  const handleMinutesChange = (e: SelectChangeEvent<number>) => {
     setMinutes(Number(e.target.value));
   };
 
-  const handleSecondsChange = (e: React.ChangeEvent<{ value: unknown }>) => {
+  const handleSecondsChange = (e: SelectChangeEvent<number>) => {
     setSeconds(Number(e.target.value));
   };
 

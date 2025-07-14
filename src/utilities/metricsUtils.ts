@@ -15,11 +15,14 @@ export const getLevelForPower = (
 ): string | null => {
   if (!wattsPerKilo || ![60, 300, 1200].includes(period)) return null;
 
-  const periodKey = `sec${period.toString().padStart(4, "0")}`;
+  type ReferenceKey = keyof ReferenceLevel;
+
+  const periodKey = `sec${period.toString().padStart(4, "0")}` as ReferenceKey;
 
   // Find the highest matching level
   for (const ref of referenceLevels.slice().reverse()) {
-    if (wattsPerKilo >= ref[periodKey] ) {
+    const refValue = ref[periodKey];
+    if (typeof refValue === "number" && wattsPerKilo >= refValue) {
       return ref.level;
     }
   }

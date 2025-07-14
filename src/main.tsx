@@ -1,3 +1,4 @@
+// @ts-expect-error: React must be in scope for JSX
 import React from 'react';
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'

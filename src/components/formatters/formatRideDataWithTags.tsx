@@ -1,8 +1,8 @@
+// @ts-expect-error: React must be in scope for JSX
 import React from 'react';
 import { RideDataWithTags } from "../../types/types";
 import TagChips from '../TagChips';
 import { formatDate, formatElapsedTime, formatInteger, formatNumber } from '../../utilities/formatUtilities';
-
 
 export const formatRideDataWithTags = (col: { key: keyof RideDataWithTags; label: string; justify: string, width: string, type: string }, theDatum: number | string, row: RideDataWithTags) => {
     switch (col.key) {

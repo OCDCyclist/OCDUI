@@ -1,8 +1,8 @@
+// @ts-expect-error: React must be in scope for JSX
 import React from 'react';
 import { CentroidDefinition } from "../../types/types";
 import { formatInteger, formatNumber } from "../../utilities/formatUtilities";
 import CentroidName from "../CentroidName";
-import CentroidColor from '../CentroidColor';
 import ColorSwatch from '../ColorSwatch';
 
 export const formatCentroidDefinition = (

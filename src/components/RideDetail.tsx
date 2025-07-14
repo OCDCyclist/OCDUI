@@ -325,9 +325,9 @@ const RideDetail = ({ rideData: initialRideData, onRideUpdated, onClose }: RideD
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`, // Include token in Authorization header
+        'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify({ [field]: editValue }),
+      body: JSON.stringify({ "elapsedtime": editValue }),
     });
 
     setEditingField(null);

@@ -21,8 +21,8 @@ const ClusterColorPicker: React.FC<ClusterColorPickerProps> = ({
   onUpdate,
 }) => {
   // Parse initial colors and names
-  const initialColors = centroidDefinition.colors.split(",").map((color) => color.trim());
-  const initialNames = centroidDefinition.names.split(",").map((name) => name.trim());
+  const initialColors = centroidDefinition.color.split(",").map((color) => color.trim());
+  const initialNames = centroidDefinition.name.split(",").map((name) => name.trim());
 
   const [colors, setColors] = useState<string[]>(initialColors);
   const [names, setNames] = useState<string[]>(initialNames);
@@ -53,8 +53,8 @@ const ClusterColorPicker: React.FC<ClusterColorPickerProps> = ({
   const handleSubmit = () => {
     onUpdate({
         ...centroidDefinition,
-      colors: colors.join(","),
-      names: names.join(","),
+      color: colors.join(","),
+      name: names.join(","),
     });
   };
 

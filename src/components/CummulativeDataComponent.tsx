@@ -76,7 +76,7 @@ const CummulativeDataComponent = ({ years }: CummulativeDataComponentProps) => {
     setSortConfig({ key: columnKey, direction });
   };
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabIndex(newValue);
   };
 
@@ -122,8 +122,8 @@ const CummulativeDataComponent = ({ years }: CummulativeDataComponentProps) => {
     }).format(Number(num));
   };
 
-  const format = ( col:  { key: keyof CumulativeData; label: string }, theDatum: number) =>{
-    switch(col.key){
+  const format = (col: { key: keyof CumulativeData; label: string }, theDatum: string | number) => {
+    switch (col.key) {
       case 'moving_total_elevationgain1':
       case 'moving_total_elevationgain7':
       case 'moving_total_elevationgain30':
@@ -143,14 +143,17 @@ const CummulativeDataComponent = ({ years }: CummulativeDataComponentProps) => {
       case 'moving_power_average365':
       case 'moving_power_averagealltime':
       case 'runconsecutivedays':
-      case 'run7days200':{
-        return formatInteger(theDatum);
+      case 'run7days200': {
+        return formatInteger(typeof theDatum === 'string' ? Number(theDatum) : theDatum);
       }
 
-      case 'ride_date': return formatDate(theDatum);
+      case 'ride_date':
+        return formatDate(theDatum);
+
       case 'moving_total_elapsedtime1':
       case 'moving_total_elapsedtime7':
-      default: return formatNumber(theDatum);
+      default:
+        return formatNumber(typeof theDatum === 'string' ? Number(theDatum) : theDatum);
     }
   }
 

@@ -63,13 +63,6 @@ const RideDayFractionsComponent = () => {
     setTabIndex(newValue);
   };
 
-  const handleRowClick = (yearMonth: string, column: string) => {
-    if( yearMonth !== 'Overall'){
-      setDialogInfo({ yearMonth, column });
-      setDialogOpen(true);
-    }
-  };
-
   const sortedData = React.useMemo(() => {
     if (!sortConfig.key) return data;
     return [...data].sort((a, b) => {
@@ -112,7 +105,6 @@ const RideDayFractionsComponent = () => {
                       paddingRight: '1em',
                       backgroundColor: row.year_month === currentYearMonth ? '#e3f1c4' : 'inherit',
                     }}
-                    onClick={() => handleRowClick(row.year_month, col.key)}
                   >
                     {typeof row[col.key] === 'number'
                       ? (

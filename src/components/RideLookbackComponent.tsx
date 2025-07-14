@@ -76,7 +76,7 @@ const categories = useMemo(() => {
     setSortConfig({ key: columnKey, direction });
   };
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabIndex(newValue);
   };
 
@@ -90,7 +90,13 @@ const categories = useMemo(() => {
     setRideData(null);
   };
 
-  const format = (col: { key: keyof RideDataCategory; label: string; justify: string, width: string }, theDatum: number | string) => {
+  const format = (
+    col: { key: keyof RideDataCategory; label: string; justify: string, width: string },
+    theDatum: string | number | number[]
+  ) => {
+    if (Array.isArray(theDatum)) {
+      return theDatum.join(', ');
+    }
     switch (col.key) {
       case 'rideid':
       case 'cadence':
@@ -134,14 +140,21 @@ const categories = useMemo(() => {
   const sortedData = React.useMemo(() => {
     if (!sortConfig.key) return filteredData;
     const sorted = [...filteredData].sort((a, b) => {
-      if (a[sortConfig.key!] < b[sortConfig.key!]) return sortConfig.direction === 'asc' ? -1 : 1;
-      if (a[sortConfig.key!] > b[sortConfig.key!]) return sortConfig.direction === 'asc' ? 1 : -1;
+      const aValue = a[sortConfig.key!];
+      const bValue = b[sortConfig.key!];
+
+      if (aValue == null && bValue == null) return 0;
+      if (aValue == null) return 1;
+      if (bValue == null) return -1;
+
+      if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
       return 0;
     });
     return sorted;
   }, [filteredData, sortConfig]);
 
-  const renderTable = (columns: { key: keyof RideDataCategory; label: string; justify: string, width: string }[]) => {
+  const renderTable = (columns: { key: keyof RideDataCategory; label: string; justify: "center" | "left" | "right" | "inherit" | "justify"; width: string }[]) => {
     return (
       <TableContainer>
         <Table>
@@ -174,7 +187,8 @@ const categories = useMemo(() => {
                     align={col.justify}
                     sx={{ paddingRight: '1em' }}
                   >
-                    {format(col, row[col.key])}
+                    {
+                    format(col, row[col.key] ?? '')}
                   </TableCell>
                 ))}
               </TableRow>
@@ -205,7 +219,7 @@ const categories = useMemo(() => {
             ))}
           </Tabs>
 
-          {categories.map((category, index) => (
+          {categories.map((_category, index) => (
             <TabPanel value={tabIndex} index={index} key={index}>
               {renderTable([
                 { key: 'date', label: 'Ride Date', justify: 'center', width: '80' },
@@ -232,7 +246,9 @@ const categories = useMemo(() => {
                 width: '100%',
               }}
             >
-              {rideData &&  <RideDetail rideData={rideData} onClose={() => setDialogOpen(false)} />}
+              {rideData &&  <RideDetail rideData={rideData} onClose={() => setDialogOpen(false)} onRideUpdated={function (): void {
+                throw new Error('Function not implemented.');
+              } } />}
             </DialogContent>
           </Dialog>
         </Box>

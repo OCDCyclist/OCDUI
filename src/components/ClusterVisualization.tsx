@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Grid, Alert, Stack, List, ListItem, ListItemText, Button, Typography, Box } from "@mui/material";
+import { Grid, Alert, Stack, List, ListItemText, Button, Typography, Box, ListItemButton } from "@mui/material";
 import ScatterPlot from "./plotting/ScatterPlot";
 import { useFetchClusterData } from "../api/clusters/useFetchClusterData";
 import { CentroidSelectorData, RideDataWithTagsClusters } from "../types/types";
@@ -123,14 +123,13 @@ const ClusterVisualization: React.FC = () => {
               <Typography variant="h6">Ride List</Typography>
               <List>
                 {data?.map((ride) => (
-                  <ListItem
-                    button
+                  <ListItemButton
                     key={ride.rideid}
                     onClick={() => handleRideSelect(ride)}
                     selected={selectedRide?.rideid === ride.rideid}
                   >
                     <ListItemText primary={`${formatDate(ride.date)}`} secondary={ride.clusterindex !== undefined ? `${ride.cluster} ${ride.title}` : ""} />
-                  </ListItem>
+                  </ListItemButton>
                 ))}
               </List>
             </Box>

@@ -37,7 +37,7 @@ const ClusterEdit: React.FC<ClusterEditProps> = ({ clusterId, onClose, onSave })
     }
   }, [fetchedClusterDefinition, clusterId, currentYear]);
 
-  const handleChange = (field: keyof ClusterDefinition, value: string | number) => {
+  const handleChange = (field: keyof ClusterDefinition, value: string | number | boolean) => {
     setClusterDefinition((prev) => ({
       ...prev,
       [field]: value,

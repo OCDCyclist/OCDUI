@@ -34,8 +34,8 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, xKey, yKey, fieldLabels
         data: data
           .filter((point) => point.cluster === cluster)
           .map((point) => ({
-            x: point[xKey],
-            y: point[yKey],
+            x: typeof point[xKey] === "number" ? point[xKey] as number : 0,
+            y: typeof point[yKey] === "number" ? point[yKey] as number : 0,
             clusterindex: point.clusterindex,
             rideid: point.rideid,
             title: point.title,
@@ -43,15 +43,15 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, xKey, yKey, fieldLabels
           })),
         backgroundColor: colors[clusterIndex % colors.length],
         pointRadius: (context) => {
-          const ride = context.raw;
+          const ride = context.raw as RideDataWithTagsClusters;
           return highlightedRide && ride.rideid === highlightedRide.rideid ? 8 : 4;
         },
         pointBorderColor: (context) => {
-          const ride = context.raw;
+          const ride = context.raw as RideDataWithTagsClusters;
           return highlightedRide && ride.rideid === highlightedRide.rideid ? "black" : "rgba(0,0,0,0)";
         },
         pointBorderWidth: (context) => {
-          const ride = context.raw;
+          const ride = context.raw as RideDataWithTagsClusters;;
           return highlightedRide && ride.rideid === highlightedRide.rideid ? 2 : 0;
         },
       };
@@ -77,12 +77,15 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, xKey, yKey, fieldLabels
       tooltip: {
         callbacks: {
           label: (context) => {
-            const xValue = context.raw.x || "";
-            const yValue = context.raw.y || "";
-            const xLabel = context.chart.options.scales?.x?.title?.text || "X";
-            const yLabel = context.chart.options.scales?.y?.title?.text || "Y";
-            const title = context.raw?.title ?? "";
-            const date = formatDate(context.raw?.date ?? "");
+            const raw = context.raw as { x?: number; y?: number; title?: string; date?: string };
+            const xValue = raw.x ?? "";
+            const yValue = raw.y ?? "";
+            const xTitle = (context.chart.options.scales?.x as { title?: { text?: string } })?.title;
+            const yTitle = (context.chart.options.scales?.y as { title?: { text?: string } })?.title;
+            const xLabel = xTitle?.text || "X";
+            const yLabel = yTitle?.text || "Y";
+            const title = raw.title ?? "";
+            const date = formatDate(raw.date ?? "");
 
             return `${xLabel}: ${xValue}, ${yLabel}: ${yValue}, date: ${date}, title: ${title}`;
           },

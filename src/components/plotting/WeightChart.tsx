@@ -23,6 +23,7 @@ import {
 } from "@mui/material";
 import { useFetchWeightData } from "../../api/user/useFetchWeightData";
 import LinearLoader from "../loaders/LinearLoader";
+import { WeightData } from "../../types/types";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -77,31 +78,35 @@ const WeightChart: React.FC = () => {
     }
 
     const firstValidMetric = selectedMetrics.find((metric) =>
-      weightData.some((entry) => entry[metric] != null)
+      weightData.some((entry) => entry[metric as keyof WeightData] != null)
     );
 
     const labels = firstValidMetric
       ? weightData
-          .filter((entry) => entry[firstValidMetric] != null)
+          .filter((entry) => entry[firstValidMetric as keyof WeightData] != null)
           .map((entry) => new Date(entry.date).toLocaleDateString())
       : [];
 
     const datasets = selectedMetrics
       .map((metric) => {
         const config = METRIC_CONFIG[metric];
-        const filteredEntries = weightData.filter((entry) => entry[metric] != null);
+        const filteredEntries = weightData.filter(
+          (entry) => entry[metric as keyof WeightData] != null
+        );
 
         return filteredEntries.length > 0
           ? {
               label: config.label,
-              data: filteredEntries.map((entry) => entry[metric]),
+              data: filteredEntries.map(
+                (entry) => entry[metric as keyof WeightData]
+              ),
               borderColor: config.color,
               fill: false,
               tension: 0.3,
             }
           : null;
       })
-      .filter(Boolean) as any[];
+      .filter(Boolean);
 
     return { labels, datasets };
   }, [weightData, selectedMetrics]);

@@ -224,7 +224,7 @@ const UserSettingsTable: React.FC<UserSettingsTableProps> = ({ refreshCallback }
             label="Value"
             value={addValueInput}
             onChange={(e) => setAddValueInput(e.target.value)}
-            error={addTarget?.value.match(/^\d+$/) && isNaN(Number(addValueInput))}
+            error={!!(addTarget?.value.match(/^\d+$/) && isNaN(Number(addValueInput)))}
             helperText={
               addTarget?.value.match(/^\d+$/) && isNaN(Number(addValueInput))
                 ? "Must be a number"

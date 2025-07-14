@@ -64,7 +64,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({ initialTags, locationId, assi
         value={selectedTags}
         onChange={handleTagSelect}
         inputValue={inputValue}
-        onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
+        onInputChange={(_event, newInputValue) => setInputValue(newInputValue)}
         renderTags={(value: readonly string[], getTagProps) =>
           value.map((option: string, index: number) => (
             <Chip variant="outlined" label={option} {...getTagProps({ index })} key={option} />

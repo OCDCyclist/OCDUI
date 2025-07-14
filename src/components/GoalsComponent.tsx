@@ -16,15 +16,13 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  Checkbox,
-  FormControlLabel,
   Button,
   Typography,
 } from "@mui/material";
 import { Goal } from "../types/types";
 import { useAddUpdateGoal } from "../api/user/useAddUpdateGoal";
 import { useFetchGoals } from "../api/user/useFetchGoals";
-import { formatDate, formatInteger } from "../utilities/formatUtilities";
+import { formatInteger } from "../utilities/formatUtilities";
 
 function isPositiveInteger(value: string): boolean {
   return /^\d+$/.test(value) && parseInt(value, 10) > 0;
