@@ -90,6 +90,21 @@ const CummulativeDataComponent = ({ years }: CummulativeDataComponentProps) => {
     setDialogInfo(null);
   };
 
+  const formatUtcDateToMMDDYYYY = (utcDateString: string): string => {
+    const utcDate = new Date(utcDateString);
+
+    const month = String(utcDate.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(utcDate.getUTCDate()).padStart(2, '0');
+    const year = utcDate.getUTCFullYear();
+
+    const dayOfWeek = utcDate.toLocaleString('en-US', {
+      weekday: 'short',
+      timeZone: 'UTC',
+    }); // e.g., "Sun"
+
+    return `${month}/${day}/${year} ${dayOfWeek}`;
+  }
+
   const formatDate = (dateString: string | number) => {
     const date = new Date(dateString);
 
@@ -148,7 +163,7 @@ const CummulativeDataComponent = ({ years }: CummulativeDataComponentProps) => {
       }
 
       case 'ride_date':
-        return formatDate(theDatum);
+        return formatUtcDateToMMDDYYYY(String(theDatum));
 
       case 'moving_total_elapsedtime1':
       case 'moving_total_elapsedtime7':
