@@ -33,6 +33,11 @@ export const formatDate = (dateString: string) => {
     return `${datePart} ${weekdayPart}`;
 };
 
+export const formatDateUTCAsLocal = (utcDateString: string): string => {
+  // Extract only the date portion (YYYY-MM-DD) without parsing as local time
+  return utcDateString.slice(0, 10); // "2022-10-29"
+};
+
 export const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Tab, Tabs, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, Container } from '@mui/material';
 import axios from 'axios';
 import { Streak_1_Day, Streak_7_Day } from '../types/types';
-import { formatDate, formatInteger } from '../utilities/formatUtilities';
+import { formatInteger, formatDateUTCAsLocal } from '../utilities/formatUtilities';
 import RideListComponent from './RideListComponent';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -95,7 +95,7 @@ const StreaksComponent = () => {
 
       case 'start_date':
       case 'end_date':{
-        return typeof theDatum === 'string' ? formatDate(theDatum) : theDatum;
+        return typeof theDatum === 'string' ? formatDateUTCAsLocal(theDatum) : theDatum;
       }
 
       default: return theDatum;
@@ -252,7 +252,7 @@ const StreaksComponent = () => {
             fullWidth
             maxWidth="xl" // You can set 'lg' or 'xl' for larger widths
           >
-            <DialogTitle>Streak rides between {dialogInfo ? formatDate(dialogInfo.start_date) : ""} and {dialogInfo ? formatDate(dialogInfo.end_date) : ""} </DialogTitle>
+            <DialogTitle>Streak rides between {dialogInfo ? formatDateUTCAsLocal(dialogInfo.start_date) : ""} and {dialogInfo ? formatDateUTCAsLocal(dialogInfo.end_date) : ""} </DialogTitle>
             <DialogContent>
               {dialogInfo ? <RideListComponent start_date={dialogInfo?.start_date} end_date={dialogInfo?.end_date} /> : undefined}
             </DialogContent>
