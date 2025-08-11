@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { AppBar, Toolbar, Typography, IconButton, Drawer, List, ListItem, ListItemIcon, ListItemText, Box, CssBaseline, Divider, Collapse } from '@mui/material';
+import React, { useState } from 'react';
+import {
+  AppBar, Toolbar, Typography, IconButton, Drawer, List, ListItem, ListItemIcon, ListItemText,
+  Box, CssBaseline, Divider, Collapse
+} from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'; // Close icon
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import HomeIcon from '@mui/icons-material/Home';
 import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import UpdateIcon from '@mui/icons-material/Update';
@@ -19,9 +22,6 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import PersonIcon from '@mui/icons-material/Person';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/AuthContext';
-import LoginStatus from './authentication/LoginStatus';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import TuneIcon from '@mui/icons-material/Tune';
 import PivotTableChartIcon from '@mui/icons-material/PivotTableChart';
@@ -34,30 +34,27 @@ import FunctionsIcon from '@mui/icons-material/Functions';
 import FlagCircleIcon from '@mui/icons-material/FlagCircle';
 import StackedLineChartIcon from '@mui/icons-material/StackedLineChart';
 import SettingsEthernetIcon from '@mui/icons-material/SettingsEthernet';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/AuthContext';
+import LoginStatus from './authentication/LoginStatus';
 
 const drawerWidth = 240;
 
 interface OCDCyclistAppBarProps {
   onLogout: () => void;
+  onMenuClick: () => void;
+  drawerOpen?: boolean;
 }
 
-const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
-  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({
+  onLogout,
+  onMenuClick,
+  drawerOpen = false
+}) => {
   const isAuthenticated = useAuth();
   const navigate = useNavigate();
   const [openItems, setOpenItems] = useState<{ [key: string]: boolean }>({});
   const [selectedItem, setSelectedItem] = useState<string>('');
-
-  useEffect(() => {
-    const savedDrawerState = localStorage.getItem('drawerOpen');
-    if (savedDrawerState) {
-      setDrawerOpen(savedDrawerState === 'true');
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('drawerOpen', drawerOpen.toString());
-  }, [drawerOpen]);
 
   const handleLoginLogout = () => {
     if (isAuthenticated) {
@@ -67,15 +64,16 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
     }
   };
 
-  const toggleDrawer = () => {
-    setDrawerOpen(!drawerOpen);
-  };
-
   const toggleItem = (itemText: string) => {
     setOpenItems((prevState) => ({
       ...prevState,
-      [itemText]: !prevState[itemText], // Toggle the specific item
+      [itemText]: !prevState[itemText],
     }));
+  };
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    setSelectedItem(path);
   };
 
   const menuItems = [
@@ -90,7 +88,6 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
         { text: 'Add Ride', icon: <PlusOneIcon />, path: '/rides/add' },
       ]
     },
-
     {
       text: 'OCDs',
       icon: <CalendarViewMonthIcon />,
@@ -107,7 +104,6 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
         { text: 'Streaks', icon: <SettingsEthernetIcon />, path: '/ocds/streaks' },
       ]
     },
-
     {
       text: 'Segments',
       icon: <AutoAwesomeIcon />,
@@ -116,7 +112,6 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
         { text: 'Update Starred', icon: <AutoAwesomeIcon />, path: '/segments/updatestarred' },
       ]
     },
-
     {
       text: 'Power',
       icon: <ElectricMeterIcon />,
@@ -124,7 +119,6 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
         { text: 'Power Curve', icon: <BoltIcon />, path: '/power/powercurve' },
       ]
     },
-
     {
       text: 'Analysis',
       icon: <AnalyticsIcon />,
@@ -134,7 +128,6 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
         { text: 'Cluster Visuals', icon: <PivotTableChartIcon />, path: '/analysis/clustervisuals' },
       ]
     },
-
     {
       text: 'Rider',
       icon: <PersonIcon />,
@@ -145,15 +138,13 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
         { text: 'Settings', icon: <SettingsIcon />, path: '/rider/settings' },
       ]
     },
-
-      {
+    {
       text: 'Gear',
       icon: <FunctionsIcon />,
       children: [
         { text: 'Bikes', icon: <DirectionsBikeIcon />, path: '/gear/bikes' },
       ]
     },
-
     {
       text: 'Updates',
       icon: <RefreshIcon />,
@@ -164,30 +155,21 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
     },
   ];
 
-  const handleNavigation = (path: string) => {
-    navigate(path);
-    setSelectedItem(path);
-  };
-
   return (
     <>
       <CssBaseline />
       <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar>
-          <IconButton color="inherit" edge="start" onClick={toggleDrawer} sx={{ marginRight: 2 }}>
+          <IconButton color="inherit" edge="start" onClick={onMenuClick} sx={{ marginRight: 2 }}>
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" sx={{ flexGrow: 1 }} component={"span"}>
+          <Typography variant="h6" sx={{ flexGrow: 1 }} component="span">
             OCD Cyclist
           </Typography>
           <LoginStatus
-            onLogin={() => {
-              handleLoginLogout();
-            }}
-            onLogout={() => {
-              handleLoginLogout();
-            }}
-            background="dark" // AppBar background
+            onLogin={handleLoginLogout}
+            onLogout={handleLoginLogout}
+            background="dark"
           />
         </Toolbar>
       </AppBar>
@@ -199,24 +181,26 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
         sx={{
           width: drawerWidth,
           flexShrink: 0,
-          '& .MuiDrawer-paper': { width: drawerWidth, boxSizing: 'border-box', display: 'flex', flexDirection: 'column' },
+          '& .MuiDrawer-paper': {
+            width: drawerWidth,
+            boxSizing: 'border-box',
+            display: 'flex',
+            flexDirection: 'column'
+          },
         }}
       >
         <Toolbar />
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', padding: '0 8px' }}>
-          <IconButton onClick={toggleDrawer}>
-            <ChevronLeftIcon />
-          </IconButton>
-        </Box>
-        <Divider />
         <Box sx={{ flexGrow: 1 }}>
           <List>
             {menuItems.map((item) => (
               <React.Fragment key={item.text}>
                 {!item.children ? (
                   <ListItem
-                    sx={{ backgroundColor: selectedItem === item.path ? '#fbeacd' : 'transparent' }}
-                    onClick={() => handleNavigation(item.path)} component="div"
+                    sx={{
+                      backgroundColor: selectedItem === item.path ? '#fbeacd' : 'transparent'
+                    }}
+                    onClick={() => handleNavigation(item.path)}
+                    component="div"
                   >
                     <ListItemIcon>{item.icon}</ListItemIcon>
                     <ListItemText primary={item.text} />
@@ -234,11 +218,12 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
                           <ListItem
                             component="div"
                             key={subItem.text}
-                            sx={{ pl: 4, backgroundColor: selectedItem === subItem.path ? '#fbeacd' : 'transparent' }}
-                            onClick={() => {
-                              handleNavigation(subItem.path);
-                            }
-                          }
+                            sx={{
+                              pl: 4,
+                              backgroundColor:
+                                selectedItem === subItem.path ? '#fbeacd' : 'transparent'
+                            }}
+                            onClick={() => handleNavigation(subItem.path)}
                           >
                             <ListItemIcon>{subItem.icon}</ListItemIcon>
                             <ListItemText primary={subItem.text} />
@@ -255,13 +240,9 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({ onLogout }) => {
         <Divider />
         <Box sx={{ padding: 2 }}>
           <LoginStatus
-            onLogin={() => {
-              handleLoginLogout();
-            }}
-            onLogout={() => {
-              handleLoginLogout();
-            }}
-            background="light" // AppBar background
+            onLogin={handleLoginLogout}
+            onLogout={handleLoginLogout}
+            background="light"
           />
         </Box>
       </Drawer>

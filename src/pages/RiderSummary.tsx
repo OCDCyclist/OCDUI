@@ -6,6 +6,7 @@ import {
     Paper,
     Grid,
     Typography,
+    Box,
 } from '@mui/material';
 import './RiderSummary.css'; // Importing CSS for additional styling
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -55,7 +56,7 @@ interface RiderSummaryProps {
     paperWidth?: number; // Optional prop to control the width of the Paper component
 }
 
-const RiderSummary: React.FC<RiderSummaryProps> = ({ paperWidth = 600 }) => {
+const RiderSummary: React.FC<RiderSummaryProps> = () => {
     const [summaryData, setSummaryData] = useState<RiderSummaryData | null>(null);
     const navigate = useNavigate();
 
@@ -92,42 +93,23 @@ const RiderSummary: React.FC<RiderSummaryProps> = ({ paperWidth = 600 }) => {
 
     return (
         <Container sx={{ marginY: 0 }}>
-            <SummarySection
-                title="Today"
-                distance={summaryData.miles_today_actual}
-                elevation={summaryData.elevation_today_actual}
-                time={summaryData.time_today_actual}
-                deltaDistance=""
-                deltaTime=""
-                paperWidth={paperWidth}
-            />
-            <SummarySection
-                title="This Week"
-                distance={summaryData.miles_week_actual}
-                elevation={summaryData.elevation_week_actual}
-                time={summaryData.time_week_actual}
-                deltaDistance={summaryData.miles_week_delta}
-                deltaTime={summaryData.time_week_delta}
-                paperWidth={paperWidth}
-            />
-            <SummarySection
-                title="This Month"
-                distance={summaryData.miles_month_actual}
-                elevation={summaryData.elevation_month_actual}
-                time={summaryData.time_month_actual}
-                deltaDistance={summaryData.miles_month_delta}
-                deltaTime={summaryData.time_month_delta}
-                paperWidth={paperWidth}
-            />
-            <SummarySection
-                title="This Year"
-                distance={summaryData.miles_year_actual}
-                elevation={summaryData.elevation_year_actual}
-                time={summaryData.time_year_actual}
-                deltaDistance={summaryData.miles_year_delta}
-                deltaTime={summaryData.time_year_delta}
-                paperWidth={paperWidth}
-            />
+            <Box
+                className="container-scroll"
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                    // Responsive max width and horizontal scrolling on small screens
+                    maxWidth: '100%',
+                    overflowX: 'auto',  // enable horizontal scroll on small widths
+                    paddingX: 1,
+                }}
+            >
+            {/* pass down no fixed width here */}
+            <SummarySection title="Today" distance={summaryData.miles_today_actual} elevation={summaryData.elevation_today_actual} time={summaryData.time_today_actual} deltaDistance="" deltaTime="" />
+            <SummarySection title="This Week" distance={summaryData.miles_week_actual} elevation={summaryData.elevation_week_actual} time={summaryData.time_week_actual} deltaDistance={summaryData.miles_week_delta} deltaTime={summaryData.time_week_delta} />
+            <SummarySection title="This Month" distance={summaryData.miles_month_actual} elevation={summaryData.elevation_month_actual} time={summaryData.time_month_actual} deltaDistance={summaryData.miles_month_delta} deltaTime={summaryData.time_month_delta} />
+            <SummarySection title="This Year" distance={summaryData.miles_year_actual} elevation={summaryData.elevation_year_actual} time={summaryData.time_year_actual} deltaDistance={summaryData.miles_year_delta} deltaTime={summaryData.time_year_delta} />
             <SummarySectionAllTime
                 title="All Time"
                 distance={summaryData.miles_alltime_actual}
@@ -136,11 +118,11 @@ const RiderSummary: React.FC<RiderSummaryProps> = ({ paperWidth = 600 }) => {
                 distancePerDay={summaryData.miles_alltime_perday}
                 elevationePerDay={summaryData.elevation_alltime_perday}
                 timePerDay={summaryData.time_alltime_perday}
-                paperWidth={paperWidth}
             />
+            </Box>
         </Container>
     );
-};
+ };
 
 interface SummarySectionProps {
     title: string;
@@ -188,16 +170,25 @@ const SummarySection: React.FC<SummarySectionProps> = ({
     time,
     deltaDistance,
     deltaTime,
-    paperWidth = 600,
 }) => (
     <Paper
         elevation={3}
         sx={{
             backgroundColor: '#f5f5f5',
             marginBottom: '1em',
-            padding: 2,
+            padding: {
+                xs: 1,    // small padding on very small screens
+                sm: 2,    // medium padding on small+ screens
+                md: 3,    // larger padding on medium+ screens
+            },
             textAlign: 'center',
-            width: paperWidth // Control the width of the Paper
+            width: {
+                xs: '90vw',   // almost full viewport width on extra-small screens
+                sm: 500,      // 500px on small+ screens
+                md: 600,      // 600px on medium+ screens
+            },
+            boxSizing: 'border-box', // important for padding + width
+            minWidth: 300, // set a min-width below which horizontal scroll will trigger
         }}
     >
         <Typography variant="h6" component="span">{title}</Typography>
@@ -279,16 +270,25 @@ const SummarySectionAllTime: React.FC<SummarySectionAllTimeProps> = ({
     distancePerDay,
     elevationePerDay,
     timePerDay,
-    paperWidth = 600,
 }) => (
     <Paper
         elevation={3}
         sx={{
             backgroundColor: '#f5f5f5',
             marginBottom: '1em',
-            padding: 2,
+            padding: {
+                xs: 1,    // small padding on very small screens
+                sm: 2,    // medium padding on small+ screens
+                md: 3,    // larger padding on medium+ screens
+            },
             textAlign: 'center',
-            width: paperWidth // Control the width of the Paper
+            width: {
+                xs: '90vw',   // almost full viewport width on extra-small screens
+                sm: 500,      // 500px on small+ screens
+                md: 600,      // 600px on medium+ screens
+            },
+            boxSizing: 'border-box', // important for padding + width
+            minWidth: 300, // set a min-width below which horizontal scroll will trigger
         }}
     >
         <Typography variant="h6">{title}</Typography>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import OCDCyclistAppBar from './OCDCyclistAppBar';
 import { Outlet } from 'react-router-dom';
 import { Box, Toolbar } from '@mui/material';
@@ -8,25 +8,35 @@ const drawerWidth = 240;
 
 const Layout: React.FC = () => {
   const navigate = useNavigate();
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem('token'); // Clear the token
     navigate('/login'); // Redirect to login
   };
 
+  const handleMenuClick = () => {
+    setDrawerOpen((prev) => !prev);
+  };
+
   return (
     <>
-      <OCDCyclistAppBar onLogout={handleLogout} />
+      <OCDCyclistAppBar
+        onLogout={handleLogout}
+        onMenuClick={handleMenuClick}
+        drawerOpen={drawerOpen}
+      />
       <Box
         component="main"
         sx={{
           flexGrow: 1,
           padding: 3,
-          marginLeft: { sm: `${drawerWidth}px` }, // Shift content when drawer is open
-          transition: (theme) => theme.transitions.create('margin', {
-            easing: theme.transitions.easing.easeInOut,
-            duration: theme.transitions.duration.leavingScreen,
-          }),
+          marginLeft: { sm: drawerOpen ? `${drawerWidth}px` : 0 }, // Shift only when open
+          transition: (theme) =>
+            theme.transitions.create('margin', {
+              easing: theme.transitions.easing.easeInOut,
+              duration: theme.transitions.duration.leavingScreen,
+            }),
         }}
       >
         <Toolbar /> {/* Add toolbar space to avoid content under app bar */}

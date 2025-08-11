@@ -25,3 +25,13 @@
 .negative {
     color: red; /* Color for negative deltas */
 }
+
+/* optional custom scrollbar styles */
+.container-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.container-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 3px;
+}
