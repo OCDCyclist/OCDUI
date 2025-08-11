@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogContent, Container, TableCellProps, Typography } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogContent, Container, TableCellProps, Typography, Card, CardContent, Stack } from '@mui/material';
 import axios from 'axios';
 import RideDetail from './RideDetail';
 import { formatDateHelper } from '../components/formatters/formatDateHelper';
@@ -52,6 +52,7 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster, years, start
     search: '',
   });
   const [error, setError] = useState<string | null>(null);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   useEffect(() => {
     const handleResize = () => {
@@ -97,6 +98,12 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster, years, start
         setLoadingState({ loading: false, message: '' });
       });
   }, [refreshData, date, year, month, dow, dom, cluster, years, similar_to_rideid, similareffort_to_rideid]);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleSort = (columnKey: keyof RideDataWithTags) => {
     let direction: 'asc' | 'desc' = 'asc';
@@ -218,9 +225,70 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster, years, start
     return sorted;
   }, [filteredData, sortConfig]);
 
-  const renderTableRecent = (columns: { key: keyof RideDataWithTags; label: string; justify: string, width: string, type: string }[]) => {
+  type ColumnConfig<T> = T & { priority: number };
+
+  type PriorityRule = {
+    maxWidth: number;      // Max screen width for this rule
+    maxPriority: number;   // Max priority allowed for this width
+  };
+
+  /**
+   * Filters columns based on screen width and priority rules.
+   * @param screenWidth - Current screen width
+   * @param columns - Array of columns with priority
+   * @param rules - Array of rules mapping screen widths to max priority
+   */
+  function getVisibleColumnsUtility<T>(
+    screenWidth: number,
+    columns: ColumnConfig<T>[],
+    rules: PriorityRule[]
+  ): ColumnConfig<T>[] {
+    const matchedRule = rules.find(rule => screenWidth <= rule.maxWidth);
+    const maxPriority = matchedRule ? matchedRule.maxPriority : 5;
+    return columns.filter(col => col.priority <= maxPriority);
+  }
+
+  const priorityRules: PriorityRule[] = [
+    { maxWidth: 480, maxPriority: 1 }, // smallest: only priority 1
+    { maxWidth: 768, maxPriority: 2 }, // small tablets
+    { maxWidth: 1024, maxPriority: 3 }, // large tablets
+    { maxWidth: 1440, maxPriority: 4 }, // laptops
+    // anything above 1440 → priority 5 (all columns)
+];
+
+  type RideDisplayColumn = {
+    key: keyof RideDataWithTags;
+    label: string;
+    justify: string;
+    width: string;
+    type: string;
+    priority: number;
+  };
+
+  const allColumns: RideDisplayColumn[] = [
+    { key: 'date', label: 'Ride Date', justify: 'center', width: '80', type: 'number', priority: 1 },
+    { key: 'distance', label: 'Distance', justify: 'center', width: '80', type: 'number', priority: 1 },
+    { key: 'elapsedtime', label: 'Elapsed time', justify: 'center', width: '80', type: 'number', priority: 3 },
+    { key: 'speedavg', label: 'Avg Speed', justify: 'center', width: '80', type: 'number', priority: 2 },
+    { key: 'elevationgain', label: 'Elevation', justify: 'center', width: '80', type: 'number', priority: 2 },
+    { key: 'hravg', label: 'Avg HR', justify: 'center', width: '80', type: 'number', priority: 3 },
+    { key: 'poweravg', label: 'Avg Power', justify: 'center', width: '80', type: 'number', priority: 4 },
+    { key: 'title', label: 'Title', justify: 'left', width: '100', type: 'string', priority: 1 },
+    { key: 'cluster', label: 'Cluster', justify: 'center', width: '90', type: 'tags', priority: 5 },
+    { key: 'tags', label: 'Tags', justify: 'left', width: '90', type: 'tags', priority: 5 },
+  ];
+
+  const isSmallScreen = windowWidth <= 480;
+  const visibleColumns = getVisibleColumnsUtility(windowWidth, allColumns, priorityRules);
+
+  const renderTableRecent = (columns: RideDisplayColumn[]) => {
     return (
-      <TableContainer sx={{ maxHeight: tableHeight }}>
+      <TableContainer
+        sx={{
+          maxHeight: tableHeight,
+          overflowX: 'auto',
+        }}
+      >
           { loadingState.loading ? <LinearLoader message={loadingState.message} /> : undefined }
           <Table stickyHeader>
           <TableHead>
@@ -262,6 +330,31 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster, years, start
     );
   };
 
+  const renderCardsRecent = (
+    columns: typeof allColumns,
+    data: RideDataWithTags[]
+  ) => {
+    return (
+      <Stack spacing={2}>
+        {data.map((row) => (
+          <Card
+            key={row.rideid}
+            sx={{ cursor: "pointer" }}
+          >
+            <CardContent>
+              {columns.map((col) => (
+                <Typography key={col.key} variant="body2">
+                  <strong>{col.label}:</strong>{" "}
+                  {formatRideDataWithTags(col, row[col.key] ?? "", row)}
+                </Typography>
+              ))}
+            </CardContent>
+          </Card>
+        ))}
+      </Stack>
+    );
+  };
+
   if( error){
     <Typography component={"span"}>
         {`Error: ${error}`}
@@ -283,18 +376,11 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster, years, start
 
         <RideDataFilter filters={filters} onFilterChange={handleFilterChange} hideTagFilter={false} />
 
-        {renderTableRecent([
-          { key: 'date', label: 'Ride Date', justify: 'center', width: '80', type: 'number' },
-          { key: 'distance', label: 'Distance', justify: 'center', width: '80', type: 'number' },
-          { key: 'elapsedtime', label: 'Elapsed time', justify: 'center', width: '80', type: 'number' },
-          { key: 'speedavg', label: 'Avg Speed', justify: 'center', width: '80', type: 'number' },
-          { key: 'elevationgain', label: 'Elevation', justify: 'center', width: '80', type: 'number' },
-          { key: 'hravg', label: 'Avg HR', justify: 'center', width: '80', type: 'number' },
-          { key: 'poweravg', label: 'Avg Power', justify: 'center', width: '80', type: 'number' },
-          { key: 'title', label: 'Title', justify: 'left', width: '100', type: 'string' },
-          { key: 'cluster', label: 'Cluster', justify: 'center', width: '90', type: 'tags' },
-          { key: 'tags', label: 'Tags', justify: 'left', width: '90', type: 'tags' },
-        ])}
+        {
+          isSmallScreen
+            ? renderCardsRecent(allColumns, sortedData) // cards for small screens
+            : renderTableRecent(visibleColumns)             // table for larger screens
+        }
 
         {/* Modal Dialog to display ride details */}
         <Dialog
