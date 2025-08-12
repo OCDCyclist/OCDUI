@@ -98,10 +98,8 @@ const RiderSummary: React.FC<RiderSummaryProps> = () => {
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
-                    alignItems: 'flex-start',
-                    // Responsive max width and horizontal scrolling on small screens
+                    alignItems: 'center', // horizontal center
                     maxWidth: '100%',
-                    overflowX: 'auto',  // enable horizontal scroll on small widths
                     paddingX: 1,
                 }}
             >
