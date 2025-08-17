@@ -4,6 +4,8 @@ import axios from 'axios';
 import RideDetail from './RideDetail';
 import { formatDate, formatElapsedTime, formatInteger, formatNumber } from '../utilities/formatUtilities';
 import { RideData, RideDataWithTags } from '../types/types';
+import LinearLoader from './loaders/LinearLoader';
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 interface RideDataCategory extends RideData {
@@ -19,6 +21,10 @@ const TabPanel = ({ children, value, index }: { children: React.ReactNode; value
 };
 
 const RideLookbackComponent = () => {
+  const [loadingState, setLoadingState] = React.useState({
+    loading: false,
+    message: "",
+  });
   const [data, setData] = useState<RideDataCategory[]>([]);
   const [tabIndex, setTabIndex] = useState(0);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -56,6 +62,7 @@ const categories = useMemo(() => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
+    setLoadingState({ loading: true, message: "Loading rides of yesteryear." });
 
     axios.get(`${API_BASE_URL}/ride/lookback`, {
       method: 'GET',
@@ -64,8 +71,14 @@ const categories = useMemo(() => {
           Authorization: `Bearer ${token}`,
       },
     })
-      .then((response) => setData(response.data))
-      .catch((error) => console.error('Error fetching data:', error));
+      .then((response) =>{
+        setData(response.data);
+        setLoadingState({ loading: false, message: '' });
+      })
+      .catch((error) =>{
+        console.error('Error fetching data:', error);
+        setLoadingState({ loading: false, message: '' });
+      });
   }, []);
 
   const handleSort = (columnKey: keyof RideDataCategory) => {
@@ -157,6 +170,7 @@ const categories = useMemo(() => {
   const renderTable = (columns: { key: keyof RideDataCategory; label: string; justify: "center" | "left" | "right" | "inherit" | "justify"; width: string }[]) => {
     return (
       <TableContainer>
+        { loadingState.loading ? <LinearLoader message={loadingState.message} /> : undefined }
         <Table>
           <TableHead>
             <TableRow>
