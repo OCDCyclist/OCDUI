@@ -7,6 +7,7 @@ import RideDataFilter, { FilterObject } from './filters2/RideDataFilter';
 import { cummulativeUrlHelper } from './formatters/cummulativeUrlHelper';
 import { formatCummulativeHelper } from './formatters/formatCummulativeHelper';
 import LinearLoader from './loaders/LinearLoader';
+import { useTheme, useMediaQuery } from "@mui/material";
 
 const TabPanel = ({ children, value, index }: { children: React.ReactNode; value: number; index: number }) => {
   return (
@@ -67,6 +68,9 @@ const CummulativeDataComponent = ({ years }: CummulativeDataComponentProps) => {
         setLoadingState({ loading: false, message: '' });
       });
   }, [years]);
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleSort = (columnKey: keyof CumulativeData) => {
     let direction: 'asc' | 'desc' = 'asc';
@@ -241,9 +245,9 @@ const CummulativeDataComponent = ({ years }: CummulativeDataComponentProps) => {
     const formattedDate = `${year}-${month}-${day}`;
 
     return (
-      <TableContainer>
+      <TableContainer sx={{ overflowX: 'auto' }}>
           { loadingState.loading ? <LinearLoader message={loadingState.message} /> : undefined }
-          <Table>
+          <Table stickyHeader>
           <TableHead>
             <TableRow>
               {columns.map((col) => (
@@ -251,7 +255,11 @@ const CummulativeDataComponent = ({ years }: CummulativeDataComponentProps) => {
                   key={col.key}
                   align="right"
                   onClick={() => handleSort(col.key)}
-                  sx={{ cursor: 'pointer' }}
+                  sx={{
+                    cursor: 'pointer',
+                    fontSize: { xs: "0.75rem", sm: "0.875rem", md: "1rem" },
+                    padding: { xs: "4px", sm: "8px" }
+                  }}
                 >
                   {col.label}
                   {sortConfig.key === col.key ? (sortConfig.direction === 'asc' ? ' ▲' : ' ▼') : ''}
@@ -269,7 +277,7 @@ const CummulativeDataComponent = ({ years }: CummulativeDataComponentProps) => {
                   <TableCell
                       key={col.key}
                       align="right"
-                      sx={{ paddingRight: '1em',  backgroundColor: (row.ride_date.split('T')[0]) === formattedDate ? '#e3f1c4' : 'inherit', }}
+                      sx={{ padding: { xs: "4px", sm: "8px" }, fontSize: { xs: "0.75rem", sm: "0.875rem", md: "1rem" }, backgroundColor: (row.ride_date.split('T')[0]) === formattedDate ? '#e3f1c4' : 'inherit', }}
                       onClick={() => handleRowClick(row.ride_date, col.key)}
                     >
                       {format(col, row[col.key])}
@@ -290,7 +298,13 @@ const CummulativeDataComponent = ({ years }: CummulativeDataComponentProps) => {
   }
 
   return (
-    <Container maxWidth='xl' sx={{ marginY: 0 }}>
+    <Container 
+      maxWidth='xl'
+      sx={{
+        px: isMobile ? 1 : 3,
+        py: isMobile ? 1 : 2,
+      }}
+      >
       <Paper
           elevation={3}
           sx={{
@@ -305,7 +319,13 @@ const CummulativeDataComponent = ({ years }: CummulativeDataComponentProps) => {
           <RideDataFilter filters={filters} onFilterChange={handleFilterChange}  hideTagFilter={true} />
 
 
-          <Tabs value={tabIndex} onChange={handleTabChange}>
+          <Tabs
+            value={tabIndex}
+            onChange={handleTabChange}
+            variant={isMobile ? "scrollable" : "standard"}
+            scrollButtons={isMobile ? "auto" : undefined}
+            allowScrollButtonsMobile
+          >
             <Tab label="Distance" />
             <Tab label="Elevation" />
             <Tab label="Elapsed Time" />
@@ -390,8 +410,9 @@ const CummulativeDataComponent = ({ years }: CummulativeDataComponentProps) => {
           <Dialog
             open={dialogOpen}
             onClose={handleCloseDialog}
+            fullScreen={isMobile}
             fullWidth
-            maxWidth="lg" // You can set 'lg' or 'xl' for larger widths
+            maxWidth="lg"
           >
             <DialogTitle>Rides for {dialogInfo?.date.split('T')[0] || 'Unknown date'}</DialogTitle>
             <DialogContent>
