@@ -4,7 +4,6 @@ import {
   Box, CssBaseline, Divider, Collapse
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import HomeIcon from '@mui/icons-material/Home';
 import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import UpdateIcon from '@mui/icons-material/Update';
@@ -12,7 +11,6 @@ import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike';
-import DayOfMonthIcon from '@mui/icons-material/CalendarViewDay';
 import DatasetIcon from '@mui/icons-material/Dataset';
 import PlusOneIcon from '@mui/icons-material/PlusOne';
 import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
@@ -37,6 +35,7 @@ import SettingsEthernetIcon from '@mui/icons-material/SettingsEthernet';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/AuthContext';
 import LoginStatus from './authentication/LoginStatus';
+import ViewWeekIcon from '@mui/icons-material/ViewWeek';
 
 const drawerWidth = 240;
 
@@ -95,7 +94,7 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({
         { text: 'Cummulatives', icon: <QueryStatsIcon />, path: '/ocds/cummulatives' },
         { text: 'All Cummulatives', icon: <DirectionsBikeIcon />, path: '/ocds/allcummulatives' },
         { text: 'Year and Month', icon: <DatasetIcon />, path: '/ocds/yearandmonth' },
-        { text: 'Year and DOW', icon: <DayOfMonthIcon />, path: '/ocds/yearanddow' },
+        { text: 'Year and DOW', icon: <ViewWeekIcon />, path: '/ocds/yearanddow' },
         { text: 'Day of Month', icon: <CalendarMonthIcon />, path: '/ocds/monthanddom' },
         { text: 'Month and Day', icon: <CalendarMonthIcon />, path: '/ocds/monthanddomvertical' },
         { text: 'Milestones', icon: <AirlineStopsIcon />, path: '/ocds/milestones' },
@@ -109,7 +108,9 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({
       icon: <AutoAwesomeIcon />,
       children: [
         { text: 'Starred', icon: <AutoAwesomeIcon />, path: '/segments/starred' },
-        { text: 'Update Starred', icon: <AutoAwesomeIcon />, path: '/segments/updatestarred' },
+        { text: 'Starred by Month', icon: <AutoAwesomeIcon />, path: '/segments/byMonth' },
+        { text: 'Starred by DOW', icon: <ViewWeekIcon />, path: '/segments/byDOW' },
+        { text: 'Update Starred', icon: <CalendarMonthIcon />, path: '/segments/updatestarred' },
       ]
     },
     {

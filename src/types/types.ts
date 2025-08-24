@@ -446,6 +446,39 @@ export interface SegmentEffort {
     end_index: number,
 }
 
+export interface SegmentEffortByMonth{
+    id: number,
+    segmentname: string,
+    january: number,
+    february: number,
+    march: number,
+    april: number,
+    may: number,
+    june: number,
+    july: number,
+    august: number,
+    september: number,
+    october: number,
+    november: number,
+    december: number,
+    totalattempts: number,
+    [key: string]: string | number; // Add index signature for string keys
+}
+
+export interface SegmentEffortByDOW{
+    id: number,
+    segmentname: string,
+    monday: number,
+    tuesday: number,
+    wednesday: number,
+    thursday: number,
+    friday: number,
+    saturday: number,
+    sunday: number,
+    totalattempts: number,
+    [key: string]: string | number; // Add index signature for string keys
+}
+
 export interface SegmentEffortMini {
     id: number;
     name: string;

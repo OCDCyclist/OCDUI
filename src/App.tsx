@@ -30,6 +30,8 @@ import BikesComponent from './components/BikesComponent';
 import GoalsComponent from './components/GoalsComponent';
 import MonthDayMetricTableComponent from './components/MonthDayMetricTableComponent';
 import RideDayFractionsComponent from './components/RideDayFractionsComponent';
+import StarredSegmentsComponentByMonth from './components/StarredSegmentsComponentByMonth';
+import StarredSegmentsComponentByDOW from './components/StarredSegmentsComponentByDOW';
 
 const App: React.FC = () => {
   return (
@@ -60,6 +62,8 @@ const App: React.FC = () => {
           <Route path="rides/allrides" element={<RideAllComponent />} />
           <Route path="rides/add" element={<AddRide />} />
           <Route path="segments/starred" element={<StarredSegmentsComponent />} />
+          <Route path="segments/byMonth" element={<StarredSegmentsComponentByMonth />} />
+          <Route path="segments/byDOW" element={<StarredSegmentsComponentByDOW />} />
           <Route path="segments/updatestarred" element={<UpdateStravaStarredSegments />} />
           <Route path="/analysis/clustersetup" element={<ClusterSetup />} />
           <Route path="/analysis/clustercentroids" element={<ClusterCentroidTable />} />

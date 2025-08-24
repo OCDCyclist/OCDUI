@@ -1,29 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogContent, Container, Checkbox, FormGroup, FormControlLabel, Button, TableCellProps, Typography } from '@mui/material';
+import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Container, Checkbox, FormGroup, FormControlLabel, Button, TableCellProps, Typography } from '@mui/material';
 import axios from 'axios';
 import { formatDate, formatElapsedTime, formatInteger, formatNumber } from '../utilities/formatUtilities';
-import { LocationId, SegmentEffortWithTags } from '../types/types';
-import { dayFilterDefault, daysOfWeek } from '../utilities/daysOfWeek';
-import TagChips from './TagChips';
-import TagSelector from './TagSelector';
-import { splitCommaSeparatedString } from '../utilities/stringUtilities';
-import { getUniqueTags } from '../utilities/tagUtilities';
-import TagFilter from './TagFilter';
+import { SegmentEffort } from '../types/types';
+import { dayFilterDefault, daysOfWeek, monthsOfYear } from '../utilities/daysOfWeek';
 import StravaEffortLink from './StravaEffortLink';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 interface SegmentEffortListProps {
   segmentId: number;
+  month?: number;
+  dow?: number;
 }
 
-const SegmentEffortListComponent = ({ segmentId }: SegmentEffortListProps) => {
+const SegmentEffortListComponent = ({ segmentId, month, dow }: SegmentEffortListProps) => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [data, setData] = useState<SegmentEffortWithTags[]>([]);
+  const [data, setData] = useState<SegmentEffort[]>([]);
   const [segmentName, setSegmentName] = useState<string>('');
-  const [dialogInfo, setDialogInfo] = useState<{ segmentEffortData: SegmentEffortWithTags; column: string } | null>(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [rideData, setRideData] = useState<SegmentEffortWithTags | null >(null);
-  const [sortConfig, setSortConfig] = useState<{ key: keyof SegmentEffortWithTags | null, direction: 'asc' | 'desc' }>({
+  const [filteredName, setFilteredName] = useState<string>('');
+  const [sortConfig, setSortConfig] = useState<{ key: keyof SegmentEffort | null, direction: 'asc' | 'desc' }>({
     key: null,
     direction: 'asc',
   });
@@ -31,8 +26,60 @@ const SegmentEffortListComponent = ({ segmentId }: SegmentEffortListProps) => {
   const [showAll, setShowAll] = useState<boolean>(false);
   const [tableHeight, setTableHeight] = useState(window.innerHeight - 190);
   const [refreshData, setRefreshData] = useState(false);
-  const [uniqueTags, setUniqueTags] = useState<string[]>([]);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+  const [selectedDays, setSelectedDays] = useState<{ [key: string]: boolean }>(dayFilterDefault);
+  const [selectedMonths, setSelectedMonths] = useState<{ [key: string]: boolean }>(
+    Object.fromEntries(monthsOfYear.map(m => [m, true]))
+  );
+
+  useEffect(() => {
+    if (month !== undefined) {
+      const monthIndex = month - 1; // Convert 1-based to 0-based index
+      // Only select the provided month, deselect all others
+      const updatedMonths = Object.fromEntries(
+        monthsOfYear.map((m, idx) => [m, idx === monthIndex])
+      );
+      setSelectedMonths(updatedMonths);
+
+      // Select all days
+      const updatedDays = Object.fromEntries(daysOfWeek.map(d => [d, true]));
+      setSelectedDays(updatedDays);
+    }
+
+    if (dow !== undefined) {
+      // Only select the provided day, deselect all others
+      const updatedDays = Object.fromEntries(
+        daysOfWeek.map((d, idx) => [d, idx === dow])
+      );
+      setSelectedDays(updatedDays);
+
+      // Select all months
+      const updatedMonths = Object.fromEntries(monthsOfYear.map(m => [m, true]));
+      setSelectedMonths(updatedMonths);
+    }
+  }, [month, dow]);
+
+  useEffect(() => {
+    setLoading(true);
+    const token = localStorage.getItem('token');
+
+    axios.get(`${API_BASE_URL}/segment/efforts/${segmentId}`, {
+      method: 'GET',
+      headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) =>{
+        setData(response.data);
+        setSegmentName(`${response.data[0]?.segment_name || "Unavailable"}`);
+        setLoading(false);
+      })
+      .catch((error) =>{
+        console.error('Error fetching segment effort data:', error)
+        setLoading(false);
+      });
+  }, [refreshData]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -53,83 +100,32 @@ const SegmentEffortListComponent = ({ segmentId }: SegmentEffortListProps) => {
     setShowFilters(prev => !prev);
   };
 
-  const toggleShowAll = () =>{
+  const toggleShowAll = () => {
     setShowAll(prev => {
-      if(prev){
-        setSelectedDays({
-          Sunday: true,
-          Monday: true,
-          Tuesday: true,
-          Wednesday: true,
-          Thursday: true,
-          Friday: true,
-          Saturday: true
-        });
-      }
-      else{
-        setSelectedDays({
-          Sunday: false,
-          Monday: false,
-          Tuesday: false,
-          Wednesday: false,
-          Thursday: false,
-          Friday: false,
-          Saturday: false
-        });
-      }
-      return !prev;
+      const newValue = !prev;
+
+      // update days
+      const updatedDays = Object.fromEntries(
+        daysOfWeek.map(day => [day, newValue])
+      );
+      setSelectedDays(updatedDays as { [key: string]: boolean });
+
+      // update months
+      const updatedMonths = Object.fromEntries(
+        monthsOfYear.map(month => [month, newValue])
+      );
+      setSelectedMonths(updatedMonths as { [key: string]: boolean });
+
+      return newValue;
     });
   };
 
-  const [selectedDays, setSelectedDays] = useState<{ [key: string]: boolean }>(dayFilterDefault);
-
-  useEffect(() => {
-    setLoading(true);
-    const token = localStorage.getItem('token');
-
-    axios.get(`${API_BASE_URL}/segment/efforts/${segmentId}`, {
-      method: 'GET',
-      headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // Include the token in the Authorization header
-      },
-    })
-      .then((response) =>{
-        const uniqueTags = getUniqueTags(response.data);
-        setUniqueTags(uniqueTags);
-        setData(response.data);
-        setSegmentName(response.data.length > 0 ? `${response.data.length} Segment efforts for ${response.data[0]?.segment_name || "Unavailable"}` : "No segment efforts available")
-        setLoading(false);
-      })
-      .catch((error) =>{
-        console.error('Error fetching segment effort data:', error)
-        setLoading(false);
-      });
-  }, [refreshData]);
-
-  const handleSort = (columnKey: keyof SegmentEffortWithTags) => {
+  const handleSort = (columnKey: keyof SegmentEffort) => {
     let direction: 'asc' | 'desc' = 'asc';
     if (sortConfig.key === columnKey && sortConfig.direction === 'asc') {
       direction = 'desc';
     }
     setSortConfig({ key: columnKey, direction });
-  };
-
-  const handleRowClick = (rideData: SegmentEffortWithTags, column: string) => {
-    if( column.toLowerCase().trim() === "tags"){
-      setDialogInfo( {segmentEffortData: rideData, column });
-      setRideData(rideData);
-      setDialogOpen(true);
-    }
-  };
-
-  const handleTagFilterChange = (tags: string[]) => {
-    setSelectedTags(tags);
-  };
-
-  const handleCloseDialog = () => {
-    setDialogOpen(false);
-    setRideData(null);
   };
 
   const handleDayChange = (day: string) => {
@@ -139,7 +135,14 @@ const SegmentEffortListComponent = ({ segmentId }: SegmentEffortListProps) => {
     }));
   };
 
-  const filterByDay = (rides: SegmentEffortWithTags[]) => {
+  const handleMonthChange = (month: string) => {
+    setSelectedMonths(prev => ({
+      ...prev,
+      [month]: !prev[month],
+    }));
+  };
+
+  const filterByDay = (rides: SegmentEffort[]) => {
     return rides.filter(ride => {
       const rideDate = new Date(ride.start_date);
       const dayOfWeek = daysOfWeek[rideDate.getDay()];
@@ -147,31 +150,17 @@ const SegmentEffortListComponent = ({ segmentId }: SegmentEffortListProps) => {
     });
   };
 
-  const filterByTag = (segmentData: SegmentEffortWithTags[], filterTags: string[]) => {
-    if(filterTags.length === 0 ) return segmentData;
-    return segmentData.filter(
-      segment => {
-        const segmentTags = segment.tags ? segment.tags.trim().split(',') : [];
-        return filterTags.every(tag => segmentTags.includes(tag));
-      }
-    );
-  }
+  const filterByMonth = (rides: SegmentEffort[]) => {
+    return rides.filter(ride => {
+      const rideDate = new Date(ride.start_date);
+      const monthAbbrev = monthsOfYear[rideDate.getMonth()];
+      return selectedMonths[monthAbbrev];
+    });
+  };
 
-  const format = (col: { key: keyof SegmentEffortWithTags; label: string; justify: string, width: string, type: string }, theDatum: number | string, row: SegmentEffortWithTags) => {
+  const format = (col: { key: keyof SegmentEffort; label: string; justify: string, width: string, type: string }, theDatum: number | string, row: SegmentEffort) => {
     switch (col.key) {
       case 'segment_name': {
-        return theDatum as string;
-      }
-      case 'tags':{
-        if(col.type === 'tags'){
-          const tagArray = (row?.tags ?? "").split(',').map(tag => tag.trim()).filter(Boolean);
-          return <TagChips
-            tags={tagArray}
-            color="primary"
-            onClick={(tag) => console.log(`Clicked on: ${tag}`)}
-            onDelete={(tag) => console.log(`Deleted: ${tag}`)}
-          />
-        }
         return theDatum as string;
       }
       case 'rank':{
@@ -195,36 +184,14 @@ const SegmentEffortListComponent = ({ segmentId }: SegmentEffortListProps) => {
     }
   };
 
-  const handleOnSaveTags = (locationId : number | string | null, assignmentId : number | string | null, tags: string[]) =>{
-    const token = localStorage.getItem('token');
-    axios.post(
-      `${API_BASE_URL}/user/saveTagAssignments`,
-      {
-        locationId,
-        assignmentId,
-        tags
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
-      .then(() => {
-         setRefreshData((prev) => !prev);  // Toggle refreshData to trigger useEffect
-      })
-      .catch((error) =>{
-        console.error('Error fetching data:', error)
-      });
-  };
-
   const filteredData = React.useMemo(() => {
     let result = data;
     result = filterByDay(result);
-    result = filterByTag(result, selectedTags);
+    result = filterByMonth(result);
+    setFilteredName(`Showing ${result.length} of ${data.length} efforts`);
+
     return result;
-  }, [data, selectedDays, selectedTags]);
+  }, [data, selectedDays, selectedMonths]);
 
   const sortedData = React.useMemo(() => {
     if (!sortConfig.key) return filteredData;
@@ -238,7 +205,7 @@ const SegmentEffortListComponent = ({ segmentId }: SegmentEffortListProps) => {
     return sorted;
   }, [filteredData, sortConfig]);
 
-  const renderTableRecent = (columns: { key: keyof SegmentEffortWithTags; label: string; justify: string, width: string, type: string }[]) => {
+  const renderTableRecent = (columns: { key: keyof SegmentEffort; label: string; justify: string, width: string, type: string }[]) => {
     return (
       <TableContainer sx={{ maxHeight: tableHeight }}>
         <Table stickyHeader>
@@ -268,7 +235,6 @@ const SegmentEffortListComponent = ({ segmentId }: SegmentEffortListProps) => {
                     key={col.key}
                     align={col.justify as unknown as TableCellProps["align"]}
                     sx={{ paddingRight: '1em' }}
-                    onClick={() => handleRowClick(row, col.label)}
                   >
                     {format(col, row[col.key] ?? '', row)}
                   </TableCell>
@@ -295,7 +261,7 @@ const SegmentEffortListComponent = ({ segmentId }: SegmentEffortListProps) => {
       >
         <Box display="flex" flexDirection= 'column' alignItems="left">
           <Typography component={"span"}>
-            { loading ? "Loading segment efforts" : `${segmentName}`}
+            { loading ? "Loading segment efforts" : `${segmentName}: ${filteredName}`}
           </Typography>
 
           <Button variant="text" color="primary" onClick={toggleShowFilters} sx={{alignSelf: "left"}}>
@@ -325,14 +291,21 @@ const SegmentEffortListComponent = ({ segmentId }: SegmentEffortListProps) => {
                   ))}
                 </FormGroup>
 
-                <Box display="flex" alignItems="center">
-                  <TagFilter
-                    availableTags={uniqueTags}
-                    selectedTags={selectedTags}
-                    onTagChange={handleTagFilterChange}
-                  />
-                </Box>
-
+                <FormGroup row sx={{ marginY: 2 }} style={{ marginLeft: '16px' }}>
+                  {monthsOfYear.map((month) => (
+                    <FormControlLabel
+                      key={month}
+                      control={
+                        <Checkbox
+                          checked={selectedMonths[month]}
+                          onChange={() => handleMonthChange(month)}
+                          name={month}
+                        />
+                      }
+                      label={month}
+                    />
+                  ))}
+                </FormGroup>
               </>
             )
           }
@@ -345,37 +318,8 @@ const SegmentEffortListComponent = ({ segmentId }: SegmentEffortListProps) => {
           { key: 'average_cadence', label: 'Avg Cadence', justify: 'center', width: '80', type: 'number' },
           { key: 'average_watts', label: 'Avg Power', justify: 'center', width: '80', type: 'number' },
           { key: 'average_heartrate', label: 'Avg HR', justify: 'center', width: '80', type: 'number' },
-          { key: 'max_heartrate', label: 'Max HR', justify: 'left', width: '100', type: 'string' },
-          { key: 'tags', label: 'Tags', justify: 'left', width: '90', type: 'tags' },
+          { key: 'max_heartrate', label: 'Max HR', justify: 'left', width: '100', type: 'string' }
         ])}
-
-        <Dialog
-          open={dialogOpen}
-          onClose={handleCloseDialog}
-          fullWidth
-          maxWidth="lg"
-        >
-          <DialogContent
-            sx={{
-              padding: 4,
-              width: '100%',
-            }}
-          >
-            {
-              dialogInfo?.column.toLowerCase() === 'tags'
-              ?
-              <TagSelector
-                  locationId={LocationId.SegmentEfforts}
-                  assignmentId={rideData?.strava_effortid || null}
-                  initialTags={splitCommaSeparatedString(dialogInfo?.segmentEffortData?.tags)}
-                  onClose={handleCloseDialog}
-                  onSave={handleOnSaveTags}
-              />
-              :
-              undefined
-            }
-          </DialogContent>
-        </Dialog>
       </Paper>
     </Container>
   );
