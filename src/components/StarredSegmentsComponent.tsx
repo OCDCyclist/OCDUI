@@ -2,26 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogContent, Container, Link,TableCellProps, Box } from '@mui/material';
 import axios from 'axios';
 import { formatDate, formatElapsedTime, formatInteger, formatNumber } from '../utilities/formatUtilities';
-import { LocationId, SegmentDataWithTags } from '../types/types';
+import { LocationId, SegmentDataWithTags, Tagable } from '../types/types';
 import TagChips from './TagChips';
 import TagSelector from './TagSelector';
 import { splitCommaSeparatedString } from '../utilities/stringUtilities';
 import TagFilter from './TagFilter';
 import SegmentEffortListComponent from './SegmentEffortListComponent';
+import { filterByTag, getUniqueTags } from '../utilities/tagUtilities';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
-const getUniqueTags = (segments: SegmentDataWithTags[]): string[] => {
-  const tagSet = new Set<string>();
-
-  segments.forEach(segment => {
-    // Check if tags exist and are non-null before iterating
-    if (segment.tags && segment.tags.trim().length > 0) {
-      segment.tags.split(',').forEach(tag => tagSet.add(tag));
-    }
-  });
-
-  return Array.from(tagSet); // Convert the Set back to an array
-};
 
 const StarredSegmentsComponent = () => {
   const [data, setData] = useState<SegmentDataWithTags[]>([]);
@@ -161,23 +149,13 @@ const StarredSegmentsComponent = () => {
       });
   };
 
-  const filterByTag = (segmentData: SegmentDataWithTags[], filterTags: string[]) => {
-    if(filterTags.length === 0 ) return segmentData;
-    return segmentData.filter(
-      segment => {
-        const segmentTags = segment.tags ? segment.tags.trim().split(',') : [];
-        return filterTags.every(tag => segmentTags.includes(tag));
-      }
-    );
-  }
-
   const filteredData = React.useMemo(() => filterByTag(data, selectedTags), [data, selectedTags]);
 
   const sortedData = React.useMemo(() => {
     if (!sortConfig.key) return filteredData;
     const sorted = [...filteredData].sort((a, b) => {
-      const lhs = a[sortConfig.key!] || '';
-      const rhs = b[sortConfig.key!] || '';
+      const lhs = (a as SegmentDataWithTags)[sortConfig.key!] || '';
+      const rhs = (b as SegmentDataWithTags)[sortConfig.key!] || '';
       if (lhs < rhs) return sortConfig.direction === 'asc' ? -1 : 1;
       if (lhs > rhs) return sortConfig.direction === 'asc' ? 1 : -1;
       return 0;

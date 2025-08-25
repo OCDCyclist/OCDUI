@@ -17,6 +17,7 @@ import SegmentEffortListComponent from './SegmentEffortListComponent';
 import { SegmentEffortByDOWWithTags } from '../types/types';
 import TagChips from './TagChips';
 import TagFilter from './TagFilter';
+import { filterByTag, getUniqueTags } from '../utilities/tagUtilities';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -37,19 +38,6 @@ const StarredSegmentsComponentByDOW: React.FC = () => {
   const [tableHeight, setTableHeight] = useState(window.innerHeight - 190);
   const [uniqueTags, setUniqueTags] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-
-  const getUniqueTags = (segments: SegmentEffortByDOWWithTags[]): string[] => {
-    const tagSet = new Set<string>();
-
-    segments.forEach(segment => {
-      // Check if tags exist and are non-null before iterating
-      if (segment.tags && segment.tags.trim().length > 0) {
-        segment.tags.split(',').forEach(tag => tagSet.add(tag));
-      }
-    });
-
-    return Array.from(tagSet); // Convert the Set back to an array
-  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -90,16 +78,6 @@ const StarredSegmentsComponentByDOW: React.FC = () => {
     setDialogOpen(false);
     setDialogInfo(null);
   };
-
-  const filterByTag = (segmentData: SegmentEffortByDOWWithTags[], filterTags: string[]) => {
-    if(filterTags.length === 0 ) return segmentData;
-    return segmentData.filter(
-      segment => {
-        const segmentTags = segment.tags ? segment.tags.trim().split(',') : [];
-        return filterTags.every(tag => segmentTags.includes(tag));
-      }
-    );
-  }
 
   const filteredData = React.useMemo(() => filterByTag(data, selectedTags), [data, selectedTags]);
 
