@@ -10,10 +10,13 @@ import {
   Dialog,
   DialogContent,
   Container,
+  Box,
 } from '@mui/material';
 import axios from 'axios';
 import SegmentEffortListComponent from './SegmentEffortListComponent';
-import { SegmentEffortByDOW } from '../types/types';
+import { SegmentEffortByDOWWithTags } from '../types/types';
+import TagChips from './TagChips';
+import TagFilter from './TagFilter';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -28,10 +31,25 @@ const months = [
 ];
 
 const StarredSegmentsComponentByDOW: React.FC = () => {
-  const [data, setData] = useState<SegmentEffortByDOW[]>([]);
+  const [data, setData] = useState<SegmentEffortByDOWWithTags[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogInfo, setDialogInfo] = useState<{ id: number; dow: number } | null>(null);
   const [tableHeight, setTableHeight] = useState(window.innerHeight - 190);
+  const [uniqueTags, setUniqueTags] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+  const getUniqueTags = (segments: SegmentEffortByDOWWithTags[]): string[] => {
+    const tagSet = new Set<string>();
+
+    segments.forEach(segment => {
+      // Check if tags exist and are non-null before iterating
+      if (segment.tags && segment.tags.trim().length > 0) {
+        segment.tags.split(',').forEach(tag => tagSet.add(tag));
+      }
+    });
+
+    return Array.from(tagSet); // Convert the Set back to an array
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -50,7 +68,11 @@ const StarredSegmentsComponentByDOW: React.FC = () => {
           Authorization: `Bearer ${token}`,
         },
       })
-      .then((response) => setData(response.data))
+      .then((response) => {
+        const uniqueTags = getUniqueTags(response.data);
+        setUniqueTags(uniqueTags);
+        setData(response.data);
+      })
       .catch((error) => console.error('Error fetching data:', error));
   }, []);
 
@@ -59,10 +81,27 @@ const StarredSegmentsComponentByDOW: React.FC = () => {
     setDialogOpen(true);
   };
 
+  const handleTagFilterChange = (tags: string[]) => {
+    setSelectedTags(tags);
+    // Filter segment data based on `tags` here
+  };
+
   const handleCloseDialog = () => {
     setDialogOpen(false);
     setDialogInfo(null);
   };
+
+  const filterByTag = (segmentData: SegmentEffortByDOWWithTags[], filterTags: string[]) => {
+    if(filterTags.length === 0 ) return segmentData;
+    return segmentData.filter(
+      segment => {
+        const segmentTags = segment.tags ? segment.tags.trim().split(',') : [];
+        return filterTags.every(tag => segmentTags.includes(tag));
+      }
+    );
+  }
+
+  const filteredData = React.useMemo(() => filterByTag(data, selectedTags), [data, selectedTags]);
 
   return (
     <Container maxWidth="xl" sx={{ marginY: 0 }}>
@@ -76,25 +115,37 @@ const StarredSegmentsComponentByDOW: React.FC = () => {
           width: '100%',
         }}
       >
+
+        <Box display="flex" alignItems="center">
+          <TagFilter
+            availableTags={uniqueTags}
+            selectedTags={selectedTags}
+            onTagChange={handleTagFilterChange}
+          />
+        </Box>
+
         <TableContainer sx={{ maxHeight: tableHeight }}>
           <Table stickyHeader>
             <TableHead>
               <TableRow>
                 <TableCell key="segmentname" align="left">
-                  Segment
+                  Starred Segment Efforts by Day of Week
                 </TableCell>
                 {months.map((m) => (
                   <TableCell key={m.key} align="right">
                     {m.label}
                   </TableCell>
                 ))}
-                <TableCell key="total" align="right">
+                <TableCell key="total" align="center">
                   Total
+                </TableCell>
+                <TableCell key="tags" align="left">
+                  Tags
                 </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {data.map((row, index) => (
+              {filteredData.map((row, index) => (
                 <TableRow
                   key={row.id}
                   sx={{ backgroundColor: index % 2 === 0 ? '#f9f9f9' : '#fff' }}
@@ -116,6 +167,15 @@ const StarredSegmentsComponentByDOW: React.FC = () => {
                     onClick={() => handleCellClick(row.id, 0)}
                   >
                     {row.totalattempts}
+                  </TableCell>
+
+                  <TableCell
+                    align="right"
+                  >
+                    <TagChips
+                      tags={(row?.tags ?? "").split(',').map(tag => tag.trim()).filter(Boolean)}
+                      color="primary"
+                    />
                   </TableCell>
                 </TableRow>
               ))}

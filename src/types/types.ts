@@ -690,6 +690,8 @@ export type RideDataWithTags = RideData & Tagable;
 export type SegmentDataWithTags = SegmentData & Tagable;
 export type SegmentEffortWithTags = SegmentEffort & Tagable;
 export type RideDataWithTagsClusters = RideData & Tagable & ClusterInfo;
+export type SegmentEffortByDOWWithTags = SegmentEffortByDOW & Tagable;
+export type SegmentEffortByMonthWithTags = SegmentEffortByMonth & Tagable;
 
 export type FormatDateParams = {
     date?: string; // YYYY-MM-DD format
