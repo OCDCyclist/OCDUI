@@ -33,6 +33,10 @@ const months = [
 
 const StarredSegmentsComponentByDOW: React.FC = () => {
   const [data, setData] = useState<SegmentEffortByDOWWithTags[]>([]);
+  const [sortConfig, setSortConfig] = useState<{ key: keyof SegmentEffortByDOWWithTags | null, direction: 'asc' | 'desc' }>({
+    key: null,
+    direction: 'asc',
+  });
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogInfo, setDialogInfo] = useState<{ id: number; dow: number } | null>(null);
   const [tableHeight, setTableHeight] = useState(window.innerHeight - 190);
@@ -64,6 +68,14 @@ const StarredSegmentsComponentByDOW: React.FC = () => {
       .catch((error) => console.error('Error fetching data:', error));
   }, []);
 
+  const handleSort = (columnKey: keyof SegmentEffortByDOWWithTags) => {
+    let direction: 'asc' | 'desc' = 'asc';
+    if (sortConfig.key === columnKey && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key: columnKey, direction });
+  };
+
   const handleCellClick = (id: number, dow: number) => {
     setDialogInfo({ id, dow });
     setDialogOpen(true);
@@ -79,7 +91,22 @@ const StarredSegmentsComponentByDOW: React.FC = () => {
     setDialogInfo(null);
   };
 
-  const filteredData = React.useMemo(() => filterByTag(data, selectedTags), [data, selectedTags]);
+  const filteredData = React.useMemo(
+    () => filterByTag(data, selectedTags),
+    [data, selectedTags]
+  );
+
+  const sortedData = React.useMemo(() => {
+    if (!sortConfig.key) return filteredData;
+    const sorted = [...filteredData].sort((a, b) => {
+      const lhs = (a as SegmentEffortByDOWWithTags)[sortConfig.key!] || '';
+      const rhs = (b as SegmentEffortByDOWWithTags)[sortConfig.key!] || '';
+      if (lhs < rhs) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (lhs > rhs) return sortConfig.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+    return sorted;
+  }, [filteredData, sortConfig]);
 
   return (
     <Container maxWidth="xl" sx={{ marginY: 0 }}>
@@ -106,16 +133,36 @@ const StarredSegmentsComponentByDOW: React.FC = () => {
           <Table stickyHeader>
             <TableHead>
               <TableRow>
-                <TableCell key="segmentname" align="left">
+                <TableCell
+                  key="segmentname"
+                  align="left"
+                  onClick={() => handleSort("segmentname")}
+                  sx={{ cursor: 'pointer' }}
+                >
                   Starred Segment Efforts by Day of Week
                 </TableCell>
                 {months.map((m) => (
-                  <TableCell key={m.key} align="right">
+                  <TableCell
+                    key={m.key} align="right"
+                    onClick={() => handleSort(m.key)}
+                    sx={{ cursor: 'pointer' }}
+                  >
                     {m.label}
+                    {sortConfig.key === m.key ? (sortConfig.direction === 'asc' ? ' ▲' : ' ▼') : ''}
                   </TableCell>
                 ))}
-                <TableCell key="total" align="center">
+                <TableCell
+                  key="totalattempts"
+                  align="center"
+                  onClick={() => handleSort("totalattempts")}
+                  sx={{ cursor: 'pointer' }}
+                >
                   Total
+                  {sortConfig.key === "totalattempts"
+                    ? sortConfig.direction === "asc"
+                      ? " ▲"
+                      : " ▼"
+                    : ""}
                 </TableCell>
                 <TableCell key="tags" align="left">
                   Tags
@@ -123,7 +170,7 @@ const StarredSegmentsComponentByDOW: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredData.map((row, index) => (
+              {sortedData.map((row, index) => (
                 <TableRow
                   key={row.id}
                   sx={{ backgroundColor: index % 2 === 0 ? '#f9f9f9' : '#fff' }}

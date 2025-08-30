@@ -38,6 +38,10 @@ const months = [
 
 const StarredSegmentsComponentByMonth: React.FC = () => {
   const [data, setData] = useState<SegmentEffortByMonthWithTags[]>([]);
+  const [sortConfig, setSortConfig] = useState<{ key: keyof SegmentEffortByMonthWithTags | null, direction: 'asc' | 'desc' }>({
+    key: null,
+    direction: 'asc',
+  });
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogInfo, setDialogInfo] = useState<{ id: number; month: number } | null>(null);
   const [tableHeight, setTableHeight] = useState(window.innerHeight - 190);
@@ -69,6 +73,14 @@ const StarredSegmentsComponentByMonth: React.FC = () => {
       .catch((error) => console.error('Error fetching data:', error));
   }, []);
 
+  const handleSort = (columnKey: keyof SegmentEffortByMonthWithTags) => {
+    let direction: 'asc' | 'desc' = 'asc';
+    if (sortConfig.key === columnKey && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key: columnKey, direction });
+  };
+
   const handleCellClick = (id: number, month: number) => {
     setDialogInfo({ id, month });
     setDialogOpen(true);
@@ -86,6 +98,18 @@ const StarredSegmentsComponentByMonth: React.FC = () => {
 
 
   const filteredData = React.useMemo(() => filterByTag(data, selectedTags), [data, selectedTags]);
+
+  const sortedData = React.useMemo(() => {
+    if (!sortConfig.key) return filteredData;
+    const sorted = [...filteredData].sort((a, b) => {
+      const lhs = (a as SegmentEffortByMonthWithTags)[sortConfig.key!] || '';
+      const rhs = (b as SegmentEffortByMonthWithTags)[sortConfig.key!] || '';
+      if (lhs < rhs) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (lhs > rhs) return sortConfig.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+    return sorted;
+  }, [filteredData, sortConfig]);
 
   return (
     <Container maxWidth="xl" sx={{ marginY: 0 }}>
@@ -110,16 +134,38 @@ const StarredSegmentsComponentByMonth: React.FC = () => {
           <Table stickyHeader>
             <TableHead>
               <TableRow>
-                <TableCell key="segmentname" align="left">
+                <TableCell
+                  key="segmentname"
+                  align="left"
+                  onClick={() => handleSort("segmentname")}
+                  sx={{ cursor: 'pointer' }}
+                >
                   Starred Segment Efforts by Month
+                  {sortConfig.key === "segmentname" ? (sortConfig.direction === 'asc' ? ' ▲' : ' ▼') : ''}
                 </TableCell>
                 {months.map((m) => (
-                  <TableCell key={m.key} align="center">
+                  <TableCell
+                    key={m.key}
+                    align="center"
+                    onClick={() => handleSort(m.key)}
+                    sx={{ cursor: 'pointer' }}
+                  >
                     {m.label}
+                    {sortConfig.key === m.key ? (sortConfig.direction === 'asc' ? ' ▲' : ' ▼') : ''}
                   </TableCell>
                 ))}
-                <TableCell key="total" align="center">
+                <TableCell
+                  key="totalattempts"
+                  align="center"
+                  onClick={() => handleSort("totalattempts")}
+                  sx={{ cursor: 'pointer' }}
+                >
                   Total
+                  {sortConfig.key === "totalattempts"
+                    ? sortConfig.direction === "asc"
+                      ? " ▲"
+                      : " ▼"
+                    : ""}
                 </TableCell>
                 <TableCell key="tags" align="left">
                   Tags
@@ -127,7 +173,7 @@ const StarredSegmentsComponentByMonth: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredData.map((row, index) => (
+              {sortedData.map((row, index) => (
                 <TableRow
                   key={row.id}
                   sx={{ backgroundColor: index % 2 === 0 ? '#f9f9f9' : '#fff' }}

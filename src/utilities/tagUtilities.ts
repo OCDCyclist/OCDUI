@@ -15,12 +15,13 @@ export const getUniqueTags = (tagables: Tagable[]): string[] => {
   return Array.from(tagSet);
 };
 
-export const filterByTag = (tagables: Tagable[], filterTags: string[]) => {
-  if(filterTags.length === 0 ) return tagables;
-  return tagables.filter(
-    segment => {
-      const segmentTags = segment.tags ? segment.tags.trim().split(',') : [];
-      return filterTags.every(tag => segmentTags.includes(tag));
-    }
-  );
-}
+export const filterByTag = <T extends Tagable>(
+  tagables: T[],
+  filterTags: string[]
+): T[] => {
+  if (filterTags.length === 0) return tagables;
+  return tagables.filter(segment => {
+    const segmentTags = segment.tags ? segment.tags.trim().split(",") : [];
+    return filterTags.every(tag => segmentTags.includes(tag));
+  });
+};
