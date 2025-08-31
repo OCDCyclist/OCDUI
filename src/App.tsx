@@ -32,6 +32,7 @@ import MonthDayMetricTableComponent from './components/MonthDayMetricTableCompon
 import RideDayFractionsComponent from './components/RideDayFractionsComponent';
 import StarredSegmentsComponentByMonth from './components/StarredSegmentsComponentByMonth';
 import StarredSegmentsComponentByDOW from './components/StarredSegmentsComponentByDOW';
+import { YearHeatmap } from './components/YearHeatMap';
 
 const App: React.FC = () => {
   return (
@@ -50,6 +51,7 @@ const App: React.FC = () => {
           <Route path="/ocds/milestones" element={<MilestonesComponent />} />
           <Route path="/ocds/inoroutside" element={<YearAndIndoorOutdoorData />} />
           <Route path="/ocds/ridedayfractions" element={<RideDayFractionsComponent />} />
+          <Route path="/ocds/yearheatmap" element={<YearHeatmap />} />
           <Route path="updateStrava" element={<UpdateStrava />} />
           <Route path="UpdateMetrics" element={<UpdateMetrics />} />
           <Route path="rider/weighttracker" element={<WeightTracker />} />

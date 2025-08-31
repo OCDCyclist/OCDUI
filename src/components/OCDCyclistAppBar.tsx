@@ -36,6 +36,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/AuthContext';
 import LoginStatus from './authentication/LoginStatus';
 import ViewWeekIcon from '@mui/icons-material/ViewWeek';
+import SolarPowerIcon from '@mui/icons-material/SolarPower';
 
 const drawerWidth = 240;
 
@@ -101,6 +102,7 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({
         { text: 'In or Outside', icon: <NaturePeopleIcon />, path: '/ocds/inoroutside' },
         { text: 'Days With Rides', icon: <StackedLineChartIcon />, path: '/ocds/ridedayfractions' },
         { text: 'Streaks', icon: <SettingsEthernetIcon />, path: '/ocds/streaks' },
+        { text: 'Heatmap', icon: <SolarPowerIcon />, path: '/ocds/yearheatmap' },
       ]
     },
     {
