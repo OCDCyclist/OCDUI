@@ -37,6 +37,7 @@ import { useAuth } from '../hooks/AuthContext';
 import LoginStatus from './authentication/LoginStatus';
 import ViewWeekIcon from '@mui/icons-material/ViewWeek';
 import SolarPowerIcon from '@mui/icons-material/SolarPower';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 
 const drawerWidth = 240;
 
@@ -97,12 +98,6 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({
         { text: 'Year and Month', icon: <DatasetIcon />, path: '/ocds/yearandmonth' },
         { text: 'Year and DOW', icon: <ViewWeekIcon />, path: '/ocds/yearanddow' },
         { text: 'Day of Month', icon: <CalendarMonthIcon />, path: '/ocds/monthanddom' },
-        { text: 'Month and Day', icon: <CalendarMonthIcon />, path: '/ocds/monthanddomvertical' },
-        { text: 'Milestones', icon: <AirlineStopsIcon />, path: '/ocds/milestones' },
-        { text: 'In or Outside', icon: <NaturePeopleIcon />, path: '/ocds/inoroutside' },
-        { text: 'Days With Rides', icon: <StackedLineChartIcon />, path: '/ocds/ridedayfractions' },
-        { text: 'Streaks', icon: <SettingsEthernetIcon />, path: '/ocds/streaks' },
-        { text: 'Heatmap', icon: <SolarPowerIcon />, path: '/ocds/yearheatmap' },
       ]
     },
     {
@@ -123,12 +118,23 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({
       ]
     },
     {
-      text: 'Analysis',
+      text: 'Clusters',
       icon: <AnalyticsIcon />,
       children: [
         { text: 'Cluster Setup', icon: <TuneIcon />, path: '/analysis/clustersetup' },
         { text: 'Cluster Centroids', icon: <QueryStatsIcon />, path: '/analysis/clustercentroids' },
         { text: 'Cluster Visuals', icon: <PivotTableChartIcon />, path: '/analysis/clustervisuals' },
+      ]
+    },
+    {
+      text: 'Reports',
+      icon: <AssessmentIcon />,
+      children: [
+        { text: 'Heatmap', icon: <SolarPowerIcon />, path: '/ocds/yearheatmap' },
+        { text: 'Milestones', icon: <AirlineStopsIcon />, path: '/ocds/milestones' },
+        { text: 'In or Outside', icon: <NaturePeopleIcon />, path: '/ocds/inoroutside' },
+        { text: 'Streaks', icon: <SettingsEthernetIcon />, path: '/ocds/streaks' },
+        { text: 'Days With Rides', icon: <StackedLineChartIcon />, path: '/ocds/ridedayfractions' },
       ]
     },
     {
