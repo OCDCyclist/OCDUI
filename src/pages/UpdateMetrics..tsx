@@ -4,7 +4,6 @@ import {
   Paper,
   Typography,
   Grid,
-  Button,
   CircularProgress,
   Alert,
 } from '@mui/material';
@@ -40,12 +39,10 @@ const UpdateMetrics: React.FC = () => {
     }
   };
 
-  // Run the update function when the component is mounted
   useEffect(() => {
     handleStravaUpdate();
   }, []);
 
-  // If loading, show a spinner
   if (loading) {
     return (
       <Container maxWidth="sm" sx={{ marginY: 5, textAlign: 'center' }}>
@@ -57,7 +54,6 @@ const UpdateMetrics: React.FC = () => {
     );
   }
 
-  // If there's an error, show an error message
   if (error) {
     return (
       <Container maxWidth="sm" sx={{ marginY: 5 }}>
@@ -68,7 +64,6 @@ const UpdateMetrics: React.FC = () => {
     );
   }
 
-  // If we have the result, show the success message with data
   if (updateResult) {
     return (
       <Container maxWidth="sm" sx={{ marginY: 5 }}>
@@ -87,14 +82,6 @@ const UpdateMetrics: React.FC = () => {
               <Typography variant="body1" component={"span"}>
                 <strong>Message:</strong> {updateResult.message}
               </Typography>
-            </Grid>
-          </Grid>
-
-          <Grid container spacing={2} sx={{ marginTop: 3 }}>
-            <Grid item xs={12}>
-              <Button fullWidth variant="contained" color="primary" onClick={handleStravaUpdate}>
-                Update Again (probably not necessary)
-              </Button>
             </Grid>
           </Grid>
         </Paper>

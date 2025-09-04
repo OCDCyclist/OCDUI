@@ -121,20 +121,20 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({
       text: 'Clusters',
       icon: <AnalyticsIcon />,
       children: [
-        { text: 'Cluster Setup', icon: <TuneIcon />, path: '/analysis/clustersetup' },
-        { text: 'Cluster Centroids', icon: <QueryStatsIcon />, path: '/analysis/clustercentroids' },
-        { text: 'Cluster Visuals', icon: <PivotTableChartIcon />, path: '/analysis/clustervisuals' },
+        { text: 'Cluster Setup', icon: <TuneIcon />, path: '/clusters/clustersetup' },
+        { text: 'Cluster Centroids', icon: <QueryStatsIcon />, path: '/clusters/clustercentroids' },
+        { text: 'Cluster Visuals', icon: <PivotTableChartIcon />, path: '/clusters/clustervisuals' },
       ]
     },
     {
       text: 'Reports',
       icon: <AssessmentIcon />,
       children: [
-        { text: 'Heatmap', icon: <SolarPowerIcon />, path: '/ocds/yearheatmap' },
-        { text: 'Milestones', icon: <AirlineStopsIcon />, path: '/ocds/milestones' },
-        { text: 'In or Outside', icon: <NaturePeopleIcon />, path: '/ocds/inoroutside' },
-        { text: 'Streaks', icon: <SettingsEthernetIcon />, path: '/ocds/streaks' },
-        { text: 'Days With Rides', icon: <StackedLineChartIcon />, path: '/ocds/ridedayfractions' },
+        { text: 'Heatmap', icon: <SolarPowerIcon />, path: '/reports/yearheatmap' },
+        { text: 'Milestones', icon: <AirlineStopsIcon />, path: '/reports/milestones' },
+        { text: 'In or Outside', icon: <NaturePeopleIcon />, path: '/reports/inoroutside' },
+        { text: 'Streaks', icon: <SettingsEthernetIcon />, path: '/reports/streaks' },
+        { text: 'Days With Rides', icon: <StackedLineChartIcon />, path: '/reports/ridedayfractions' },
       ]
     },
     {

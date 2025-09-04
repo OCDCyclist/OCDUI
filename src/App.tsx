@@ -28,7 +28,6 @@ import YearAndIndoorOutdoorData from './components/YearAndInOrOutsideComponent';
 import UserSettingsTable from './components/UserSettings';
 import BikesComponent from './components/BikesComponent';
 import GoalsComponent from './components/GoalsComponent';
-import MonthDayMetricTableComponent from './components/MonthDayMetricTableComponent';
 import RideDayFractionsComponent from './components/RideDayFractionsComponent';
 import StarredSegmentsComponentByMonth from './components/StarredSegmentsComponentByMonth';
 import StarredSegmentsComponentByDOW from './components/StarredSegmentsComponentByDOW';
@@ -41,36 +40,35 @@ const App: React.FC = () => {
         <Route path="/" element={<Layout />}>
           <Route index element={<RiderSummary />} />
           <Route path="login" element={<Login />} />
+          <Route path="rides/recent" element={<RideListComponent />} />
+          <Route path="rides/lookback" element={<RideLookbackComponent />} />
+          <Route path="rides/allrides" element={<RideAllComponent />} />
+          <Route path="rides/add" element={<AddRide />} />
           <Route path="ocds/cummulatives" element={<CumulativeDataComponent />} />
           <Route path="ocds/allcummulatives" element={<CummulativeAllComponent />} />
           <Route path="ocds/yearandmonth" element={<YearAndMonthComponent />} />
           <Route path="ocds/yearanddow" element={<YearAndDOWComponent />} />
           <Route path="ocds/monthanddom" element={<MonthAndDOMComponent />} />
-          <Route path="ocds/monthanddomvertical" element={<MonthDayMetricTableComponent />} />
-          <Route path="/ocds/streaks" element={<StreaksComponent />} />
-          <Route path="/ocds/milestones" element={<MilestonesComponent />} />
-          <Route path="/ocds/inoroutside" element={<YearAndIndoorOutdoorData />} />
-          <Route path="/ocds/ridedayfractions" element={<RideDayFractionsComponent />} />
-          <Route path="/ocds/yearheatmap" element={<YearHeatmap />} />
-          <Route path="updateStrava" element={<UpdateStrava />} />
-          <Route path="UpdateMetrics" element={<UpdateMetrics />} />
+          <Route path="reports/streaks" element={<StreaksComponent />} />
+          <Route path="reports/milestones" element={<MilestonesComponent />} />
+          <Route path="reports/inoroutside" element={<YearAndIndoorOutdoorData />} />
+          <Route path="reports/ridedayfractions" element={<RideDayFractionsComponent />} />
+          <Route path="reports/yearheatmap" element={<YearHeatmap />} />
           <Route path="rider/weighttracker" element={<WeightTracker />} />
           <Route path="rider/addweight" element={<AddWeight />} />
           <Route path="rider/goals" element={<GoalsComponent />} />
           <Route path="rider/settings" element={<UserSettingsTable />} />
           <Route path="gear/bikes" element={<BikesComponent />} />
-          <Route path="rides/recent" element={<RideListComponent />} />
-          <Route path="rides/lookback" element={<RideLookbackComponent />} />
-          <Route path="rides/allrides" element={<RideAllComponent />} />
-          <Route path="rides/add" element={<AddRide />} />
           <Route path="segments/starred" element={<StarredSegmentsComponent />} />
           <Route path="segments/byMonth" element={<StarredSegmentsComponentByMonth />} />
           <Route path="segments/byDOW" element={<StarredSegmentsComponentByDOW />} />
           <Route path="segments/updatestarred" element={<UpdateStravaStarredSegments />} />
-          <Route path="/analysis/clustersetup" element={<ClusterSetup />} />
-          <Route path="/analysis/clustercentroids" element={<ClusterCentroidTable />} />
-          <Route path="/analysis/clustervisuals" element={<ClusterVisualization />} />
-          <Route path="/power/powercurve" element={<PowerCurverVisualization />} />
+          <Route path="clusters/clustersetup" element={<ClusterSetup />} />
+          <Route path="clusters/clustercentroids" element={<ClusterCentroidTable />} />
+          <Route path="clusters/clustervisuals" element={<ClusterVisualization />} />
+          <Route path="power/powercurve" element={<PowerCurverVisualization />} />
+          <Route path="updateStrava" element={<UpdateStrava />} />
+          <Route path="UpdateMetrics" element={<UpdateMetrics />} />
         </Route>
       </Routes>
     </Router>

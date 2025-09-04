@@ -5,7 +5,6 @@ import {
   Paper,
   Typography,
   Grid,
-  Button,
   CircularProgress,
   Alert,
 } from '@mui/material';
@@ -22,16 +21,16 @@ const UpdateStrava: React.FC = () => {
     setLoading(true);
     setError(null);
 
-    const token = localStorage.getItem('token'); // Retrieve the JWT token from localStorage
+    const token = localStorage.getItem('token');
 
     try {
       const response = await axios.get(`${API_BASE_URL}/rider/updateStrava`, {
         headers: {
-          Authorization: `Bearer ${token}`, // Add the token in the Authorization header
+          Authorization: `Bearer ${token}`,
         },
       });
 
-      setUpdateResult(response.data); // Store the response data (success and ridesAdded)
+      setUpdateResult(response.data);
       setLoading(false);
     } catch (err) {
       setError(`Failed to update Strava rides. Please try again: ${err}`);
@@ -39,12 +38,10 @@ const UpdateStrava: React.FC = () => {
     }
   };
 
-  // Run the update function when the component is mounted
   useEffect(() => {
     handleStravaUpdate();
   }, []);
 
-  // If loading, show a spinner
   if (loading) {
     return (
       <Container maxWidth="sm" sx={{ marginY: 5, textAlign: 'center' }}>
@@ -57,7 +54,6 @@ const UpdateStrava: React.FC = () => {
     );
   }
 
-  // If there's an error, show an error message
   if (error) {
     return (
       <Container maxWidth="sm" sx={{ marginY: 5 }}>
@@ -68,7 +64,6 @@ const UpdateStrava: React.FC = () => {
     );
   }
 
-  // If we have the result, show the success message with data
   if (updateResult) {
     return (
       <Container maxWidth="sm" sx={{ marginY: 5 }}>
@@ -90,20 +85,13 @@ const UpdateStrava: React.FC = () => {
             </Grid>
           </Grid>
 
-          <Grid container spacing={2} sx={{ marginTop: 3 }}>
-            <Grid item xs={12}>
-              <Button fullWidth variant="contained" color="primary" onClick={handleStravaUpdate}>
-                Update Again
-              </Button>
-            </Grid>
-          </Grid>
-          <img src={StravaLogo} alt="Powered by Strava" style={{ marginTop: 20, width: '80%' }} /> {/* Add image */}
+          <img src={StravaLogo} alt="Powered by Strava" style={{ marginTop: 20, width: '80%' }} />
         </Paper>
       </Container>
     );
   }
 
-  return null; // Render nothing by default until the component is loaded
+  return null;
 };
 
 export default UpdateStrava;
