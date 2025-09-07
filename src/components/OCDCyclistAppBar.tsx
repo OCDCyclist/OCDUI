@@ -1,8 +1,21 @@
 import React, { useState } from 'react';
 import {
-  AppBar, Toolbar, Typography, IconButton, Drawer, List, ListItem, ListItemIcon, ListItemText,
-  Box, CssBaseline, Divider, Collapse
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
+  Drawer,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Box,
+  CssBaseline,
+  Divider,
+  Collapse,
+  useMediaQuery
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
 import HomeIcon from '@mui/icons-material/Home';
 import TravelExploreIcon from '@mui/icons-material/TravelExplore';
@@ -32,12 +45,12 @@ import FunctionsIcon from '@mui/icons-material/Functions';
 import FlagCircleIcon from '@mui/icons-material/FlagCircle';
 import StackedLineChartIcon from '@mui/icons-material/StackedLineChart';
 import SettingsEthernetIcon from '@mui/icons-material/SettingsEthernet';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/AuthContext';
-import LoginStatus from './authentication/LoginStatus';
 import ViewWeekIcon from '@mui/icons-material/ViewWeek';
 import SolarPowerIcon from '@mui/icons-material/SolarPower';
 import AssessmentIcon from '@mui/icons-material/Assessment';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/AuthContext';
+import LoginStatus from './authentication/LoginStatus';
 
 const drawerWidth = 240;
 
@@ -52,6 +65,8 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({
   onMenuClick,
   drawerOpen = false
 }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md')); // md ~ tablet breakpoint
   const isAuthenticated = useAuth();
   const navigate = useNavigate();
   const [openItems, setOpenItems] = useState<{ [key: string]: boolean }>({});
@@ -75,6 +90,9 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({
   const handleNavigation = (path: string) => {
     navigate(path);
     setSelectedItem(path);
+    if (isMobile) {
+      onMenuClick(); // close drawer automatically on mobile
+    }
   };
 
   const menuItems = [
@@ -184,9 +202,10 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({
       </AppBar>
 
       <Drawer
-        variant="persistent"
+        variant={isMobile ? 'temporary' : 'persistent'}
         anchor="left"
         open={drawerOpen}
+        onClose={onMenuClick} // important for temporary drawer
         sx={{
           width: drawerWidth,
           flexShrink: 0,
