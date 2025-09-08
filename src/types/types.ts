@@ -806,3 +806,13 @@ export type Goal = {
   month: number;
   year: number;
 };
+
+export type IndoorOutdoorData = {
+  year: number;
+  month: number; // 1–12
+  distance_outdoor: number;
+  distance_indoor: number;
+  total_distance: number;
+  pct_outdoor: number;
+  pct_indoor: number;
+};

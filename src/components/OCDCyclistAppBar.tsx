@@ -148,7 +148,8 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({
       text: 'Reports',
       icon: <AssessmentIcon />,
       children: [
-        { text: 'Heatmap', icon: <SolarPowerIcon />, path: '/reports/yearheatmap' },
+        { text: '1K per Day Heatmap', icon: <SolarPowerIcon />, path: '/reports/yearheatmap' },
+        { text: 'Outdoor Heatmap', icon: <SolarPowerIcon />, path: '/reports/outdoorheatmap' },
         { text: 'Milestones', icon: <AirlineStopsIcon />, path: '/reports/milestones' },
         { text: 'In or Outside', icon: <NaturePeopleIcon />, path: '/reports/inoroutside' },
         { text: 'Streaks', icon: <SettingsEthernetIcon />, path: '/reports/streaks' },
