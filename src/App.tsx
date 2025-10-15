@@ -33,6 +33,7 @@ import StarredSegmentsComponentByMonth from './components/StarredSegmentsCompone
 import StarredSegmentsComponentByDOW from './components/StarredSegmentsComponentByDOW';
 import { YearHeatmap } from './components/YearHeatMap';
 import { IndoorOutdoorHeatMap } from './components/IndoorOutdoorHeatMap';
+import RecalcCummulatives from './components/RecalcCummulatives';
 
 const App: React.FC = () => {
   return (
@@ -69,8 +70,8 @@ const App: React.FC = () => {
           <Route path="clusters/clustercentroids" element={<ClusterCentroidTable />} />
           <Route path="clusters/clustervisuals" element={<ClusterVisualization />} />
           <Route path="power/powercurve" element={<PowerCurverVisualization />} />
+          <Route path="/recalc/Cummulatives" element={<RecalcCummulatives />} />
           <Route path="updateStrava" element={<UpdateStrava />} />
-          <Route path="UpdateMetrics" element={<UpdateMetrics />} />
         </Route>
       </Routes>
     </Router>

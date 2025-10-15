@@ -178,7 +178,7 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({
       icon: <RefreshIcon />,
       children: [
         { text: 'Update Strava', icon: <UpdateIcon />, path: '/updateStrava' },
-        { text: 'Update Metrics', icon: <UpdateIcon />, path: '/updateMetrics' },
+        { text: 'Recalc Cummulatives', icon: <UpdateIcon />, path: '/recalc/Cummulatives' },
       ]
     },
   ];
