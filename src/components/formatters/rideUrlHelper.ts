@@ -10,8 +10,11 @@ export function rideUrlHelper({ date, year, month, dow, dom, cluster, years, sta
   else if(typeof cluster !== 'undefined'){
     url = `${API_BASE_URL}/cluster/getRidesByCluster?clusterId=${cluster?.clusterid}&cluster=${cluster.cluster}`;
   }
-  else if(typeof year !== 'undefined' && typeof month !== 'undefined'){
+  else if(typeof year !== 'undefined' && typeof month !== 'undefined' && typeof dom === 'undefined'){
     url = `${API_BASE_URL}/ride/ridesByYearMonth?year=${year}&month=${month}`;
+  }
+  else if(typeof year !== 'undefined' && typeof month !== 'undefined' && typeof dom !== 'undefined'){
+    url = `${API_BASE_URL}/ride/ridesByYearMonthDOM?year=${year}&month=${month}&dom=${dom}`;
   }
   else if(typeof year !== 'undefined' && typeof dow !== 'undefined'){
     url = `${API_BASE_URL}/ride/ridesByYearDOW?year=${year}&dow=${dow}`;

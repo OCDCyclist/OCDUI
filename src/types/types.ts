@@ -767,6 +767,13 @@ export interface Milestone_10K {
     distance_miles: number,
 }
 
+export interface Centuries {
+    year: number,
+    month: number,
+    day: number,
+    total_distance: number,
+}
+
 export interface Setting {
   riderid: number;
   property: string;

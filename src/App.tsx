@@ -34,6 +34,7 @@ import StarredSegmentsComponentByDOW from './components/StarredSegmentsComponent
 import { YearHeatmap } from './components/YearHeatMap';
 import { IndoorOutdoorHeatMap } from './components/IndoorOutdoorHeatMap';
 import RecalcCummulatives from './components/RecalcCummulatives';
+import CenturiesComponent from './components/CenturiesComponent';
 
 const App: React.FC = () => {
   return (
@@ -57,6 +58,7 @@ const App: React.FC = () => {
           <Route path="reports/ridedayfractions" element={<RideDayFractionsComponent />} />
           <Route path="reports/yearheatmap" element={<YearHeatmap />} />
           <Route path="reports/outdoorheatmap" element={<IndoorOutdoorHeatMap />} />
+          <Route path="reports/centuries" element={<CenturiesComponent />} />
           <Route path="rider/weighttracker" element={<WeightTracker />} />
           <Route path="rider/addweight" element={<AddWeight />} />
           <Route path="rider/goals" element={<GoalsComponent />} />

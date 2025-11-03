@@ -51,6 +51,7 @@ import AssessmentIcon from '@mui/icons-material/Assessment';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/AuthContext';
 import LoginStatus from './authentication/LoginStatus';
+import JoinFullIcon from '@mui/icons-material/JoinFull';
 
 const drawerWidth = 240;
 
@@ -154,6 +155,7 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({
         { text: 'In or Outside', icon: <NaturePeopleIcon />, path: '/reports/inoroutside' },
         { text: 'Streaks', icon: <SettingsEthernetIcon />, path: '/reports/streaks' },
         { text: 'Days With Rides', icon: <StackedLineChartIcon />, path: '/reports/ridedayfractions' },
+        { text: 'Centuries', icon: <JoinFullIcon />, path: '/reports/centuries' },
       ]
     },
     {
