@@ -73,6 +73,9 @@ const YearAndDOWComponent = () => {
     return sorted;
   }, [data, sortConfig]);
 
+  const today = new Date();
+  const year = today.getFullYear();
+
   const renderTable = (columns: { key: keyof YearAndDOWData; label: string, dow: number }[]) => {
     return (
       <TableContainer>
@@ -102,7 +105,7 @@ const YearAndDOWComponent = () => {
                   <TableCell
                       key={col.key}
                       align="right"
-                      sx={{ paddingRight: '1em' }}
+                      sx={{ backgroundColor: row.year === year ? '#e3f1c4' : 'inherit', }}
                       onClick={() => handleRowClick(row.year, col.key, col.dow)}
                     >
                       {formatYearAndDOWData(col, row[col.key])}

@@ -293,6 +293,12 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster, years, start
   const visibleColumns = getVisibleColumnsUtility(windowWidth, allColumns, priorityRules);
 
   const renderTableRecent = (columns: RideDisplayColumn[]) => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const day = String(today.getDate()).padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+
     return (
       <TableContainer
         sx={{
@@ -327,7 +333,7 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster, years, start
                   <TableCell
                     key={col.key}
                     align={col.justify as unknown as TableCellProps["align"]}
-                    sx={{ paddingRight: '1em' }}
+                    sx={{ paddingRight: '1em', backgroundColor: (row.date.split('T')[0]) === formattedDate ? '#e3f1c4' : 'inherit'}}
                     onClick={() => handleRowClick(row, col.label)}
                   >
                     {formatRideDataWithTags(col, row[col.key] ?? '', row)}
@@ -378,10 +384,10 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster, years, start
         elevation={3}
         sx={{
           backgroundColor: '#fbeacd',
-          padding: 2, // Increase padding
+          padding: 2,
           marginBottom: '1em',
-          margin: 'auto', // Center the component
-          width: '100%', // Occupy the full width of the container
+          margin: 'auto',
+          width: '100%',
         }}
       >
 
@@ -389,8 +395,8 @@ const RideListComponent = ( { date, year, month, dow, dom, cluster, years, start
 
         {
           isSmallScreen
-            ? renderCardsRecent(allColumns, sortedData) // cards for small screens
-            : renderTableRecent(visibleColumns)             // table for larger screens
+            ? renderCardsRecent(allColumns, sortedData)
+            : renderTableRecent(visibleColumns)
         }
 
         {/* Modal Dialog to display ride details */}

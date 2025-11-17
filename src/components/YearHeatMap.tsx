@@ -62,8 +62,7 @@ const getMonthStatusColor = (data: MonthAndDOMData[], month: keyof MonthAndDOMDa
 };
 
 const isValidDate = (day: number, month: number) => {
-  // month is 1–12, day is 1–31
-  const date = new Date(2024, month - 1, day); // 2024 is leap year → safe for Feb
+  const date = new Date(2024, month - 1, day);
   return date.getMonth() === month - 1 && date.getDate() === day;
 };
 
@@ -71,6 +70,11 @@ export const YearHeatmap: React.FC = () => {
   const [data, setData] = useState<MonthAndDOMData[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogInfo, setDialogInfo] = useState<DialogInfo>(null);
+
+  // NEW: identify today
+  const today = new Date();
+  const todayMonth = today.getMonth() + 1; // 1–12
+  const todayDay = today.getDate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -102,38 +106,37 @@ export const YearHeatmap: React.FC = () => {
   return (
     <Box sx={{ p: 2 }}>
       <Typography variant="h6" gutterBottom align="center">
-       Month and Day of Month Heatmap
+        Month and Day of Month Heatmap
       </Typography>
 
-      <Grid
-        container
-        spacing={2}
-        justifyContent="center"
-      >
+      <Grid container spacing={2} justifyContent="center">
         {monthKeys.map((month, monthIdx) => (
           <Grid
             item
             key={month}
-            xs={12}   // mobile: 1 month per row
-            sm={4}    // small tablet: 3 months per row
-            md={2}    // tablet: 6 months per row
-            lg={1}    // desktop: 12 months per row
+            xs={12}
+            sm={4}
+            md={2}
+            lg={1}
           >
             <Typography
-                variant="body2"
-                align="center"
-                sx={{
-                    mb: 1,
-                    fontWeight: "bold",
-                    borderRadius: 1,
-                    px: 1,
-                    backgroundColor: getMonthStatusColor(data, month),
-                    color:
-                    getMonthStatusColor(data, month) === "gold" ? "black" : "white",
-                }}
-                >
-                {monthLabels[monthIdx]}
+              variant="body2"
+              align="center"
+              sx={{
+                mb: 1,
+                fontWeight: "bold",
+                borderRadius: 1,
+                px: 1,
+                backgroundColor: getMonthStatusColor(data, month),
+                color:
+                  getMonthStatusColor(data, month) === "gold"
+                    ? "black"
+                    : "white",
+              }}
+            >
+              {monthLabels[monthIdx]}
             </Typography>
+
             <Box
               sx={{
                 display: "grid",
@@ -142,10 +145,9 @@ export const YearHeatmap: React.FC = () => {
                 justifyContent: "center",
               }}
             >
-                {Array.from({ length: 31 }, (_, dayIdx) => {
+              {Array.from({ length: 31 }, (_, dayIdx) => {
                 const day = dayIdx + 1;
 
-                // skip invalid day/month combos
                 if (!isValidDate(day, monthIdx + 1)) return null;
 
                 const dayData = data.find((d) => d.dom === day);
@@ -153,27 +155,35 @@ export const YearHeatmap: React.FC = () => {
 
                 const value = dayData[month];
 
+                const isToday =
+                  (monthIdx + 1 === todayMonth) && (day === todayDay);
+
                 return (
-                    <Tooltip
+                  <Tooltip
                     key={`${month}-${dayIdx}`}
                     title={`Day ${day}: ${value} miles`}
                     arrow
-                    >
+                  >
                     <Box
-                        onClick={() => handleCellClick(day, month, monthIdx + 1)}
-                        sx={{
+                      onClick={() =>
+                        handleCellClick(day, month, monthIdx + 1)
+                      }
+                      sx={{
                         width: 16,
                         height: 16,
                         bgcolor: getColor(value),
                         borderRadius: 0.5,
                         cursor: "pointer",
-                        "&:hover": { opacity: 0.8 },
                         margin: "auto",
-                        }}
+                        "&:hover": { opacity: 0.8 },
+
+                        border: isToday ? "2px solid blue" : "1px solid transparent",
+                        boxShadow: isToday ? "0 0 6px 2px rgba(255, 215, 0, 0.9)" : "none",
+                      }}
                     />
-                    </Tooltip>
+                  </Tooltip>
                 );
-                })}
+              })}
             </Box>
           </Grid>
         ))}
@@ -201,6 +211,20 @@ export const YearHeatmap: React.FC = () => {
           <Box sx={{ width: 16, height: 16, bgcolor: "lightcoral", borderRadius: 0.5 }} />
           <Typography variant="body2">&lt; 900 miles</Typography>
         </Box>
+
+        {/* NEW legend entry for Today */}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Box
+            sx={{
+              width: 16,
+              height: 16,
+              borderRadius: 0.5,
+              border: "2px solid white",
+              boxShadow: "0 0 3px 1px rgba(255,255,255,0.9)",
+            }}
+          />
+          <Typography variant="body2">Today</Typography>
+        </Box>
       </Box>
 
       <Dialog
@@ -212,12 +236,18 @@ export const YearHeatmap: React.FC = () => {
         <DialogTitle>
           Rides for{" "}
           {dialogInfo
-            ? formatDateHelper({ dom: dialogInfo.dom, month: dialogInfo.month })
+            ? formatDateHelper({
+                dom: dialogInfo.dom,
+                month: dialogInfo.month,
+              })
             : ""}
         </DialogTitle>
         <DialogContent>
           {dialogInfo ? (
-            <RideListComponent dom={dialogInfo.dom} month={dialogInfo.month} />
+            <RideListComponent
+              dom={dialogInfo.dom}
+              month={dialogInfo.month}
+            />
           ) : null}
         </DialogContent>
       </Dialog>
