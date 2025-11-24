@@ -568,6 +568,11 @@ export interface FetchRideMetricsResult {
     error: string | null;
 }
 
+export interface FetchRideHRRsResult {
+    rideHRR: HRRRow[];
+    error: string | null;
+}
+
 export interface FetchRideMatchesResult {
     rideMatches: MatchRow[];
     error: string | null;
@@ -626,6 +631,19 @@ export interface MetricRow {
     period: number;
     metric_value: number;
     starttime: string;
+}
+
+export interface HRRRow {
+    startindex: number;
+    endindex: number;
+    idxpeakpower: number;
+    idxhrpeak: number;
+    idxstoppedaling: number;
+    peakpower: number;
+    hrpeak: number;
+    hrr60: number;
+    hrr120: number;
+    tau: number;
 }
 
 export interface PowerCurveData {

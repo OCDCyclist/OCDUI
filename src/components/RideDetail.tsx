@@ -23,7 +23,7 @@ import {
 } from '@mui/material';
 import { formatBoolean, formatDate, formatInteger, formatNumber, formatPercent, isTextPresent } from '../utilities/formatUtilities';
 import { useNavigate } from 'react-router-dom';
-import { Bike, MatchRow, MetricRow, ReferenceLevel, RideData, SegmentEffortMini, UserZone, ZoneType } from '../types/types';
+import { Bike, HRRRow, MatchRow, MetricRow, ReferenceLevel, RideData, SegmentEffortMini, UserZone, ZoneType } from '../types/types';
 import { isBooleanString, isStringInteger, isStringNumber } from '../utilities/validation';
 import LinearIndeterminate from './loaders/LinearIndeterminate';
 import { isTokenValid } from '../utilities/jwtUtils';
@@ -35,6 +35,7 @@ import DownloadRideDataLink from './DownloadRideDataLink';
 import ZoneTable from './ZoneTable';
 import MetricTable from './MetricTable';
 import { fetchRideMetrics } from '../api/rides/fetchRideMetrics';
+import { fetchRideHRR } from '../api/rides/fetchRideHRR';
 import { fetchRideMatches } from '../api/rides/fetchRideMatches';
 import MatchTable from './MatchTable';
 import { fetchUserZones } from '../api';
@@ -43,6 +44,7 @@ import SegmentTable from './SegmentTable';
 import { fetchRideSegmentEfforts } from '../api/rides/fetchRideSegmentEfforts';
 import SimilarRides from './SimilarRides';
 import { useRideFieldUpdate } from '../api/rides/useRideFieldUpdate';
+import HRRTable from './HRRTable';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const TabPanel = ({ children, value, index }: { children: React.ReactNode; value: number; index: number }) => {
@@ -63,6 +65,7 @@ const RideDetail = ({ rideData: initialRideData, onRideUpdated, onClose }: RideD
   const [rideData, setRideData] = useState<RideData>(initialRideData); // For success response
   const [userZones, setUserZones] = useState<UserZone[]>([]);
   const [rideMetricData, setRideMetricData] = useState<MetricRow[]>([]); // For metric data
+  const [rideHRRData, setRideHRRData] = useState<HRRRow[]>([]); // For HRR data
   const [segmentEffortData, setSegmentEffortData] = useState<SegmentEffortMini[]>([]); // For segment effort data
   const [referenceLevels, setReferenceLevels] = useState<ReferenceLevel[]>([]); // For reference level data
   const [rideMatches, setRideMatches] = useState<MatchRow[]>([]); // For match data
@@ -156,6 +159,26 @@ const RideDetail = ({ rideData: initialRideData, onRideUpdated, onClose }: RideD
         .catch( (error) =>{
             setError(error.message);
             setRideMetricData([]);
+         });
+  }, [rideData]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if(!token) return;
+    fetchRideHRR(token, rideData.rideid)
+        .then( (result)=>{
+            if( result.error){
+                setError(result.error);
+                setRideHRRData([]);
+            }
+            else{
+                setError(null);
+                setRideHRRData(result.rideHRR);
+            }
+        })
+        .catch( (error) =>{
+            setError(error.message);
+            setRideHRRData([]);
          });
   }, [rideData]);
 
@@ -475,6 +498,7 @@ const RideDetail = ({ rideData: initialRideData, onRideUpdated, onClose }: RideD
           <Tab label="Metrics" />
           <Tab label="Segments" />
           <Tab label="Similar Rides" />
+          <Tab label="HRR" />
         </Tabs>
 
         <TabPanel value={tabIndex} index={0}>
@@ -969,6 +993,15 @@ const RideDetail = ({ rideData: initialRideData, onRideUpdated, onClose }: RideD
         <TabPanel value={tabIndex} index={7}>
           <SimilarRides rideid={rideData.rideid} />
         </TabPanel>
+
+        <TabPanel value={tabIndex} index={8}>
+        <div>
+          <HRRTable
+            hrrData={rideHRRData}
+          />
+        </div>
+        </TabPanel>
+
         <Button
           variant="contained"
           color="primary"

@@ -11,7 +11,6 @@ import {
 } from "@mui/material";
 import { ZoneType } from "../types/types";
 
-// Define the props interface.
 interface ZoneTableProps {
   zoneType: ZoneType; // The type of zone data (HR, Power, Cadence).
   zoneDefinitions: number[]; // The start and end points for each zone.
