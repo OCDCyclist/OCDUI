@@ -103,9 +103,9 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({
       icon: <DirectionsBikeIcon />,
       children: [
         { text: 'Rides', icon: <DirectionsBikeIcon />, path: '/rides/recent' },
-        { text: 'Rides by Year', icon: <DirectionsBikeIcon />, path: '/rides/allrides' },
         { text: 'Yesteryear', icon: <TravelExploreIcon />, path: '/rides/lookback' },
         { text: 'Add Ride', icon: <PlusOneIcon />, path: '/rides/add' },
+        { text: 'Rides by Year', icon: <DirectionsBikeIcon />, path: '/rides/allrides' },
       ]
     },
     {
@@ -113,10 +113,10 @@ const OCDCyclistAppBar: React.FC<OCDCyclistAppBarProps> = ({
       icon: <CalendarViewMonthIcon />,
       children: [
         { text: 'Cummulatives', icon: <QueryStatsIcon />, path: '/ocds/cummulatives' },
-        { text: 'All Cummulatives', icon: <DirectionsBikeIcon />, path: '/ocds/allcummulatives' },
         { text: 'Year and Month', icon: <DatasetIcon />, path: '/ocds/yearandmonth' },
         { text: 'Year and DOW', icon: <ViewWeekIcon />, path: '/ocds/yearanddow' },
         { text: 'Day of Month', icon: <CalendarMonthIcon />, path: '/ocds/monthanddom' },
+        { text: 'All Cummulatives', icon: <DirectionsBikeIcon />, path: '/ocds/allcummulatives' },
       ]
     },
     {

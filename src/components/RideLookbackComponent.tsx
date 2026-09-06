@@ -228,9 +228,14 @@ const categories = useMemo(() => {
       >
         <Box>
           <Tabs value={tabIndex} onChange={handleTabChange}>
-            {categories.map((category, index) => (
-              <Tab key={index} label={category} />
-            ))}
+            {categories.map((category, index) => {
+              const tabLabel = category
+                .replace('years ago', 'yrs')
+                .replace('year ago', 'yr')
+                .replace('today', 'Today');
+
+              return <Tab key={index} label={tabLabel} />;
+            })}
           </Tabs>
 
           {categories.map((_category, index) => (
